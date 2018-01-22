@@ -8,7 +8,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SelectCategory categoryId ->
-            ( { model | selectedCategoryId = Just categoryId }, Cmd.none )
+            ( { model
+                | selectedCategoryId = Just categoryId
+                , selectedSiteId = Nothing
+              }
+            , Cmd.none
+            )
 
         SelectSite siteId ->
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
@@ -61,6 +66,26 @@ update msg model =
               }
             , Cmd.none
             )
+
+        EditCategoryId categoryToEditId ->
+            ( { model | categoryToEditId = Just categoryToEditId }, Cmd.none )
+
+        EndCategoryEditing ->
+            ( { model | categoryToEditId = Nothing }, Cmd.none )
+
+        UpdateCategoryName categoryId newName ->
+            let
+                updatedCategories =
+                    List.map
+                        (\category ->
+                            if category.id == categoryId then
+                                { category | name = newName }
+                            else
+                                category
+                        )
+                        model.categories
+            in
+            ( { model | categories = updatedCategories }, Cmd.none )
 
 
 deleteCategories : List Category -> List Int -> List Category

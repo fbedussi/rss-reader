@@ -8,3 +8,6 @@ type Msg
     | DeleteCategories (List Int)
     | DeleteSites (List Int)
     | DeleteCategoryAndSites (List Int) (List Int)
+    | EditCategoryId Int
+    | UpdateCategoryName Int String
+    | EndCategoryEditing
