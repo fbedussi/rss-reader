@@ -1,0 +1,7 @@
+.category {
+  display: flex;
+}
+
+.category.selected {
+  background-color: lightgray;
+}
