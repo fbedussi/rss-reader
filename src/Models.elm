@@ -28,12 +28,21 @@ type alias Category =
     }
 
 
+type alias SelectedCategoryId =
+    Maybe Int
+
+
+type alias SelectedSiteId =
+    Maybe Int
+
+
 type alias Model =
     { categories : List Category
     , sites : List Site
     , articles : List Article
-    , selectedCategoryId : Maybe Int
-    , selectedSiteId : Maybe Int
+    , selectedCategoryId : SelectedCategoryId
+    , selectedSiteId : SelectedSiteId
+    , categoryToDeleteId : Maybe Int
     }
 
 
@@ -43,7 +52,8 @@ init =
         [ exampleCategory 1, exampleCategory 2 ]
         [ exampleSite 1, exampleSite 2 ]
         [ exampleArticle 1, exampleArticle 2 ]
-        (Just 1)
+        Nothing
+        Nothing
         Nothing
     , Cmd.none
     )
@@ -64,7 +74,7 @@ exampleSite : Int -> Site
 exampleSite int =
     Site
         int
-        [ int ]
+        [ 1 ]
         ("Site " ++ toString int)
         "https://www.lffl.org/feed"
         "https://www.lffl.org/"

@@ -2,4 +2,9 @@ module Msgs exposing (..)
 
 
 type Msg
-    = NoOp
+    = SelectCategory Int
+    | SelectSite Int
+    | ToggleDeleteActions Int
+    | DeleteCategories (List Int)
+    | DeleteSites (List Int)
+    | DeleteCategoryAndSites (List Int) (List Int)

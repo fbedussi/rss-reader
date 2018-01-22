@@ -1,7 +1,45 @@
-.category {
-  display: flex;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.category.selected {
+ul {
+  list-style-type: none;
+}
+
+.category {
+  display: block;
+}
+
+.categoryButtons {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+}
+
+.category.selected .categoryButtons {
   background-color: lightgray;
+}
+
+.category-sitesInCategory {
+  display: none;
+}
+
+.selected .category-sitesInCategory {
+  display: block;
+}
+
+.category-siteInCategory.selected {
+  background-color: beige;
+}
+
+.delete-actions {
+  display: none;
+  position: absolute;
+  background-color: white;
+}
+
+.delete-actions.selected {
+  display: block;
 }
