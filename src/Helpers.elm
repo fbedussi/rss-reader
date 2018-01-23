@@ -36,14 +36,14 @@ getSelectedArticles selectedCategoryId selectedSiteId sites articles =
 
                 Nothing ->
                     articles
-                        |> getArticlesInSites (sitesInSelectedCategory |> extractSitesId)
+                        |> getArticlesInSites (sitesInSelectedCategory |> extractId)
     in
     articlesSelected
 
 
-extractSitesId : List Site -> List Int
-extractSitesId =
-    List.map (\site -> site.id)
+extractId : List { a | id : Int } -> List Int
+extractId =
+    List.map (\entity -> entity.id)
 
 
 getArticlesInSites : List Int -> List Article -> List Article

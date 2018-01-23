@@ -1,5 +1,7 @@
 module Msgs exposing (..)
 
+import Dom exposing (Error)
+
 
 type Msg
     = SelectCategory Int
@@ -11,3 +13,5 @@ type Msg
     | EditCategoryId Int
     | UpdateCategoryName Int String
     | EndCategoryEditing
+    | AddNewCategory
+    | FocusResult (Result Error ())

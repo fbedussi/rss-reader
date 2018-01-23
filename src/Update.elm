@@ -1,7 +1,10 @@
 module Update exposing (..)
 
+import Dom exposing (focus)
+import Helpers exposing (extractId)
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
+import Task
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -87,6 +90,27 @@ update msg model =
             in
             ( { model | categories = updatedCategories }, Cmd.none )
 
+        AddNewCategory ->
+            let
+                newCategory =
+                    createNewCategory model.categories
+            in
+            ( { model
+                | categories = List.append model.categories [ newCategory ]
+                , categoryToEditId = Just newCategory.id
+              }
+            , Dom.focus ("editCategoryName-" ++ toString newCategory.id) |> Task.attempt FocusResult
+            )
+
+        FocusResult result ->
+            -- handle success or failure here
+            case result of
+                Err (Dom.NotFound id) ->
+                    ( model, Cmd.none )
+
+                Ok () ->
+                    ( model, Cmd.none )
+
 
 deleteCategories : List Category -> List Int -> List Category
 deleteCategories categories categoriesToDeleteId =
@@ -101,3 +125,27 @@ deleteSites sites sitesToDeleteId =
 deleteSitesArticles : List Article -> List Int -> List Article
 deleteSitesArticles articles sitesToDeleteId =
     List.filter (\article -> not (List.member article.siteId sitesToDeleteId)) articles
+
+
+createNewCategory : List Category -> Category
+createNewCategory categories =
+    let
+        categoriesId =
+            extractId categories
+
+        maxId =
+            List.sort categoriesId
+                |> List.reverse
+                |> List.head
+
+        nextId =
+            case maxId of
+                Just id ->
+                    id + 1
+
+                Nothing ->
+                    1
+    in
+    Category
+        nextId
+        "New Category"
