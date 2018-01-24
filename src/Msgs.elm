@@ -14,4 +14,7 @@ type Msg
     | UpdateCategoryName Int String
     | EndCategoryEditing
     | AddNewCategory
+    | AddNewSite
     | FocusResult (Result Error ())
+    | EditSite Int
+    | EndEditSite

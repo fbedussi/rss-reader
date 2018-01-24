@@ -46,6 +46,30 @@ extractId =
     List.map (\entity -> entity.id)
 
 
+getMaxId : List Int -> Maybe Int
+getMaxId ids =
+    List.sort ids
+        |> List.reverse
+        |> List.head
+
+
+incrementMaxId : Maybe Int -> Int
+incrementMaxId maxId =
+    case maxId of
+        Just id ->
+            id + 1
+
+        Nothing ->
+            1
+
+
+getNextId : List { a | id : Int } -> Int
+getNextId entities =
+    extractId entities
+        |> getMaxId
+        |> incrementMaxId
+
+
 getArticlesInSites : List Int -> List Article -> List Article
 getArticlesInSites sitesId =
     List.filter (\article -> List.any (\siteId -> siteId == article.siteId) sitesId)

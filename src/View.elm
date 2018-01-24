@@ -1,6 +1,7 @@
 module View exposing (view)
 
-import Html exposing (Html, div)
+import Dialog
+import Html exposing (Html, div, p, text)
 import Html.Attributes exposing (class)
 import Models exposing (Model)
 import Msgs exposing (..)
@@ -14,4 +15,18 @@ view model =
         [ class "appWrapper grid-x" ]
         [ sidebar model
         , mainContent model
+        , Dialog.view
+            (case model.siteToEditId of
+                Just siteId ->
+                    Just
+                        { closeMessage = Just EndEditSite
+                        , containerClass = Just "your-container-class"
+                        , header = Just (text "Alert!")
+                        , body = Just (p [] [ text "Let me tell you something important..." ])
+                        , footer = Nothing
+                        }
+
+                Nothing ->
+                    Nothing
+            )
         ]

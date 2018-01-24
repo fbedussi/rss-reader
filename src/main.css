@@ -8,6 +8,10 @@ ul {
   list-style-type: none;
 }
 
+.sidebar ul {
+  margin: 0;
+}
+
 .category {
   display: block;
 }
@@ -18,7 +22,26 @@ ul {
   justify-content: space-between;
 }
 
-.category.selected .categoryButtons {
+.category .button-group,
+.category .button  {
+  margin-bottom: 0;
+}
+
+.categoryBtn,
+.siteInCategoryBtn {
+  flex: 1;
+  text-align: left;
+}
+
+.editCategoryName {
+  display: flex;
+}
+
+.editCategoryName-input {
+  flex: 1;
+}
+
+.category.is-active .categoryButtons {
   background-color: lightgray;
 }
 
@@ -26,20 +49,32 @@ ul {
   display: none;
 }
 
-.selected .category-sitesInCategory {
+.is-active .category-sitesInCategory {
   display: block;
 }
 
-.category-siteInCategory.selected {
+.category-siteInCategory {
+  display: flex;
+  justify-content: space-between;
+}
+
+.category-siteInCategory.is-active {
   background-color: beige;
+}
+
+.deleteButtonsWrapper {
+  position: relative;
 }
 
 .delete-actions {
   display: none;
   position: absolute;
+  top: 0;
+  right: 0;
   background-color: white;
 }
 
-.delete-actions.selected {
-  display: block;
+.delete-actions.is-active {
+  display: flex;
+  transform: translateX(100%)
 }

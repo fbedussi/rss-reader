@@ -2,7 +2,7 @@ module PartialViews.CategoryTree exposing (renderCategory)
 
 import Helpers exposing (extractId, getSitesInCategory, isArticleInSites)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
-import Html.Attributes exposing (class, disabled, href, id, src, value)
+import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
@@ -11,7 +11,9 @@ import Msgs exposing (..)
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
     li
-        [ class ("category " ++ getSelectedClass model.selectedCategoryId category.id) ]
+        [ class ("accordion-item category " ++ getSelectedClass model.selectedCategoryId category.id)
+        , attribute "data-accordion-item" ""
+        ]
         (case model.categoryToEditId of
             Just categoryToEditId ->
                 if categoryToEditId == category.id then
@@ -34,7 +36,7 @@ renderViewCategory model category =
             countArticlesInCategory sitesInCategory model.articles
     in
     [ span
-        [ class "categoryButtons" ]
+        [ class "categoryButtons accordion-title" ]
         [ button
             [ class "categoryBtn"
             , onClick (SelectCategory category.id)
@@ -57,12 +59,12 @@ renderViewCategory model category =
                 , onClick (EditCategoryId category.id)
                 ]
                 [ text "edit " ]
-            , button
-                [ class "button"
-                , onClick (ToggleDeleteActions category.id)
-                ]
-                [ span
-                    []
+            , span
+                [ class "deleteButtonsWrapper" ]
+                [ button
+                    [ class "button"
+                    , onClick (ToggleDeleteActions category.id)
+                    ]
                     [ text "delete " ]
                 , span
                     [ class ("delete-actions " ++ getSelectedClass model.categoryToDeleteId category.id) ]
@@ -87,7 +89,9 @@ renderViewCategory model category =
             ]
         ]
     , ul
-        [ class "category-sitesInCategory" ]
+        [ class "accordion-content category-sitesInCategory"
+        , attribute "data-tab-content" ""
+        ]
         (sitesInCategory
             |> List.map (renderSiteInCategory model.selectedSiteId)
         )
@@ -96,18 +100,21 @@ renderViewCategory model category =
 
 renderEditCategory : Model -> Category -> List (Html Msg)
 renderEditCategory model category =
-    [ input
-        [ class "editCategoryName"
-        , id ("editCategoryName-" ++ toString category.id)
-        , value category.name
-        , onInput (UpdateCategoryName category.id)
+    [ span
+        [ class "editCategoryName accordion-title" ]
+        [ input
+            [ class "editCategoryName-input"
+            , id ("editCategoryName-" ++ toString category.id)
+            , value category.name
+            , onInput (UpdateCategoryName category.id)
+            ]
+            []
+        , button
+            [ class "button editCategoryName-button"
+            , onClick EndCategoryEditing
+            ]
+            [ text "ok" ]
         ]
-        []
-    , button
-        [ class "button stopEditingCategory"
-        , onClick EndCategoryEditing
-        ]
-        [ text "ok" ]
     ]
 
 
@@ -120,6 +127,19 @@ renderSiteInCategory selectedSiteId site =
             , onClick (SelectSite site.id)
             ]
             [ site.name |> text ]
+        , span
+            [ class "siteInCategory-actions button-group" ]
+            [ button
+                [ class "button"
+                , onClick (EditSite site.id)
+                ]
+                [ text "Edit site" ]
+            , button
+                [ class "button"
+                , onClick (DeleteSites [ site.id ])
+                ]
+                [ text "Delete site" ]
+            ]
         ]
 
 
@@ -128,7 +148,7 @@ getSelectedClass selectedId id =
     case selectedId of
         Just selId ->
             if selId == id then
-                "selected"
+                "is-active"
             else
                 ""
 

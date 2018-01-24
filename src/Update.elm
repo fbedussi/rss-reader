@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Dom exposing (focus)
-import Helpers exposing (extractId)
+import Helpers exposing (getNextId)
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
 import Task
@@ -111,6 +111,24 @@ update msg model =
                 Ok () ->
                     ( model, Cmd.none )
 
+        EditSite siteId ->
+            ( { model | siteToEditId = Just siteId }, Cmd.none )
+
+        EndEditSite ->
+            ( { model | siteToEditId = Nothing }, Cmd.none )
+
+        AddNewSite ->
+            let
+                newSite =
+                    createNewSite model.sites
+            in
+            ( { model
+                | sites = List.append model.sites [ newSite ]
+                , siteToEditId = Just newSite.id
+              }
+            , Cmd.none
+            )
+
 
 deleteCategories : List Category -> List Int -> List Category
 deleteCategories categories categoriesToDeleteId =
@@ -130,22 +148,24 @@ deleteSitesArticles articles sitesToDeleteId =
 createNewCategory : List Category -> Category
 createNewCategory categories =
     let
-        categoriesId =
-            extractId categories
-
-        maxId =
-            List.sort categoriesId
-                |> List.reverse
-                |> List.head
-
         nextId =
-            case maxId of
-                Just id ->
-                    id + 1
-
-                Nothing ->
-                    1
+            getNextId categories
     in
     Category
         nextId
         "New Category"
+
+
+createNewSite : List Site -> Site
+createNewSite sites =
+    let
+        nextId =
+            getNextId sites
+    in
+    Site
+        nextId
+        []
+        "New Site"
+        ""
+        ""
+        False

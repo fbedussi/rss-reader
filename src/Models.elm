@@ -44,6 +44,7 @@ type alias Model =
     , selectedSiteId : SelectedSiteId
     , categoryToDeleteId : Maybe Int
     , categoryToEditId : Maybe Int
+    , siteToEditId : Maybe Int
     }
 
 
@@ -53,6 +54,7 @@ init =
         [ exampleCategory 1, exampleCategory 2 ]
         [ exampleSite 1, exampleSite 2 ]
         [ exampleArticle 1, exampleArticle 2 ]
+        Nothing
         Nothing
         Nothing
         Nothing
