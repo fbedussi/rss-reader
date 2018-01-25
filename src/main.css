@@ -78,3 +78,22 @@ ul {
   display: flex;
   transform: translateX(100%)
 }
+
+/*Layers*/
+.layer {
+  position: fixed;
+  z-index: 10;
+  transition: transform 0.5s;
+  background-color: white;
+}
+
+.layer--top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  transform: translateY(-100%);
+} 
+
+.layer--top.is-open {
+  transform: translateY(0);
+}

@@ -29,6 +29,12 @@ sidebar model =
                 [ text "refresh" ]
             ]
         , ul
+            [ class "sitesWithoutCategory" ]
+            []
+
+        -- (List.filter (\site => site.categoryId) model.sites
+        -- )
+        , ul
             [ class "categories accordion"
             , attribute "data-accordion" ""
             ]

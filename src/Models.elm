@@ -63,6 +63,17 @@ init =
     )
 
 
+createEmptySite : Site
+createEmptySite =
+    Site
+        0
+        [ 0 ]
+        ""
+        ""
+        ""
+        False
+
+
 
 -- TEMP DUMMY DATA
 
