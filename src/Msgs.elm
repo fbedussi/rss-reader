@@ -1,6 +1,7 @@
 module Msgs exposing (..)
 
 import Dom exposing (Error)
+import Models exposing (Site)
 
 
 type Msg
@@ -16,5 +17,6 @@ type Msg
     | AddNewCategory
     | AddNewSite
     | FocusResult (Result Error ())
-    | EditSite Int
+    | ChangeEditSiteId Int
     | EndEditSite
+    | UpdateSite Site

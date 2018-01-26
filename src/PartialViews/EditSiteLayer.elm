@@ -1,8 +1,8 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
 import Html exposing (Html, a, article, aside, button, div, form, h2, input, label, li, main_, option, select, span, text, ul)
-import Html.Attributes exposing (attribute, checked, class, disabled, for, href, id, src, type_, value)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
+import Html.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import Msgs exposing (..)
 
@@ -72,6 +72,7 @@ renderEditSiteForm site categories =
                     [ class "input"
                     , id "siteNameInput"
                     , value site.name
+                    , onInput (\name -> UpdateSite { site | name = name })
                     ]
                     []
                 ]
@@ -85,6 +86,7 @@ renderEditSiteForm site categories =
                 , input
                     [ class "input"
                     , id "rssLinkInput"
+                    , onInput (\rssLink -> UpdateSite { site | rssLink = rssLink })
                     , value site.rssLink
                     ]
                     []
@@ -99,6 +101,7 @@ renderEditSiteForm site categories =
                 , input
                     [ class "input"
                     , id "webLinkInput"
+                    , onInput (\webLink -> UpdateSite { site | webLink = webLink })
                     , value site.webLink
                     ]
                     []
@@ -109,6 +112,7 @@ renderEditSiteForm site categories =
                     [ class "checkbox"
                     , type_ "checkbox"
                     , id "starredCheckbox"
+                    , onClick (UpdateSite { site | starred = not site.starred })
                     , checked site.starred
                     ]
                     []
@@ -121,9 +125,11 @@ renderEditSiteForm site categories =
             , div
                 [ class "inputRow" ]
                 [ select
-                    [ class "siteCategorySelect" ]
+                    [ class "siteCategorySelect"
+                    , onInput (\categoryId -> UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
+                    ]
                     (option
-                        []
+                        [ selected True ]
                         [ text "Select site category" ]
                         :: (categories
                                 |> List.map renderCategoryOptions
@@ -144,3 +150,13 @@ renderCategoryOptions category =
     option
         [ toString category.id |> value ]
         [ text category.name ]
+
+
+convertCategoryIdToInt : String -> List Int
+convertCategoryIdToInt string =
+    case String.toInt string of
+        Ok id ->
+            [ id ]
+
+        Err err ->
+            []

@@ -1,4 +1,4 @@
-module PartialViews.CategoryTree exposing (renderCategory)
+module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Helpers exposing (extractId, getSitesInCategory, isArticleInSites)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
@@ -93,7 +93,7 @@ renderViewCategory model category =
         , attribute "data-tab-content" ""
         ]
         (sitesInCategory
-            |> List.map (renderSiteInCategory model.selectedSiteId)
+            |> List.map (renderSiteEntry model.selectedSiteId)
         )
     ]
 
@@ -118,8 +118,8 @@ renderEditCategory model category =
     ]
 
 
-renderSiteInCategory : SelectedSiteId -> Site -> Html Msg
-renderSiteInCategory selectedSiteId site =
+renderSiteEntry : SelectedSiteId -> Site -> Html Msg
+renderSiteEntry selectedSiteId site =
     li
         [ class ("category-siteInCategory " ++ getSelectedClass selectedSiteId site.id) ]
         [ button
@@ -131,7 +131,7 @@ renderSiteInCategory selectedSiteId site =
             [ class "siteInCategory-actions button-group" ]
             [ button
                 [ class "button"
-                , onClick (EditSite site.id)
+                , onClick (ChangeEditSiteId site.id)
                 ]
                 [ text "Edit site" ]
             , button

@@ -12,6 +12,10 @@ ul {
   margin: 0;
 }
 
+.sitesWithoutCategory li {
+  padding: 1.25rem 1rem;
+}
+
 .category {
   display: block;
 }

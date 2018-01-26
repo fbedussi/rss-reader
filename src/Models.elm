@@ -1,7 +1,5 @@
 module Models exposing (..)
 
-import Msgs exposing (..)
-
 
 type alias Article =
     { siteId : Int
@@ -46,21 +44,6 @@ type alias Model =
     , categoryToEditId : Maybe Int
     , siteToEditId : Maybe Int
     }
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( Model
-        [ exampleCategory 1, exampleCategory 2 ]
-        [ exampleSite 1, exampleSite 2 ]
-        [ exampleArticle 1, exampleArticle 2 ]
-        Nothing
-        Nothing
-        Nothing
-        Nothing
-        Nothing
-    , Cmd.none
-    )
 
 
 createEmptySite : Site

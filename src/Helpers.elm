@@ -4,8 +4,8 @@ import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSi
 
 
 getSitesInCategory : Int -> List Site -> List Site
-getSitesInCategory categoryId =
-    List.filter (isSiteInCategory categoryId)
+getSitesInCategory categoryId sites =
+    List.filter (isSiteInCategory categoryId) sites
 
 
 isSiteInCategory : Int -> Site -> Bool

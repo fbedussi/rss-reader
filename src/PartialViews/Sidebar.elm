@@ -5,7 +5,7 @@ import Html.Attributes exposing (attribute, class, disabled, href, src, value)
 import Html.Events exposing (onClick)
 import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
-import PartialViews.CategoryTree exposing (renderCategory)
+import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 
 sidebar : Model -> Html Msg
@@ -30,10 +30,10 @@ sidebar model =
             ]
         , ul
             [ class "sitesWithoutCategory" ]
-            []
-
-        -- (List.filter (\site => site.categoryId) model.sites
-        -- )
+            (model.sites
+                |> List.filter (\site -> List.isEmpty site.categoriesId)
+                |> List.map (renderSiteEntry model.selectedSiteId)
+            )
         , ul
             [ class "categories accordion"
             , attribute "data-accordion" ""

@@ -111,7 +111,7 @@ update msg model =
                 Ok () ->
                     ( model, Cmd.none )
 
-        EditSite siteId ->
+        ChangeEditSiteId siteId ->
             ( { model | siteToEditId = Just siteId }, Cmd.none )
 
         EndEditSite ->
@@ -128,6 +128,20 @@ update msg model =
               }
             , Cmd.none
             )
+
+        UpdateSite siteToUpdate ->
+            let
+                updatedSites =
+                    List.map
+                        (\site ->
+                            if site.id == siteToUpdate.id then
+                                siteToUpdate
+                            else
+                                site
+                        )
+                        model.sites
+            in
+            ( { model | sites = updatedSites }, Cmd.none )
 
 
 deleteCategories : List Category -> List Int -> List Category
