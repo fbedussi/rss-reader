@@ -1,5 +1,7 @@
 module InitModel exposing (..)
 
+import Http exposing (Error)
+import Json.Decode exposing (..)
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (Msg)
 
@@ -15,12 +17,42 @@ init =
         Nothing
         Nothing
         Nothing
-    , Cmd.none
+    , Http.send Msgs.GetArticles <|
+        Http.get
+            "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ftechcrunch.com%2Ffeed%2F"
+            feedDecoder
     )
 
 
 
 -- TEMP DUMMY DATA
+-- getFeed : Http.Request Feed
+-- getFeed =
+--     Http.get "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ftechcrunch.com%2Ffeed%2F" feedDecoder
+
+
+type alias Feed =
+    List Article
+
+
+decodeFeed : Value -> Result String Feed
+decodeFeed value =
+    decodeValue feedDecoder value
+
+
+feedDecoder : Decoder Feed
+feedDecoder =
+    field "items" (list articleDecoder)
+
+
+articleDecoder : Decoder Article
+articleDecoder =
+    map5 Article
+        int
+        (field "link" string)
+        (field "title" string)
+        (field "description" string)
+        bool
 
 
 exampleCategory : Int -> Category

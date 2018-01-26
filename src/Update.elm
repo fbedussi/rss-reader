@@ -143,6 +143,14 @@ update msg model =
             in
             ( { model | sites = updatedSites }, Cmd.none )
 
+        GetArticles rssResult ->
+            case rssResult of
+                Ok articles ->
+                    ( { model | articles = articles }, Cmd.none )
+
+                Err err ->
+                    ( model, Cmd.none )
+
 
 deleteCategories : List Category -> List Int -> List Category
 deleteCategories categories categoriesToDeleteId =
