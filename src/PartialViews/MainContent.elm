@@ -3,6 +3,7 @@ module PartialViews.MainContent exposing (..)
 import Helpers exposing (getSelectedArticles)
 import Html exposing (Html, a, article, button, div, h2, li, main_, span, text, ul)
 import Html.Attributes exposing (class, href, src)
+import Json.Encode
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
 
@@ -29,7 +30,7 @@ renderArticle articleToRender =
                 ""
     in
     li
-        []
+        [ class "article" ]
         [ article
             [ class "article" ]
             [ h2
@@ -44,7 +45,10 @@ renderArticle articleToRender =
                     [ starredLabel |> text ]
                 ]
             , div
-                [ class "article-excerpt" ]
-                [ articleToRender.excerpt |> text ]
+                [ class "article-excerpt"
+                , Json.Encode.string articleToRender.excerpt
+                    |> Html.Attributes.property "innerHTML"
+                ]
+                []
             ]
         ]

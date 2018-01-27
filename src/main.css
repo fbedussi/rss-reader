@@ -101,3 +101,15 @@ ul {
 .layer--top.is-open {
   transform: translateY(0);
 }
+
+.article {
+  clear: both;
+  margin-bottom: 1em;
+}
+
+.article img {
+  width: 100px;
+  height: auto;
+  float: left;
+  margin: 0 1em 1em 0;
+}

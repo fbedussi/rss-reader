@@ -2,7 +2,7 @@ module Msgs exposing (..)
 
 import Dom exposing (Error)
 import Http
-import Models exposing (Article, Site)
+import Models exposing (Article, Feed, OriginalArticle, Site)
 
 
 type Msg
@@ -21,4 +21,4 @@ type Msg
     | ChangeEditSiteId Int
     | EndEditSite
     | UpdateSite Site
-    | GetArticles (Result Http.Error (List Article))
+    | GetArticles (Result Http.Error (List Feed))

@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import Helpers exposing (getNextId)
-import Models exposing (Article, Category, Model, Site)
+import Models exposing (Article, Category, Model, OriginalArticle, Site)
 import Msgs exposing (..)
 import Task
 
@@ -144,9 +144,22 @@ update msg model =
             ( { model | sites = updatedSites }, Cmd.none )
 
         GetArticles rssResult ->
+            let
+                log =
+                    Debug.log "rss" rssResult
+            in
             case rssResult of
-                Ok articles ->
-                    ( { model | articles = articles }, Cmd.none )
+                Ok feeds ->
+                    let
+                        articles =
+                            List.concat feeds
+
+                        convertedArticles =
+                            articles
+
+                        --List.map (convertArticle 1) articles
+                    in
+                    ( { model | articles = convertedArticles }, Cmd.none )
 
                 Err err ->
                     ( model, Cmd.none )
@@ -190,4 +203,14 @@ createNewSite sites =
         "New Site"
         ""
         ""
+        False
+
+
+convertArticle : Int -> OriginalArticle -> Article
+convertArticle siteId originalArticle =
+    Article
+        siteId
+        originalArticle.link
+        originalArticle.title
+        originalArticle.excerpt
         False

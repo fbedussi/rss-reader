@@ -1,6 +1,17 @@
 module Models exposing (..)
 
 
+type alias Feed =
+    List Article
+
+
+type alias OriginalArticle =
+    { link : String
+    , title : String
+    , excerpt : String
+    }
+
+
 type alias Article =
     { siteId : Int
     , link : String
