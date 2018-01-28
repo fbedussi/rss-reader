@@ -1,15 +1,23 @@
 module Models exposing (..)
 
 
-type alias Feed =
-    List Article
+type alias UserUid =
+    String
 
 
-type alias OriginalArticle =
-    { link : String
-    , title : String
-    , excerpt : String
+type alias LoginData =
+    { email : Email
+    , password : Password
+    , authenticated : Bool
     }
+
+
+type alias Email =
+    String
+
+
+type alias Password =
+    String
 
 
 type alias Article =
@@ -46,7 +54,8 @@ type alias SelectedSiteId =
 
 
 type alias Model =
-    { categories : List Category
+    { errorMsg : String
+    , categories : List Category
     , sites : List Site
     , articles : List Article
     , selectedCategoryId : SelectedCategoryId

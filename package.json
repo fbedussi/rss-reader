@@ -1,0 +1,37 @@
+{
+  "name": "rss",
+  "version": "1.0.0",
+  "description": "a simpe rss reader written in Elm",
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fbedussi/rss-reader.git"
+  },
+  "keywords": [
+    "rss",
+    "reader",
+    "elm"
+  ],
+  "author": "Francesco Bedussi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fbedussi/rss-reader/issues"
+  },
+  "homepage": "https://github.com/fbedussi/rss-reader#readme",
+  "config": {
+    "firebase": {
+      "apiKey": "AIzaSyB_3Ovcgn4qDF2HIxPIOO1WTXqRPQ28mbg",
+      "authDomain": "rss-reader-19af4.firebaseapp.com",
+      "databaseURL": "https://rss-reader-19af4.firebaseio.com",
+      "projectId": "rss-reader-19af4",
+      "storageBucket": "rss-reader-19af4.appspot.com",
+      "messagingSenderId": "86878232436"
+    }
+  }
+}

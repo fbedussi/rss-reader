@@ -4,6 +4,7 @@ import Html exposing (Html)
 import InitModel exposing (init)
 import Models exposing (Model)
 import Msgs exposing (..)
+import Subscriptions exposing (subscriptions)
 import Update exposing (update)
 import View exposing (view)
 
@@ -14,5 +15,5 @@ main =
         { view = view
         , init = init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }

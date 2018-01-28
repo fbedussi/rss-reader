@@ -2,7 +2,7 @@ module InitModel exposing (..)
 
 import Http exposing (Error)
 import Json.Decode exposing (..)
-import Models exposing (Article, Category, Feed, Model, OriginalArticle, Site)
+import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (Msg)
 import Task exposing (sequence)
 
@@ -17,6 +17,7 @@ init =
             [ linuxCat, jsCat ]
     in
     ( Model
+        ""
         categories
         sites
         []
@@ -49,7 +50,7 @@ init =
 --     decodeValue feedDecoder value
 
 
-feedDecoder : Int -> Decoder Feed
+feedDecoder : Int -> Decoder (List Article)
 feedDecoder siteId =
     field "items" (list (articleDecoder siteId))
 

@@ -2,14 +2,22 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import Helpers exposing (getNextId)
-import Models exposing (Article, Category, Model, OriginalArticle, Site)
+import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
+import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        LogErr err ->
+            let
+                log =
+                    Debug.log "Error: " err
+            in
+            ( { model | errorMsg = err }, Cmd.none )
+
         SelectCategory categoryId ->
             ( { model
                 | selectedCategoryId = Just categoryId
@@ -99,7 +107,10 @@ update msg model =
                 | categories = List.append model.categories [ newCategory ]
                 , categoryToEditId = Just newCategory.id
               }
-            , Dom.focus ("editCategoryName-" ++ toString newCategory.id) |> Task.attempt FocusResult
+            , Cmd.batch
+                [ Dom.focus ("editCategoryName-" ++ toString newCategory.id) |> Task.attempt FocusResult
+                , OutsideInfo.AddCategory newCategory |> sendInfoOutside
+                ]
             )
 
         FocusResult result ->
@@ -153,16 +164,14 @@ update msg model =
                     let
                         articles =
                             List.concat feeds
-
-                        convertedArticles =
-                            articles
-
-                        --List.map (convertArticle 1) articles
                     in
-                    ( { model | articles = convertedArticles }, Cmd.none )
+                    ( { model | articles = articles }, Cmd.none )
 
                 Err err ->
                     ( model, Cmd.none )
+
+        Outside infoForElm ->
+            switchInfoForElm infoForElm model
 
 
 deleteCategories : List Category -> List Int -> List Category
@@ -203,14 +212,4 @@ createNewSite sites =
         "New Site"
         ""
         ""
-        False
-
-
-convertArticle : Int -> OriginalArticle -> Article
-convertArticle siteId originalArticle =
-    Article
-        siteId
-        originalArticle.link
-        originalArticle.title
-        originalArticle.excerpt
         False
