@@ -16,6 +16,53 @@ app.ports.infoForElm.send({
     data: '7woRFDFpHZUehjOSl0IzHaWkBV82'
 })
 
+function addContent(storeName, content) {
+    dbInterface.create({storeName, content})
+        // .then((result) => {
+        //     console.log(result);
+        // })
+        .catch((error) => {
+            console.log(error);
+            app.ports.infoForElm.send({
+                tag: 'error',
+                data: error
+            })
+        })
+    ;
+}
+
+function batchDelete(storeName, idList) {
+    const deleteRequests = idList.map(contentId =>dbInterface.delete({storeName, contentId}));
+
+    Promise.all(deleteRequests)
+        // .then((result) => {
+        //     console.log(result);
+        // })
+        .catch((error) => {
+            console.log(error);
+            app.ports.infoForElm.send({
+                tag: 'error',
+                data: error
+            })
+        })
+    ;
+}
+
+function updateContent(storeName, content) {
+    dbInterface.update({storeName, content})
+        .then((result) => {
+            //console.log(result);
+        })
+        .catch((error) => {
+            console.log(error);
+            app.ports.infoForElm.send({
+                tag: 'error',
+                data: error
+            })
+        })
+    ;
+}
+
 app.ports.infoForOutside.subscribe(function (cmd) {
     if (!cmd.tag || !cmd.tag.length) {
         return;
@@ -64,7 +111,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
 
             Promise.all(readRequests)
                 .then((result, error) => {
-                    const resultObj = result[0][0];
+                    const resultObj = result[0] ? result[0] : [];
                     const resultArray = Object.keys(resultObj).map((key) => resultObj[key]);
                     var resultToSend = resultArray;
                     app.ports.infoForElm.send({
@@ -82,25 +129,29 @@ app.ports.infoForOutside.subscribe(function (cmd) {
             break;
 
         case 'addCategory':
-            var storeName = 'categories';
-            var content = payload;
-            dbInterface.create({storeName, content})
-                .then((result) => {
-                    console.log(result);
-                    // app.ports.infoForElm.send({
-                    //     tag: 'allData',
-                    //     data: result[0]
-                    // })
-                })
-                .catch((error) => {
-                    console.log(error);
-                    // app.ports.infoForElm.send({
-                    //     tag: 'error',
-                    //     data: error
-                    // })
-                })
-            ;
+            addContent('categories', payload);
             break;
+
+        case 'deleteCategories':
+            batchDelte('categories', payload);
+            break;
+
+        case 'updateCategory':
+            updateContent('categories', payload);
+            break;
+
+        case 'addSite':
+            addContent('sites', payload);
+            break;
+        
+        case 'deleteSites':
+            batchDelete('sites', payload);
+            break;
+
+        case 'updateSite':
+            updateContent('sites', payload);
+            break;
+
 
         default:
             dbInterface[cmd.tag](payload)

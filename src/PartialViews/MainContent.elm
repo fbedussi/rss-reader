@@ -38,8 +38,10 @@ renderArticle articleToRender =
                 [ a
                     [ class "article-link"
                     , href articleToRender.link
+                    , Json.Encode.string articleToRender.title
+                        |> Html.Attributes.property "innerHTML"
                     ]
-                    [ articleToRender.title |> text ]
+                    []
                 , span
                     [ class "article-starred" ]
                     [ starredLabel |> text ]

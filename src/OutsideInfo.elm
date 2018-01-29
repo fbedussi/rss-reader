@@ -1,6 +1,6 @@
 port module OutsideInfo exposing (..)
 
-import Decoder exposing (decodeData, decodeDbOpened, decodeUser)
+import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
 import Json.Encode exposing (..)
 import Models exposing (..)
 
@@ -16,14 +16,11 @@ type InfoForOutside
     | OpenDb UserUid
     | ReadAllData
     | AddCategory Category
-
-
-
--- | UpdateCategory Category
--- | DeleteCategory Category
--- | AddSite Site
--- | UpdateSite Site
--- | DeleteSite Site
+    | DeleteCategories (List Id)
+    | UpdateCategory Category
+    | AddSite Site
+    | DeleteSites (List Id)
+    | UpdateSite Site
 
 
 type InfoForElm
@@ -59,14 +56,22 @@ sendInfoOutside info =
             infoForOutside { tag = "readAllData", data = Json.Encode.string "" }
 
         AddCategory category ->
-            let
-                addCategoryPayload =
-                    object
-                        [ ( "id", category.id |> int )
-                        , ( "name", category.name |> string )
-                        ]
-            in
-            infoForOutside { tag = "addCategory", data = addCategoryPayload }
+            infoForOutside { tag = "addCategory", data = encodeCategory category }
+
+        DeleteCategories categoryToDeleteIds ->
+            infoForOutside { tag = "deleteCategories", data = encodeIdList categoryToDeleteIds }
+
+        UpdateCategory category ->
+            infoForOutside { tag = "updateCategory", data = encodeCategory category }
+
+        AddSite site ->
+            infoForOutside { tag = "addSite", data = encodeSite site }
+
+        DeleteSites siteToDeleteIds ->
+            infoForOutside { tag = "deleteSites", data = encodeIdList siteToDeleteIds }
+
+        UpdateSite site ->
+            infoForOutside { tag = "updateSite", data = encodeSite site }
 
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
@@ -98,6 +103,14 @@ getInfoFromOutside tagger onError =
                         Err e ->
                             onError e
 
+                "error" ->
+                    case decodeError outsideInfo.data of
+                        Ok errorString ->
+                            onError errorString
+
+                        Err e ->
+                            onError e
+
                 _ ->
                     onError <| "Unexpected info from outside: " ++ toString outsideInfo
         )
@@ -123,3 +136,28 @@ switchInfoForElm infoForElm model =
 
         NewData categories ->
             ( { model | categories = categories }, Cmd.none )
+
+
+encodeCategory : Category -> Value
+encodeCategory category =
+    object
+        [ ( "id", category.id |> int )
+        , ( "name", category.name |> string )
+        ]
+
+
+encodeSite : Site -> Value
+encodeSite site =
+    object
+        [ ( "id", site.id |> int )
+        , ( "categoriesId", site.categoriesId |> List.map int |> list )
+        , ( "name", site.name |> string )
+        , ( "rssLink", site.rssLink |> string )
+        , ( "webLink", site.webLink |> string )
+        , ( "starred", site.starred |> bool )
+        ]
+
+
+encodeIdList : List Id -> Value
+encodeIdList ids =
+    Json.Encode.list (List.map Json.Encode.int ids)

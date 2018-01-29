@@ -1,4 +1,4 @@
-module Decoder exposing (decodeData, decodeDbOpened, decodeUser)
+module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
 
 import Json.Decode exposing (..)
 import Models exposing (..)
@@ -29,3 +29,8 @@ categoryDecoder =
     map2 Category
         (field "id" Json.Decode.int)
         (field "name" Json.Decode.string)
+
+
+decodeError : Value -> Result String String
+decodeError err =
+    decodeValue string err

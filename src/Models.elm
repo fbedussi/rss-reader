@@ -20,8 +20,12 @@ type alias Password =
     String
 
 
+type alias Id =
+    Int
+
+
 type alias Article =
-    { siteId : Int
+    { siteId : Id
     , link : String
     , title : String
     , excerpt : String
@@ -30,7 +34,7 @@ type alias Article =
 
 
 type alias Site =
-    { id : Int
+    { id : Id
     , categoriesId : List Int
     , name : String
     , rssLink : String
@@ -40,17 +44,17 @@ type alias Site =
 
 
 type alias Category =
-    { id : Int
+    { id : Id
     , name : String
     }
 
 
 type alias SelectedCategoryId =
-    Maybe Int
+    Maybe Id
 
 
 type alias SelectedSiteId =
-    Maybe Int
+    Maybe Id
 
 
 type alias Model =
@@ -60,9 +64,9 @@ type alias Model =
     , articles : List Article
     , selectedCategoryId : SelectedCategoryId
     , selectedSiteId : SelectedSiteId
-    , categoryToDeleteId : Maybe Int
-    , categoryToEditId : Maybe Int
-    , siteToEditId : Maybe Int
+    , categoryToDeleteId : Maybe Id
+    , categoryToEditId : Maybe Id
+    , siteToEditId : Maybe Id
     }
 
 

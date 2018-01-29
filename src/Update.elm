@@ -37,12 +37,16 @@ update msg model =
                 Nothing ->
                     ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
 
-        DeleteCategories categoriesToDeleteId ->
+        DeleteCategories categoryToDeleteIds ->
             let
                 updatedCategories =
-                    deleteCategories model.categories categoriesToDeleteId
+                    deleteCategories model.categories categoryToDeleteIds
             in
-            ( { model | categories = updatedCategories }, Cmd.none )
+            ( { model
+                | categories = updatedCategories
+              }
+            , OutsideInfo.DeleteCategories categoryToDeleteIds |> sendInfoOutside
+            )
 
         DeleteSites sitesToDeleteId ->
             let
@@ -56,7 +60,7 @@ update msg model =
                 | sites = updatedSites
                 , articles = updatedArticles
               }
-            , Cmd.none
+            , OutsideInfo.DeleteSites sitesToDeleteId |> sendInfoOutside
             )
 
         DeleteCategoryAndSites categoriesToDeleteId sitesToDeleteId ->
@@ -86,17 +90,22 @@ update msg model =
 
         UpdateCategoryName categoryId newName ->
             let
+                updateCategory =
+                    Category
+                        categoryId
+                        newName
+
                 updatedCategories =
                     List.map
                         (\category ->
                             if category.id == categoryId then
-                                { category | name = newName }
+                                updateCategory
                             else
                                 category
                         )
                         model.categories
             in
-            ( { model | categories = updatedCategories }, Cmd.none )
+            ( { model | categories = updatedCategories }, OutsideInfo.UpdateCategory updateCategory |> sendInfoOutside )
 
         AddNewCategory ->
             let
@@ -137,7 +146,7 @@ update msg model =
                 | sites = List.append model.sites [ newSite ]
                 , siteToEditId = Just newSite.id
               }
-            , Cmd.none
+            , OutsideInfo.AddSite newSite |> sendInfoOutside
             )
 
         UpdateSite siteToUpdate ->
@@ -152,7 +161,7 @@ update msg model =
                         )
                         model.sites
             in
-            ( { model | sites = updatedSites }, Cmd.none )
+            ( { model | sites = updatedSites }, OutsideInfo.UpdateSite siteToUpdate |> sendInfoOutside )
 
         GetArticles rssResult ->
             let

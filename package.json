@@ -33,5 +33,8 @@
       "storageBucket": "rss-reader-19af4.appspot.com",
       "messagingSenderId": "86878232436"
     }
+  },
+  "dependencies": {
+    "firebase": "^4.9.0"
   }
 }
