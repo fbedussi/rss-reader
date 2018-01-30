@@ -18,8 +18,8 @@ init =
     in
     ( Model
         ""
-        categories
-        sites
+        []
+        []
         []
         Nothing
         Nothing
@@ -57,7 +57,8 @@ feedDecoder siteId =
 
 articleDecoder : Int -> Decoder Article
 articleDecoder siteId =
-    map5 Article
+    map6 Article
+        (succeed 0)
         (succeed siteId)
         (field "link" string)
         (field "title" string)
@@ -86,6 +87,7 @@ exampleSite int =
 exampleArticle : Int -> Article
 exampleArticle int =
     Article
+        int
         int
         "https://www.lffl.org/2018/01/fuchsia-os-google.html"
         ("Title " ++ toString int)

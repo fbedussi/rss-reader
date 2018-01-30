@@ -23,5 +23,7 @@ type Msg
     | EndEditSite
     | UpdateSite Site
     | GetArticles (Result Http.Error (List (List Article)))
+    | DeleteArticles (List Id)
+    | SaveArticle Article
     | Outside InfoForElm
     | LogErr String

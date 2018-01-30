@@ -21,6 +21,8 @@ type InfoForOutside
     | AddSite Site
     | DeleteSites (List Id)
     | UpdateSite Site
+    | AddArticle Article
+    | DeleteArticles (List Id)
 
 
 type InfoForElm
@@ -72,6 +74,12 @@ sendInfoOutside info =
 
         UpdateSite site ->
             infoForOutside { tag = "updateSite", data = encodeSite site }
+
+        AddArticle article ->
+            infoForOutside { tag = "addArticle", data = encodeArticle article }
+
+        DeleteArticles articleToDeleteIds ->
+            infoForOutside { tag = "deleteArticles", data = encodeIdList articleToDeleteIds }
 
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
@@ -161,3 +169,15 @@ encodeSite site =
 encodeIdList : List Id -> Value
 encodeIdList ids =
     Json.Encode.list (List.map Json.Encode.int ids)
+
+
+encodeArticle : Article -> Value
+encodeArticle article =
+    object
+        [ ( "id", article.id |> int )
+        , ( "siteId", article.siteId |> int )
+        , ( "link", article.link |> string )
+        , ( "title", article.title |> string )
+        , ( "excerpt", article.excerpt |> string )
+        , ( "starred", article.starred |> bool )
+        ]

@@ -2,8 +2,9 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import Helpers exposing (getNextId)
-import Models exposing (Article, Category, Model, Site)
+import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
+import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
 
@@ -40,7 +41,7 @@ update msg model =
         DeleteCategories categoryToDeleteIds ->
             let
                 updatedCategories =
-                    deleteCategories model.categories categoryToDeleteIds
+                    deleteContents model.categories categoryToDeleteIds
             in
             ( { model
                 | categories = updatedCategories
@@ -51,7 +52,7 @@ update msg model =
         DeleteSites sitesToDeleteId ->
             let
                 updatedSites =
-                    deleteSites model.sites sitesToDeleteId
+                    deleteContents model.sites sitesToDeleteId
 
                 updatedArticles =
                     deleteSitesArticles model.articles sitesToDeleteId
@@ -66,10 +67,10 @@ update msg model =
         DeleteCategoryAndSites categoriesToDeleteId sitesToDeleteId ->
             let
                 updatedCategories =
-                    deleteCategories model.categories categoriesToDeleteId
+                    deleteContents model.categories categoriesToDeleteId
 
                 updatedSites =
-                    deleteSites model.sites sitesToDeleteId
+                    deleteContents model.sites sitesToDeleteId
 
                 updatedArticles =
                     deleteSitesArticles model.articles sitesToDeleteId
@@ -163,6 +164,20 @@ update msg model =
             in
             ( { model | sites = updatedSites }, OutsideInfo.UpdateSite siteToUpdate |> sendInfoOutside )
 
+        DeleteArticles articleToDeleteIds ->
+            let
+                updatedArticles =
+                    List.map
+                        (\article ->
+                            if List.member article.id articleToDeleteIds then
+                                { article | starred = False }
+                            else
+                                article
+                        )
+                        model.articles
+            in
+            ( { model | articles = updatedArticles }, OutsideInfo.DeleteArticles articleToDeleteIds |> sendInfoOutside )
+
         GetArticles rssResult ->
             let
                 log =
@@ -173,24 +188,34 @@ update msg model =
                     let
                         articles =
                             List.concat feeds
+                                |> List.map (\article -> { article | id = hashString 12345 article.link })
                     in
                     ( { model | articles = articles }, Cmd.none )
 
                 Err err ->
                     ( model, Cmd.none )
 
+        SaveArticle articleToSave ->
+            let
+                updatedArticles =
+                    List.map
+                        (\article ->
+                            if article.id == articleToSave.id then
+                                { article | starred = True }
+                            else
+                                article
+                        )
+                        model.articles
+            in
+            ( { model | articles = updatedArticles }, OutsideInfo.AddArticle articleToSave |> sendInfoOutside )
+
         Outside infoForElm ->
             switchInfoForElm infoForElm model
 
 
-deleteCategories : List Category -> List Int -> List Category
-deleteCategories categories categoriesToDeleteId =
-    List.filter (\category -> not (List.member category.id categoriesToDeleteId)) categories
-
-
-deleteSites : List Site -> List Int -> List Site
-deleteSites sites sitesToDeleteId =
-    List.filter (\site -> not (List.member site.id sitesToDeleteId)) sites
+deleteContents : List { a | id : Int } -> List Id -> List { a | id : Int }
+deleteContents contents contentToDeleteIds =
+    List.filter (\content -> not (List.member content.id contentToDeleteIds)) contents
 
 
 deleteSitesArticles : List Article -> List Int -> List Article

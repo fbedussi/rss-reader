@@ -1,8 +1,9 @@
 module PartialViews.MainContent exposing (..)
 
 import Helpers exposing (getSelectedArticles)
-import Html exposing (Html, a, article, button, div, h2, li, main_, span, text, ul)
-import Html.Attributes exposing (class, href, src)
+import Html exposing (Html, a, article, button, div, h2, input, label, li, main_, span, text, ul)
+import Html.Attributes exposing (class, for, href, id, src, type_)
+import Html.Events exposing (onCheck)
 import Json.Encode
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
@@ -33,7 +34,25 @@ renderArticle articleToRender =
         [ class "article" ]
         [ article
             [ class "article" ]
-            [ h2
+            [ div
+                [ class "articleToolBar" ]
+                [ input
+                    [ type_ "checkbox"
+                    , id ("starred_" ++ toString articleToRender.id)
+                    , onCheck
+                        (\checked ->
+                            if checked then
+                                SaveArticle articleToRender
+                            else
+                                DeleteArticles [ articleToRender.id ]
+                        )
+                    ]
+                    []
+                , label
+                    [ for ("starred_" ++ toString articleToRender.id) ]
+                    [ text "starred" ]
+                ]
+            , h2
                 [ class "article-title" ]
                 [ a
                     [ class "article-link"

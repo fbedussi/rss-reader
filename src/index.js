@@ -151,7 +151,14 @@ app.ports.infoForOutside.subscribe(function (cmd) {
         case 'updateSite':
             updateContent('sites', payload);
             break;
+        
+        case 'addArticle':
+            addContent('articles', payload);
+            break;
 
+        case 'deleteArticles':
+            batchDelete('articles', payload);
+            break;
 
         default:
             dbInterface[cmd.tag](payload)

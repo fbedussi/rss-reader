@@ -25,7 +25,8 @@ type alias Id =
 
 
 type alias Article =
-    { siteId : Id
+    { id : Id
+    , siteId : Id
     , link : String
     , title : String
     , excerpt : String
@@ -106,6 +107,7 @@ exampleSite int =
 exampleArticle : Int -> Article
 exampleArticle int =
     Article
+        int
         int
         "https://www.lffl.org/2018/01/fuchsia-os-google.html"
         ("Title " ++ toString int)
