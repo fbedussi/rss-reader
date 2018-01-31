@@ -71,5 +71,31 @@ getNextId entities =
 
 
 getArticlesInSites : List Int -> List Article -> List Article
-getArticlesInSites sitesId =
-    List.filter (\article -> List.any (\siteId -> siteId == article.siteId) sitesId)
+getArticlesInSites sitesId articles =
+    articles
+        |> List.filter (\article -> List.any (\siteId -> siteId == article.siteId) sitesId)
+
+
+mergeArticles : List Article -> List Article -> List Article
+mergeArticles baseArticles overrideArticles =
+    let
+        overrideArticleIds =
+            extractId overrideArticles
+
+        filteredBaseArticles =
+            List.filter (\baseArticle -> not (List.member baseArticle.id overrideArticleIds)) baseArticles
+    in
+    List.append overrideArticles filteredBaseArticles
+
+
+getSelectedClass : Maybe Int -> Int -> String
+getSelectedClass selectedId id =
+    case selectedId of
+        Just selId ->
+            if selId == id then
+                "is-active"
+            else
+                ""
+
+        Nothing ->
+            ""

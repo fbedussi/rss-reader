@@ -1,4 +1,4 @@
-module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
+module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser, feedDecoder)
 
 import Json.Decode exposing (..)
 import Models exposing (..)
@@ -14,14 +14,32 @@ decodeUser value =
     decodeValue string value
 
 
-decodeData : Value -> Result String (List Category)
+decodeData : Value -> Result String Data
 decodeData value =
-    decodeValue categoriesDecoder value
+    decodeValue dataDecoder value
+
+
+dataDecoder : Decoder Data
+dataDecoder =
+    map3 Data
+        (field "categories" categoriesDecoder)
+        (field "sites" sitesDecoder)
+        (field "articles" articlesDecoder)
 
 
 categoriesDecoder : Decoder (List Category)
 categoriesDecoder =
     list categoryDecoder
+
+
+sitesDecoder : Decoder (List Site)
+sitesDecoder =
+    list siteDecoder
+
+
+articlesDecoder : Decoder (List Article)
+articlesDecoder =
+    list articleDecoder
 
 
 categoryDecoder : Decoder Category
@@ -31,6 +49,44 @@ categoryDecoder =
         (field "name" Json.Decode.string)
 
 
+siteDecoder : Decoder Site
+siteDecoder =
+    map6 Site
+        (field "id" Json.Decode.int)
+        (field "categoriesId" (list Json.Decode.int))
+        (field "name" Json.Decode.string)
+        (field "rssLink" Json.Decode.string)
+        (field "webLink" Json.Decode.string)
+        (field "starred" Json.Decode.bool)
+
+
+articleDecoder : Decoder Article
+articleDecoder =
+    map6 Article
+        (field "id" Json.Decode.int)
+        (field "siteId" Json.Decode.int)
+        (field "link" Json.Decode.string)
+        (field "title" Json.Decode.string)
+        (field "excerpt" Json.Decode.string)
+        (field "starred" Json.Decode.bool)
+
+
 decodeError : Value -> Result String String
 decodeError err =
     decodeValue string err
+
+
+feedDecoder : Int -> Decoder (List Article)
+feedDecoder siteId =
+    field "items" (list (feedArticleDecoder siteId))
+
+
+feedArticleDecoder : Int -> Decoder Article
+feedArticleDecoder siteId =
+    map6 Article
+        (succeed 0)
+        (succeed siteId)
+        (field "link" string)
+        (field "title" string)
+        (field "description" string)
+        (succeed False)

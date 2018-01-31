@@ -1,11 +1,12 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
-import Helpers exposing (extractId, getSitesInCategory, isArticleInSites)
+import Helpers exposing (extractId, getSelectedClass, getSitesInCategory, isArticleInSites)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
+import PartialViews.CategoryButtons exposing (categoryButtons)
 
 
 renderCategory : Model -> Category -> Html Msg
@@ -52,41 +53,7 @@ renderViewCategory model category =
                 [ class "category-name" ]
                 [ text category.name ]
             ]
-        , span
-            [ class "category-action button-group" ]
-            [ button
-                [ class "button"
-                , onClick (EditCategoryId category.id)
-                ]
-                [ text "edit " ]
-            , span
-                [ class "deleteButtonsWrapper" ]
-                [ button
-                    [ class "button"
-                    , onClick (ToggleDeleteActions category.id)
-                    ]
-                    [ text "delete " ]
-                , span
-                    [ class ("delete-actions " ++ getSelectedClass model.categoryToDeleteId category.id) ]
-                    [ button
-                        [ class "button"
-                        , onClick (DeleteCategories [ category.id ])
-                        ]
-                        [ text "Delete category only" ]
-                    , button
-                        [ class "button"
-                        , onClick (DeleteCategoryAndSites [ category.id ] (extractId sitesInCategory))
-                        , disabled
-                            (if List.isEmpty sitesInCategory then
-                                True
-                             else
-                                False
-                            )
-                        ]
-                        [ text "Delete sites as well" ]
-                    ]
-                ]
-            ]
+        , categoryButtons model category sitesInCategory
         ]
     , ul
         [ class "accordion-content category-sitesInCategory"
@@ -141,19 +108,6 @@ renderSiteEntry selectedSiteId site =
                 [ text "Delete site" ]
             ]
         ]
-
-
-getSelectedClass : Maybe Int -> Int -> String
-getSelectedClass selectedId id =
-    case selectedId of
-        Just selId ->
-            if selId == id then
-                "is-active"
-            else
-                ""
-
-        Nothing ->
-            ""
 
 
 addParenthesis : String -> String

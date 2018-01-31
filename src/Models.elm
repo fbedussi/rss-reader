@@ -1,5 +1,7 @@
 module Models exposing (..)
 
+import Json.Encode
+
 
 type alias UserUid =
     String
@@ -50,6 +52,13 @@ type alias Category =
     }
 
 
+type alias Data =
+    { categories : List Category
+    , sites : List Site
+    , articles : List Article
+    }
+
+
 type alias SelectedCategoryId =
     Maybe Id
 
@@ -83,33 +92,10 @@ createEmptySite =
 
 
 
--- TEMP DUMMY DATA
+--OutsideInfo
 
 
-exampleCategory : Int -> Category
-exampleCategory int =
-    Category
-        int
-        ("Category " ++ toString int)
-
-
-exampleSite : Int -> Site
-exampleSite int =
-    Site
-        int
-        [ 1 ]
-        ("Site " ++ toString int)
-        "https://www.lffl.org/feed"
-        "https://www.lffl.org/"
-        False
-
-
-exampleArticle : Int -> Article
-exampleArticle int =
-    Article
-        int
-        int
-        "https://www.lffl.org/2018/01/fuchsia-os-google.html"
-        ("Title " ++ toString int)
-        ("Lorem ipsum dolor hamet " ++ toString int)
-        False
+type alias GenericOutsideData =
+    { tag : String
+    , data : Json.Encode.Value
+    }

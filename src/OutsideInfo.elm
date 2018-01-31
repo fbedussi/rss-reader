@@ -1,40 +1,17 @@
 port module OutsideInfo exposing (..)
 
 import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
+import GetFeeds exposing (getFeeds)
+import Helpers exposing (mergeArticles)
 import Json.Encode exposing (..)
 import Models exposing (..)
+import Msgs exposing (..)
 
 
 port infoForOutside : GenericOutsideData -> Cmd msg
 
 
 port infoForElm : (GenericOutsideData -> msg) -> Sub msg
-
-
-type InfoForOutside
-    = LoginRequest LoginData
-    | OpenDb UserUid
-    | ReadAllData
-    | AddCategory Category
-    | DeleteCategories (List Id)
-    | UpdateCategory Category
-    | AddSite Site
-    | DeleteSites (List Id)
-    | UpdateSite Site
-    | AddArticle Article
-    | DeleteArticles (List Id)
-
-
-type InfoForElm
-    = UserLoggedIn UserUid
-    | DbOpened
-    | NewData (List Category)
-
-
-type alias GenericOutsideData =
-    { tag : String
-    , data : Json.Encode.Value
-    }
 
 
 sendInfoOutside : InfoForOutside -> Cmd msg
@@ -57,28 +34,28 @@ sendInfoOutside info =
         ReadAllData ->
             infoForOutside { tag = "readAllData", data = Json.Encode.string "" }
 
-        AddCategory category ->
+        AddCategoryInDb category ->
             infoForOutside { tag = "addCategory", data = encodeCategory category }
 
-        DeleteCategories categoryToDeleteIds ->
+        DeleteCategoriesInDb categoryToDeleteIds ->
             infoForOutside { tag = "deleteCategories", data = encodeIdList categoryToDeleteIds }
 
-        UpdateCategory category ->
+        UpdateCategoryInDb category ->
             infoForOutside { tag = "updateCategory", data = encodeCategory category }
 
-        AddSite site ->
+        AddSiteInDb site ->
             infoForOutside { tag = "addSite", data = encodeSite site }
 
-        DeleteSites siteToDeleteIds ->
+        DeleteSitesInDb siteToDeleteIds ->
             infoForOutside { tag = "deleteSites", data = encodeIdList siteToDeleteIds }
 
-        UpdateSite site ->
+        UpdateSiteInDb site ->
             infoForOutside { tag = "updateSite", data = encodeSite site }
 
-        AddArticle article ->
+        AddArticleInDb article ->
             infoForOutside { tag = "addArticle", data = encodeArticle article }
 
-        DeleteArticles articleToDeleteIds ->
+        DeleteArticlesInDb articleToDeleteIds ->
             infoForOutside { tag = "deleteArticles", data = encodeIdList articleToDeleteIds }
 
 
@@ -105,8 +82,8 @@ getInfoFromOutside tagger onError =
 
                 "allData" ->
                     case decodeData outsideInfo.data of
-                        Ok categories ->
-                            tagger <| NewData categories
+                        Ok data ->
+                            tagger <| NewData data.categories data.sites data.articles
 
                         Err e ->
                             onError e
@@ -124,7 +101,7 @@ getInfoFromOutside tagger onError =
         )
 
 
-switchInfoForElm : InfoForElm -> Model -> ( Model, Cmd msg )
+switchInfoForElm : InfoForElm -> Model -> ( Model, Cmd Msg )
 switchInfoForElm infoForElm model =
     case infoForElm of
         UserLoggedIn userUid ->
@@ -142,8 +119,14 @@ switchInfoForElm infoForElm model =
         DbOpened ->
             ( model, sendInfoOutside ReadAllData )
 
-        NewData categories ->
-            ( { model | categories = categories }, Cmd.none )
+        NewData categories sites savedArticles ->
+            ( { model
+                | categories = categories
+                , sites = sites
+                , articles = savedArticles
+              }
+            , getFeeds sites
+            )
 
 
 encodeCategory : Category -> Value

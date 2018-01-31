@@ -2,7 +2,7 @@ module PartialViews.MainContent exposing (..)
 
 import Helpers exposing (getSelectedArticles)
 import Html exposing (Html, a, article, button, div, h2, input, label, li, main_, span, text, ul)
-import Html.Attributes exposing (class, for, href, id, src, type_)
+import Html.Attributes exposing (checked, class, for, href, id, src, type_)
 import Html.Events exposing (onCheck)
 import Json.Encode
 import Models exposing (Article, Category, Model, Site)
@@ -46,6 +46,7 @@ renderArticle articleToRender =
                             else
                                 DeleteArticles [ articleToRender.id ]
                         )
+                    , checked articleToRender.starred
                     ]
                     []
                 , label
@@ -61,9 +62,6 @@ renderArticle articleToRender =
                         |> Html.Attributes.property "innerHTML"
                     ]
                     []
-                , span
-                    [ class "article-starred" ]
-                    [ starredLabel |> text ]
                 ]
             , div
                 [ class "article-excerpt"

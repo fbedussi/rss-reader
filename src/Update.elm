@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Dom exposing (focus)
-import Helpers exposing (getNextId)
+import Helpers exposing (getNextId, mergeArticles)
 import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
 import Murmur3 exposing (hashString)
@@ -46,7 +46,7 @@ update msg model =
             ( { model
                 | categories = updatedCategories
               }
-            , OutsideInfo.DeleteCategories categoryToDeleteIds |> sendInfoOutside
+            , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
             )
 
         DeleteSites sitesToDeleteId ->
@@ -61,7 +61,7 @@ update msg model =
                 | sites = updatedSites
                 , articles = updatedArticles
               }
-            , OutsideInfo.DeleteSites sitesToDeleteId |> sendInfoOutside
+            , DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
             )
 
         DeleteCategoryAndSites categoriesToDeleteId sitesToDeleteId ->
@@ -106,7 +106,7 @@ update msg model =
                         )
                         model.categories
             in
-            ( { model | categories = updatedCategories }, OutsideInfo.UpdateCategory updateCategory |> sendInfoOutside )
+            ( { model | categories = updatedCategories }, UpdateCategoryInDb updateCategory |> sendInfoOutside )
 
         AddNewCategory ->
             let
@@ -119,7 +119,7 @@ update msg model =
               }
             , Cmd.batch
                 [ Dom.focus ("editCategoryName-" ++ toString newCategory.id) |> Task.attempt FocusResult
-                , OutsideInfo.AddCategory newCategory |> sendInfoOutside
+                , AddCategoryInDb newCategory |> sendInfoOutside
                 ]
             )
 
@@ -147,7 +147,7 @@ update msg model =
                 | sites = List.append model.sites [ newSite ]
                 , siteToEditId = Just newSite.id
               }
-            , OutsideInfo.AddSite newSite |> sendInfoOutside
+            , AddSiteInDb newSite |> sendInfoOutside
             )
 
         UpdateSite siteToUpdate ->
@@ -162,7 +162,7 @@ update msg model =
                         )
                         model.sites
             in
-            ( { model | sites = updatedSites }, OutsideInfo.UpdateSite siteToUpdate |> sendInfoOutside )
+            ( { model | sites = updatedSites }, UpdateSiteInDb siteToUpdate |> sendInfoOutside )
 
         DeleteArticles articleToDeleteIds ->
             let
@@ -176,38 +176,37 @@ update msg model =
                         )
                         model.articles
             in
-            ( { model | articles = updatedArticles }, OutsideInfo.DeleteArticles articleToDeleteIds |> sendInfoOutside )
+            ( { model | articles = updatedArticles }, DeleteArticlesInDb articleToDeleteIds |> sendInfoOutside )
 
         GetArticles rssResult ->
-            let
-                log =
-                    Debug.log "rss" rssResult
-            in
             case rssResult of
                 Ok feeds ->
                     let
-                        articles =
+                        rssArticles =
                             List.concat feeds
                                 |> List.map (\article -> { article | id = hashString 12345 article.link })
                     in
-                    ( { model | articles = articles }, Cmd.none )
+                    ( { model | articles = mergeArticles rssArticles model.articles }, Cmd.none )
 
                 Err err ->
                     ( model, Cmd.none )
 
         SaveArticle articleToSave ->
             let
+                udatedArticleToSave =
+                    { articleToSave | starred = True }
+
                 updatedArticles =
                     List.map
                         (\article ->
                             if article.id == articleToSave.id then
-                                { article | starred = True }
+                                udatedArticleToSave
                             else
                                 article
                         )
                         model.articles
             in
-            ( { model | articles = updatedArticles }, OutsideInfo.AddArticle articleToSave |> sendInfoOutside )
+            ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model

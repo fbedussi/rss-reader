@@ -16,6 +16,18 @@ app.ports.infoForElm.send({
     data: '7woRFDFpHZUehjOSl0IzHaWkBV82'
 })
 
+function convertObjToArray(initialArray = []) {
+    const resultArray = initialArray.map((obj) => {
+        const keys = Object.keys(obj)
+
+        if (keys.indexOf('id') !== -1) {
+            return obj;
+        } 
+        return keys.reduce((acc, key) => obj[key], {});    
+    });
+    return resultArray
+}
+
 function addContent(storeName, content) {
     dbInterface.create({storeName, content})
         // .then((result) => {
@@ -106,14 +118,18 @@ app.ports.infoForOutside.subscribe(function (cmd) {
 
         case 'readAllData':
             const readRequests = [
-                dbInterface.readAll({storeName: 'categories'})    
+                dbInterface.readAll({storeName: 'categories'}),
+                dbInterface.readAll({storeName: 'sites'}),
+                dbInterface.readAll({storeName: 'articles'})
             ]
 
             Promise.all(readRequests)
                 .then((result, error) => {
-                    const resultObj = result[0] ? result[0] : [];
-                    const resultArray = Object.keys(resultObj).map((key) => resultObj[key]);
-                    var resultToSend = resultArray;
+                    var resultToSend = {
+                        categories: convertObjToArray(result[0]),
+                        sites: convertObjToArray(result[1]),
+                        articles: convertObjToArray(result[2]),
+                    };
                     app.ports.infoForElm.send({
                         tag: 'allData',
                         data: resultToSend
