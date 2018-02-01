@@ -201,13 +201,13 @@ update msg model =
                 Ok feeds ->
                     let
                         rssArticles =
-                            List.concat feeds
+                            feeds
                                 |> List.map (\article -> { article | id = hashString 12345 article.link })
                     in
                     ( { model | articles = mergeArticles rssArticles model.articles }, Cmd.none )
 
                 Err err ->
-                    ( model, Cmd.none )
+                    ( { model | errorMsg = toString err }, Cmd.none )
 
         SaveArticle articleToSave ->
             let
@@ -227,7 +227,7 @@ update msg model =
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
         RefreshFeeds sites ->
-            ( model, getFeeds sites )
+            ( model, getFeeds sites |> Cmd.batch )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model

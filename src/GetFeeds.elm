@@ -7,12 +7,10 @@ import Msgs exposing (..)
 import Task exposing (Task, sequence)
 
 
-getFeeds : List Site -> Cmd Msg
+getFeeds : List Site -> List (Cmd Msg)
 getFeeds sites =
     sites
-        |> List.map getSiteFeed
-        |> Task.sequence
-        |> Task.attempt GetArticles
+        |> List.map (\site -> Task.attempt GetArticles (getSiteFeed site))
 
 
 getSiteFeed : Site -> Task Error (List Article)
