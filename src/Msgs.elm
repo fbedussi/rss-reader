@@ -9,6 +9,9 @@ type Msg
     = SelectCategory Id
     | SelectSite Id
     | ToggleDeleteActions Id
+    | ToggleImportLayer
+    | StoreImportData String
+    | ExecuteImport
     | DeleteCategories (List Id)
     | DeleteSites (List Id)
     | DeleteCategoryAndSites (List Id) (List Id)

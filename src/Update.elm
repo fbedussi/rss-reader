@@ -3,6 +3,7 @@ module Update exposing (..)
 import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (getNextId, mergeArticles)
+import Import exposing (executeImport)
 import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
 import Murmur3 exposing (hashString)
@@ -38,6 +39,15 @@ update msg model =
 
                 Nothing ->
                     ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
+
+        ToggleImportLayer ->
+            ( { model | importLayerOpen = not model.importLayerOpen }, Cmd.none )
+
+        StoreImportData importData ->
+            ( { model | importData = importData }, Cmd.none )
+
+        ExecuteImport ->
+            ( executeImport model, Cmd.none )
 
         DeleteCategories categoryToDeleteIds ->
             let

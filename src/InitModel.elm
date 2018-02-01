@@ -16,5 +16,7 @@ init =
         Nothing
         Nothing
         Nothing
+        False
+        ""
     , Cmd.none
     )

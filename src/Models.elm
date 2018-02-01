@@ -77,6 +77,8 @@ type alias Model =
     , categoryToDeleteId : Maybe Id
     , categoryToEditId : Maybe Id
     , siteToEditId : Maybe Id
+    , importLayerOpen : Bool
+    , importData : String
     }
 
 
