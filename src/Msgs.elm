@@ -26,6 +26,7 @@ type Msg
     | SaveArticle Article
     | Outside InfoForElm
     | LogErr String
+    | RefreshFeeds (List Site)
 
 
 type InfoForOutside

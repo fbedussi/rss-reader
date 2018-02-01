@@ -25,7 +25,9 @@ sidebar model =
                 ]
                 [ text "add new site" ]
             , button
-                [ class "button" ]
+                [ class "button"
+                , onClick (RefreshFeeds model.sites)
+                ]
                 [ text "refresh" ]
             ]
         , ul

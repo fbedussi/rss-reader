@@ -149,7 +149,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
             break;
 
         case 'deleteCategories':
-            batchDelte('categories', payload);
+            batchDelete('categories', payload);
             break;
 
         case 'updateCategory':

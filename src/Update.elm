@@ -1,6 +1,7 @@
 module Update exposing (..)
 
 import Dom exposing (focus)
+import GetFeeds exposing (getFeeds)
 import Helpers exposing (getNextId, mergeArticles)
 import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
@@ -54,25 +55,28 @@ update msg model =
                 updatedSites =
                     deleteContents model.sites sitesToDeleteId
 
-                updatedArticles =
+                ( updatedArticles, articleToDeleteInDbIds ) =
                     deleteSitesArticles model.articles sitesToDeleteId
             in
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
               }
-            , DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
+            , Cmd.batch
+                [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
+                , DeleteArticlesInDb articleToDeleteInDbIds |> sendInfoOutside
+                ]
             )
 
-        DeleteCategoryAndSites categoriesToDeleteId sitesToDeleteId ->
+        DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
             let
                 updatedCategories =
-                    deleteContents model.categories categoriesToDeleteId
+                    deleteContents model.categories categoryToDeleteIds
 
                 updatedSites =
                     deleteContents model.sites sitesToDeleteId
 
-                updatedArticles =
+                ( updatedArticles, articleToDeleteInDbIds ) =
                     deleteSitesArticles model.articles sitesToDeleteId
             in
             ( { model
@@ -80,7 +84,11 @@ update msg model =
                 , sites = updatedSites
                 , articles = updatedArticles
               }
-            , Cmd.none
+            , Cmd.batch
+                [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
+                , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
+                , DeleteArticlesInDb articleToDeleteInDbIds |> sendInfoOutside
+                ]
             )
 
         EditCategoryId categoryToEditId ->
@@ -208,6 +216,9 @@ update msg model =
             in
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
+        RefreshFeeds sites ->
+            ( model, getFeeds sites )
+
         Outside infoForElm ->
             switchInfoForElm infoForElm model
 
@@ -217,9 +228,20 @@ deleteContents contents contentToDeleteIds =
     List.filter (\content -> not (List.member content.id contentToDeleteIds)) contents
 
 
-deleteSitesArticles : List Article -> List Int -> List Article
+deleteSitesArticles : List Article -> List Int -> ( List Article, List Id )
 deleteSitesArticles articles sitesToDeleteId =
-    List.filter (\article -> not (List.member article.siteId sitesToDeleteId)) articles
+    List.foldl
+        (\article ( articleToKeep, articleToDeleteInDbIds ) ->
+            if List.member article.siteId sitesToDeleteId then
+                if article.starred then
+                    ( articleToKeep, articleToDeleteInDbIds ++ [ article.id ] )
+                else
+                    ( articleToKeep, articleToDeleteInDbIds )
+            else
+                ( articleToKeep ++ [ article ], articleToDeleteInDbIds )
+        )
+        ( [], [] )
+        articles
 
 
 createNewCategory : List Category -> Category
