@@ -41,7 +41,12 @@ update msg model =
                     ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
 
         ToggleImportLayer ->
-            ( { model | importLayerOpen = not model.importLayerOpen }, Cmd.none )
+            ( { model
+                | importLayerOpen = not model.importLayerOpen
+                , importData = ""
+              }
+            , Cmd.none
+            )
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )

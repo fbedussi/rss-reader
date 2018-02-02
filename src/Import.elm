@@ -19,15 +19,26 @@ executeImport model =
     case opmlCategoriesResult of
         Ok opmlCategories ->
             let
+                ( filteredCategories, looseSites ) =
+                    opmlCategories
+                        |> List.foldl
+                            (\opmlCategory ( filteredCategories, looseSites ) ->
+                                if String.isEmpty opmlCategory.name then
+                                    ( filteredCategories, looseSites ++ opmlCategory.sites )
+                                else
+                                    ( filteredCategories ++ [ opmlCategory ], looseSites )
+                            )
+                            ( [], [] )
+
                 categories =
-                    opmlCategories |> List.indexedMap extractCategoryFromOpml
+                    filteredCategories |> List.indexedMap extractCategoryFromOpml
 
                 sites =
-                    opmlCategories |> List.indexedMap extractSitesFromOpml |> List.concat |> List.indexedMap (\index site -> { site | id = index })
+                    filteredCategories |> List.indexedMap extractSitesFromOpml |> List.concat |> List.indexedMap (\index site -> { site | id = index })
             in
             { model
                 | categories = categories
-                , sites = sites
+                , sites = sites ++ looseSites
             }
 
         Err err ->
@@ -59,7 +70,7 @@ decodeOpml importData =
 
 opmlDecoder : Decoder (List OpmlCategory)
 opmlDecoder =
-    field "body" (field "outline" (list opmlCategoryDecoder))
+    field "body" (field "outline" (list (oneOf [ opmlCategoryDecoder, opmlLooseSiteDecoder ])))
 
 
 opmlCategoryDecoder : Decoder OpmlCategory
@@ -67,6 +78,32 @@ opmlCategoryDecoder =
     map2 OpmlCategory
         (field "outline" (list opmlSiteDecoder))
         (field "_title" string)
+
+
+opmlLooseSiteDecoder : Decoder OpmlCategory
+opmlLooseSiteDecoder =
+    map2 OpmlCategory
+        (map6 fakeSiteList
+            (succeed 0)
+            (succeed [])
+            (field "_title" string)
+            (field "_xmlUrl" string)
+            (field "_htmlUrl" string)
+            (succeed False)
+        )
+        (succeed "")
+
+
+fakeSiteList : Models.Id -> List Int -> String -> String -> String -> Bool -> List Site
+fakeSiteList id categoriesId name rssLink webLink starred =
+    Site
+        id
+        categoriesId
+        name
+        rssLink
+        webLink
+        starred
+        |> List.singleton
 
 
 opmlSiteDecoder : Decoder Site
