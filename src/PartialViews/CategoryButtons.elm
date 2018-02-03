@@ -20,7 +20,7 @@ categoryButtons model category sitesInCategory =
         , span
             [ class "deleteButtonsWrapper" ]
             [ button
-                [ class "button"
+                [ class "button alert"
                 , onClick (ToggleDeleteActions category.id)
                 ]
                 [ text "delete " ]

@@ -29,8 +29,9 @@ type Msg
     | SaveArticle Article
     | Outside InfoForElm
     | LogErr String
-    | RefreshFeeds (List Site)
+    | RefreshFeeds
     | RemoveErrorMsg String
+    | UpdateSearch String
 
 
 type InfoForOutside

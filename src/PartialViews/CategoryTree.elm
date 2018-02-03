@@ -1,10 +1,10 @@
-module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
+module PartialViews.CategoryTree exposing (deleteSiteButton, renderCategory, renderSiteEntry)
 
 import Helpers exposing (extractId, getSelectedClass, getSitesInCategory, isArticleInSites)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
-import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site)
+import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryButtons exposing (categoryButtons)
 
@@ -43,15 +43,14 @@ renderViewCategory model category =
             , onClick (SelectCategory category.id)
             ]
             [ span
-                [ class "category-numberOfArticles" ]
+                [ class "category-numberOfArticles badge primary" ]
                 [ articlesInCategory
                     |> toString
-                    |> addParenthesis
                     |> text
                 ]
             , span
                 [ class "category-name" ]
-                [ text category.name ]
+                [ text (" " ++ category.name) ]
             ]
         , categoryButtons model category sitesInCategory
         ]
@@ -94,20 +93,30 @@ renderSiteEntry selectedSiteId site =
             , onClick (SelectSite site.id)
             ]
             [ site.name |> text ]
-        , span
-            [ class "siteInCategory-actions button-group" ]
-            [ button
-                [ class "button"
-                , onClick (ChangeEditSiteId site.id)
-                ]
-                [ text "Edit site" ]
-            , button
-                [ class "button"
-                , onClick (DeleteSites [ site.id ])
-                ]
-                [ text "Delete site" ]
-            ]
+        , renderSiteButtons site.id
         ]
+
+
+renderSiteButtons : Id -> Html Msg
+renderSiteButtons siteId =
+    span
+        [ class "siteInCategory-actions button-group" ]
+        [ button
+            [ class "button"
+            , onClick (ChangeEditSiteId siteId)
+            ]
+            [ text "Edit" ]
+        , deleteSiteButton siteId
+        ]
+
+
+deleteSiteButton : Id -> Html Msg
+deleteSiteButton siteId =
+    button
+        [ class "button alert"
+        , onClick (DeleteSites [ siteId ])
+        ]
+        [ text "Delete" ]
 
 
 addParenthesis : String -> String

@@ -76,10 +76,22 @@ update msg model =
 
                 ( updatedArticles, articleToDeleteInDbIds ) =
                     deleteSitesArticles model.articles sitesToDeleteId
+
+                updatedSiteToEditId =
+                    case model.siteToEditId of
+                        Just id ->
+                            if List.member id sitesToDeleteId then
+                                Nothing
+                            else
+                                Just id
+
+                        Nothing ->
+                            Nothing
             in
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
+                , siteToEditId = updatedSiteToEditId
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
@@ -235,8 +247,8 @@ update msg model =
             in
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
-        RefreshFeeds sites ->
-            ( model, getFeeds sites |> Cmd.batch )
+        RefreshFeeds ->
+            ( model, getFeeds model.sites |> Cmd.batch )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
@@ -247,6 +259,9 @@ update msg model =
                     model.errorMsgs |> List.filter (\modelMsg -> modelMsg /= msgToRemove)
             in
             ( { model | errorMsgs = newErrorMsgs }, Cmd.none )
+
+        UpdateSearch searchTerm ->
+            ( { model | searchTerm = searchTerm }, Cmd.none )
 
 
 deleteContents : List { a | id : Int } -> List Id -> List { a | id : Int }

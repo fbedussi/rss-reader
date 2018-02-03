@@ -1,6 +1,6 @@
 module Helpers exposing (..)
 
-import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site)
+import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 
 
 getSitesInCategory : Int -> List Site -> List Site
@@ -99,3 +99,17 @@ getSelectedClass selectedId id =
 
         Nothing ->
             ""
+
+
+getArticleSite : List Site -> Article -> Site
+getArticleSite sites article =
+    let
+        site =
+            sites |> List.filter (\site -> site.id == article.siteId) |> List.head
+    in
+    case site of
+        Just site ->
+            site
+
+        Nothing ->
+            createEmptySite

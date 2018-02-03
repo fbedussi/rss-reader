@@ -26,8 +26,8 @@ ul {
   justify-content: space-between;
 }
 
-.category .button-group,
-.category .button  {
+.button-group,
+.button  {
   margin-bottom: 0;
 }
 
@@ -102,6 +102,12 @@ ul {
   transform: translateY(0);
 }
 
+.editSite-buttonGroup {
+  justify-content: space-between;
+  display: flex;
+}
+
+/*Main Content*/
 .article {
   clear: both;
   margin-bottom: 1em;
@@ -112,4 +118,24 @@ ul {
   height: auto;
   float: left;
   margin: 0 1em 1em 0;
+}
+
+.selectedArticles {
+  margin-left: 0;
+}
+
+.article-starred input {
+  display: none;
+}
+
+.article-starred .icon svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  fill: white;
+  stroke: black;
+  transition: fill 0.5s;
+}
+
+.article-starred.is-starred .icon svg {
+  fill: yellow;
 }

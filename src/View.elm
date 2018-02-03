@@ -5,6 +5,7 @@ import Html.Attributes exposing (class)
 import Models exposing (Model)
 import Msgs exposing (..)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
+import PartialViews.ErrorContainer exposing (errorContainer)
 import PartialViews.Header exposing (siteHeader)
 import PartialViews.ImportLayer exposing (importLayer)
 import PartialViews.MainContent exposing (mainContent)
@@ -16,6 +17,7 @@ view model =
     div
         [ class "appWrapper grid-x" ]
         [ siteHeader model
+        , errorContainer model.errorMsgs
         , sidebar model
         , mainContent model
         , editSiteLayer model

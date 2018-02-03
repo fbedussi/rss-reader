@@ -6,14 +6,15 @@ import Html.Events exposing (onClick)
 import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
+import PartialViews.SearchResult exposing (searchResult)
 
 
 sidebar : Model -> Html Msg
 sidebar model =
     aside
-        [ class "sidebar cell medium-3" ]
+        [ class "sidebar cell medium-4" ]
         [ div
-            [ class "button-group" ]
+            [ class "button-group expanded" ]
             [ button
                 [ class "button"
                 , onClick AddNewCategory
@@ -24,23 +25,25 @@ sidebar model =
                 , onClick AddNewSite
                 ]
                 [ text "add new site" ]
-            , button
-                [ class "button"
-                , onClick (RefreshFeeds model.sites)
-                ]
-                [ text "refresh" ]
             ]
+        , searchResult model.selectedSiteId model.sites model.searchTerm
         , ul
             [ class "sitesWithoutCategory" ]
-            (model.sites
-                |> List.filter (\site -> List.isEmpty site.categoriesId)
-                |> List.map (renderSiteEntry model.selectedSiteId)
+            (if String.isEmpty model.searchTerm then
+                model.sites
+                    |> List.filter (\site -> List.isEmpty site.categoriesId)
+                    |> List.map (renderSiteEntry model.selectedSiteId)
+             else
+                []
             )
         , ul
             [ class "categories accordion"
             , attribute "data-accordion" ""
             ]
-            (model.categories
-                |> List.map (renderCategory model)
+            (if String.isEmpty model.searchTerm then
+                model.categories
+                    |> List.map (renderCategory model)
+             else
+                []
             )
         ]

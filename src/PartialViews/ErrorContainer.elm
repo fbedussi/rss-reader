@@ -1,9 +1,10 @@
 module PartialViews.ErrorContainer exposing (errorContainer)
 
+import Char
 import Html exposing (Html, button, div, header, span, text)
 import Html.Attributes exposing (class)
+import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Events exposing (onClick)
-import Models exposing (Model)
 import Msgs exposing (..)
 
 
@@ -23,13 +24,17 @@ renderErrorMessages errorMsgs =
 renderErrorMsg : String -> Html Msg
 renderErrorMsg errorMsg =
     div
-        [ class "errorMsg" ]
+        [ class "errorMsg callout warning" ]
         [ span
             [ class "errorMsg-text" ]
             [ text errorMsg ]
-        , span
-            [ class "errorMsg-button button"
+        , button
+            [ class "errorMsg-button close-button"
             , onClick (RemoveErrorMsg errorMsg)
+            , ariaLabel "Dismiss alert"
             ]
-            [ text "remove" ]
+            [ span
+                [ ariaHidden True ]
+                [ String.fromChar (Char.fromCode 215) |> text ]
+            ]
         ]

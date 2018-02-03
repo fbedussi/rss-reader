@@ -34,11 +34,11 @@ executeImport model =
                     filteredCategories |> List.indexedMap extractCategoryFromOpml
 
                 sites =
-                    filteredCategories |> List.indexedMap extractSitesFromOpml |> List.concat |> List.indexedMap (\index site -> { site | id = index })
+                    filteredCategories |> List.indexedMap extractSitesFromOpml |> List.concat |> List.append looseSites |> List.indexedMap (\index site -> { site | id = index })
             in
             { model
                 | categories = categories
-                , sites = sites ++ looseSites
+                , sites = sites
             }
 
         Err err ->
