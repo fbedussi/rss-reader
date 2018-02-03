@@ -24,12 +24,13 @@ type Msg
     | ChangeEditSiteId Id
     | EndEditSite
     | UpdateSite Site
-    | GetArticles (Result Http.Error (List Article))
+    | GetArticles (Result String (List Article))
     | DeleteArticles (List Id)
     | SaveArticle Article
     | Outside InfoForElm
     | LogErr String
     | RefreshFeeds (List Site)
+    | RemoveErrorMsg String
 
 
 type InfoForOutside
@@ -44,6 +45,7 @@ type InfoForOutside
     | UpdateSiteInDb Site
     | AddArticleInDb Article
     | DeleteArticlesInDb (List Id)
+    | SaveAllData ( List Category, List Site, List Article )
 
 
 type InfoForElm

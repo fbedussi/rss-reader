@@ -19,7 +19,7 @@ update msg model =
                 log =
                     Debug.log "Error: " err
             in
-            ( { model | errorMsg = err }, Cmd.none )
+            ( { model | errorMsgs = model.errorMsgs ++ [ toString err ] }, Cmd.none )
 
         SelectCategory categoryId ->
             ( { model
@@ -52,7 +52,11 @@ update msg model =
             ( { model | importData = importData }, Cmd.none )
 
         ExecuteImport ->
-            ( executeImport model, Cmd.none )
+            let
+                newModel =
+                    executeImport model
+            in
+            ( newModel, getDataToSaveInDb newModel |> SaveAllData |> sendInfoOutside )
 
         DeleteCategories categoryToDeleteIds ->
             let
@@ -212,7 +216,7 @@ update msg model =
                     ( { model | articles = mergeArticles rssArticles model.articles }, Cmd.none )
 
                 Err err ->
-                    ( { model | errorMsg = toString err }, Cmd.none )
+                    ( { model | errorMsgs = model.errorMsgs ++ [ err ] }, Cmd.none )
 
         SaveArticle articleToSave ->
             let
@@ -236,6 +240,13 @@ update msg model =
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
+
+        RemoveErrorMsg msgToRemove ->
+            let
+                newErrorMsgs =
+                    model.errorMsgs |> List.filter (\modelMsg -> modelMsg /= msgToRemove)
+            in
+            ( { model | errorMsgs = newErrorMsgs }, Cmd.none )
 
 
 deleteContents : List { a | id : Int } -> List Id -> List { a | id : Int }
@@ -283,3 +294,8 @@ createNewSite sites =
         ""
         ""
         False
+
+
+getDataToSaveInDb : Model -> ( List Category, List Site, List Article )
+getDataToSaveInDb model =
+    ( model.categories, model.sites, model.articles |> List.filter (\article -> article.starred) )

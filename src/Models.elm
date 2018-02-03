@@ -68,7 +68,7 @@ type alias SelectedSiteId =
 
 
 type alias Model =
-    { errorMsg : String
+    { errorMsgs : List String
     , categories : List Category
     , sites : List Site
     , articles : List Article

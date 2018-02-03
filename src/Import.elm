@@ -42,7 +42,7 @@ executeImport model =
             }
 
         Err err ->
-            { model | errorMsg = err }
+            { model | errorMsgs = model.errorMsgs ++ [ err ] }
 
 
 extractCategoryFromOpml : Int -> OpmlCategory -> Category

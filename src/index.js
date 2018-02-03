@@ -43,6 +43,18 @@ function addContent(storeName, content) {
     ;
 }
 
+function saveStore(storeName, content) {
+    dbInterface.replaceAll({storeName, content})
+        .catch((error) => {
+            console.log(error);
+            app.ports.infoForElm.send({
+                tag: 'error',
+                data: error
+            })
+        })
+    ;
+}
+
 function batchDelete(storeName, idList) {
     const deleteRequests = idList.map(contentId =>dbInterface.delete({storeName, contentId}));
 
@@ -127,7 +139,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
                 .then((result, error) => {
                     var resultToSend = {
                         categories: convertObjToArray(result[0]),
-                        sites: convertObjToArray(result[1]),
+                        sites: convertObjToArray(result[1]).map((site) => Object.assign({categoriesId: []}, site)), //if the array is empty firebase strip it
                         articles: convertObjToArray(result[2]),
                     };
                     app.ports.infoForElm.send({
@@ -174,6 +186,10 @@ app.ports.infoForOutside.subscribe(function (cmd) {
 
         case 'deleteArticles':
             batchDelete('articles', payload);
+            break;
+
+        case 'saveAllData':
+            Object.keys(payload).forEach((key) => saveStore(key, payload[key]));
             break;
 
         default:

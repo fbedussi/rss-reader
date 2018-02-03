@@ -57,6 +57,17 @@ sendInfoOutside info =
         DeleteArticlesInDb articleToDeleteIds ->
             infoForOutside { tag = "deleteArticles", data = encodeIdList articleToDeleteIds }
 
+        SaveAllData ( categories, sites, articles ) ->
+            let
+                allData =
+                    object
+                        [ ( "categories", categories |> List.map encodeCategory |> list )
+                        , ( "sites", sites |> List.map encodeSite |> list )
+                        , ( "articles", articles |> List.map encodeArticle |> list )
+                        ]
+            in
+            infoForOutside { tag = "saveAllData", data = allData }
+
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
 getInfoFromOutside tagger onError =

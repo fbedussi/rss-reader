@@ -7,7 +7,7 @@ import Msgs exposing (Msg)
 init : ( Model, Cmd Msg )
 init =
     ( Model
-        ""
+        []
         []
         []
         []

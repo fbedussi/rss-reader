@@ -36,11 +36,10 @@ const deleteInStore = ({storeName, contentId}) => db
     .remove()
 ;
   
-const replaceAllInStore = ({storeName, data}) => {
-  const writeAllRecords = data.map((record) => createInStore(storeName, record));
-  
-  return Promise.all(writeAllRecords);
-}
+const replaceAllInStore = ({storeName, content}) => db
+  .ref(`users/${userUid}/${storeName}`)
+  .set(content)
+;
 
 
 const dbInterface = {
