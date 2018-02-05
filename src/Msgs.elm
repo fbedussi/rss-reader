@@ -9,6 +9,7 @@ type Msg
     = SelectCategory Id
     | SelectSite Id
     | ToggleDeleteActions Id
+    | ToggleTransition Id
     | ToggleImportLayer
     | StoreImportData String
     | ExecuteImport

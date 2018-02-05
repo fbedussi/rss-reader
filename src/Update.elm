@@ -8,6 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
+import Process
 import Task
 
 
@@ -38,7 +39,9 @@ update msg model =
                     ( { model | categoryToDeleteId = Nothing }, Cmd.none )
 
                 Nothing ->
-                    ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
+                    ( { model | categoryToDeleteId = Just categoryId }, Task.perform (\id -> ToggleTranistion id) (Process.sleep 0) )
+
+        ToggleTransitio
 
         ToggleImportLayer ->
             ( { model
