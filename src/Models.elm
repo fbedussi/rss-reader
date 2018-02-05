@@ -80,6 +80,7 @@ type alias Model =
     , importLayerOpen : Bool
     , importData : String
     , searchTerm : String
+    , elementVisibility : ElementVisibility
     }
 
 
@@ -92,6 +93,13 @@ createEmptySite =
         ""
         ""
         False
+
+
+type ElementVisibility
+    = None
+    | OverrideNone
+    | DoTransition
+    | OverrideNoneBack
 
 
 

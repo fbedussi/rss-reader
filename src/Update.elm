@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (getNextId, mergeArticles)
+import Helpers exposing (changeElementVisibility, getNextId, mergeArticles)
 import Import exposing (executeImport)
 import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
@@ -35,10 +35,20 @@ update msg model =
         ToggleDeleteActions categoryId ->
             case model.categoryToDeleteId of
                 Just id ->
-                    ( { model | categoryToDeleteId = Nothing }, Cmd.none )
+                    ( { model
+                        | categoryToDeleteId = Nothing
+                        , elementVisibility = changeElementVisibility model.elementVisibility
+                      }
+                    , Cmd.none
+                    )
 
                 Nothing ->
-                    ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
+                    ( { model
+                        | categoryToDeleteId = Just categoryId
+                        , elementVisibility = changeElementVisibility model.elementVisibility
+                      }
+                    , Cmd.none
+                    )
 
         ToggleImportLayer ->
             ( { model
@@ -262,6 +272,16 @@ update msg model =
 
         UpdateSearch searchTerm ->
             ( { model | searchTerm = searchTerm }, Cmd.none )
+
+        ShowWithTransition ->
+            ( { model | elementVisibility = changeElementVisibility model.elementVisibility }, Cmd.none )
+
+        Tick _ ->
+            ( { model
+                | elementVisibility = changeElementVisibility model.elementVisibility
+              }
+            , Cmd.none
+            )
 
 
 deleteContents : List { a | id : Int } -> List Id -> List { a | id : Int }

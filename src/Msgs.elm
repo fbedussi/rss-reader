@@ -1,8 +1,8 @@
 module Msgs exposing (..)
 
 import Dom exposing (Error)
-import Http
 import Models exposing (Article, Category, Id, LoginData, Site, UserUid)
+import Time exposing (Time)
 
 
 type Msg
@@ -32,6 +32,8 @@ type Msg
     | RefreshFeeds
     | RemoveErrorMsg String
     | UpdateSearch String
+    | ShowWithTransition
+    | Tick Time
 
 
 type InfoForOutside

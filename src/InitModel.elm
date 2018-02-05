@@ -1,6 +1,6 @@
 module InitModel exposing (..)
 
-import Models exposing (Model)
+import Models exposing (ElementVisibility(..), Model)
 import Msgs exposing (Msg)
 
 
@@ -19,5 +19,6 @@ init =
         False
         ""
         ""
+        None
     , Cmd.none
     )

@@ -1,6 +1,6 @@
 module Helpers exposing (..)
 
-import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Models exposing (Article, Category, ElementVisibility(..), Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 
 
 getSitesInCategory : Int -> List Site -> List Site
@@ -101,6 +101,19 @@ getSelectedClass selectedId id =
             ""
 
 
+isSelected : Maybe Int -> Int -> Bool
+isSelected selectedId id =
+    case selectedId of
+        Just selId ->
+            if selId == id then
+                True
+            else
+                False
+
+        Nothing ->
+            False
+
+
 getArticleSite : List Site -> Article -> Site
 getArticleSite sites article =
     let
@@ -113,3 +126,19 @@ getArticleSite sites article =
 
         Nothing ->
             createEmptySite
+
+
+changeElementVisibility : ElementVisibility -> ElementVisibility
+changeElementVisibility elementVisibility =
+    case elementVisibility of
+        None ->
+            OverrideNone
+
+        OverrideNone ->
+            DoTransition
+
+        DoTransition ->
+            OverrideNoneBack
+
+        OverrideNoneBack ->
+            None

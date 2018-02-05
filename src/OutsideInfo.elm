@@ -135,7 +135,7 @@ switchInfoForElm infoForElm model =
                 , sites = sites
                 , articles = savedArticles
               }
-            , getFeeds sites |> Cmd.batch
+            , Cmd.none
             )
 
 

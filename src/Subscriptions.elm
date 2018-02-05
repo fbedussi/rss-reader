@@ -2,11 +2,18 @@ module Subscriptions exposing (..)
 
 --import Json.Encode
 
-import Models exposing (Model)
+import AnimationFrame
+import Models exposing (ElementVisibility(..), Model)
 import Msgs exposing (..)
 import OutsideInfo exposing (getInfoFromOutside)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    getInfoFromOutside Outside LogErr
+    Sub.batch
+        [ getInfoFromOutside Outside LogErr
+        , if model.elementVisibility == OverrideNone || model.elementVisibility == OverrideNoneBack then
+            AnimationFrame.times Tick
+          else
+            Sub.none
+        ]
