@@ -1,6 +1,6 @@
 module PartialViews.CategoryTree exposing (deleteSiteButton, renderCategory, renderSiteEntry)
 
-import Helpers exposing (extractId, getSelectedClass, getSitesInCategory, isArticleInSites)
+import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
@@ -12,7 +12,7 @@ import PartialViews.CategoryButtons exposing (categoryButtons)
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
     li
-        [ class ("accordion-item category " ++ getSelectedClass model.selectedCategoryId category.id)
+        [ class ("accordion-item category " ++ getClass "is-selected" model.selectedCategoryId category.id)
         , attribute "data-accordion-item" ""
         ]
         (case model.categoryToEditId of
@@ -87,7 +87,7 @@ renderEditCategory model category =
 renderSiteEntry : SelectedSiteId -> Site -> Html Msg
 renderSiteEntry selectedSiteId site =
     li
-        [ class ("category-siteInCategory " ++ getSelectedClass selectedSiteId site.id) ]
+        [ class ("category-siteInCategory " ++ getClass "is-selected" selectedSiteId site.id) ]
         [ button
             [ class "siteInCategoryBtn"
             , onClick (SelectSite site.id)

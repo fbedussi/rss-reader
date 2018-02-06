@@ -76,10 +76,14 @@ ul {
   top: 0;
   right: 0;
   background-color: white;
+  transition: transform 2s;
 }
 
-.delete-actions.is-active {
-  display: flex;
+.delete-actions.is-visible {
+  display: flex !important;
+}
+
+.delete-actions.is-open {
   transform: translateX(100%)
 }
 

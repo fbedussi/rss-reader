@@ -2,7 +2,6 @@ module PartialViews.SearchResult exposing (searchResult)
 
 import Html exposing (Html, div, input, ul)
 import Html.Attributes exposing (class)
-import Html.Events exposing (onInput)
 import Models exposing (SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryTree exposing (renderSiteEntry)

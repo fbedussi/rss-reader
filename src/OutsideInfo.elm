@@ -1,7 +1,6 @@
 port module OutsideInfo exposing (..)
 
 import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
-import GetFeeds exposing (getFeeds)
 import Json.Encode exposing (..)
 import Models exposing (..)
 import Msgs exposing (..)
@@ -135,7 +134,7 @@ switchInfoForElm infoForElm model =
                 , sites = sites
                 , articles = savedArticles
               }
-            , getFeeds sites |> Cmd.batch
+            , Cmd.none
             )
 
 

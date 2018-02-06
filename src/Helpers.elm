@@ -88,12 +88,12 @@ mergeArticles baseArticles overrideArticles =
     List.append overrideArticles filteredBaseArticles
 
 
-getSelectedClass : Maybe Int -> Int -> String
-getSelectedClass selectedId id =
+getClass : String -> Maybe Int -> Int -> String
+getClass class selectedId id =
     case selectedId of
         Just selId ->
             if selId == id then
-                "is-active"
+                class
             else
                 ""
 

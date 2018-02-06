@@ -9,6 +9,7 @@ import Msgs exposing (..)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
+import Transit
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -35,10 +36,19 @@ update msg model =
         ToggleDeleteActions categoryId ->
             case model.categoryToDeleteId of
                 Just id ->
-                    ( { model | categoryToDeleteId = Nothing }, Cmd.none )
+                    Transit.start TransitMsg (HideCategoryButtons categoryId) ( 2000, 0 ) { model | categoryButtonsToShow = Nothing }
 
                 Nothing ->
-                    ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
+                    Transit.start TransitMsg (ShowCategoryButtons categoryId) ( 0, 0 ) { model | categoryToDeleteId = Just categoryId }
+
+        ShowCategoryButtons categoryId ->
+            ( { model | categoryButtonsToShow = Just categoryId }, Cmd.none )
+
+        HideCategoryButtons categoryId ->
+            ( { model | categoryToDeleteId = Nothing }, Cmd.none )
+
+        TransitMsg a ->
+            Transit.tick TransitMsg a model
 
         ToggleImportLayer ->
             ( { model

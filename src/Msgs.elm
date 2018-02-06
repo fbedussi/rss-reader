@@ -1,8 +1,8 @@
 module Msgs exposing (..)
 
 import Dom exposing (Error)
-import Http
 import Models exposing (Article, Category, Id, LoginData, Site, UserUid)
+import Transit
 
 
 type Msg
@@ -32,6 +32,9 @@ type Msg
     | RefreshFeeds
     | RemoveErrorMsg String
     | UpdateSearch String
+    | TransitMsg (Transit.Msg Msg)
+    | ShowCategoryButtons Id
+    | HideCategoryButtons Id
 
 
 type InfoForOutside

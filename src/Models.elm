@@ -1,6 +1,7 @@
 module Models exposing (..)
 
 import Json.Encode
+import Transit
 
 
 type alias UserUid =
@@ -68,19 +69,21 @@ type alias SelectedSiteId =
 
 
 type alias Model =
-    { errorMsgs : List String
-    , categories : List Category
-    , sites : List Site
-    , articles : List Article
-    , selectedCategoryId : SelectedCategoryId
-    , selectedSiteId : SelectedSiteId
-    , categoryToDeleteId : Maybe Id
-    , categoryToEditId : Maybe Id
-    , siteToEditId : Maybe Id
-    , importLayerOpen : Bool
-    , importData : String
-    , searchTerm : String
-    }
+    Transit.WithTransition
+        { errorMsgs : List String
+        , categories : List Category
+        , sites : List Site
+        , articles : List Article
+        , selectedCategoryId : SelectedCategoryId
+        , selectedSiteId : SelectedSiteId
+        , categoryToDeleteId : Maybe Id
+        , categoryToEditId : Maybe Id
+        , siteToEditId : Maybe Id
+        , importLayerOpen : Bool
+        , importData : String
+        , searchTerm : String
+        , categoryButtonsToShow : Maybe Id
+        }
 
 
 createEmptySite : Site
