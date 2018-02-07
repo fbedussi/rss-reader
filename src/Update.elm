@@ -22,7 +22,11 @@ update msg model =
             in
             ( { model | errorMsgs = model.errorMsgs ++ [ toString err ] }, Cmd.none )
 
-        SelectCategory categoryId ->
+        SelectCategory categoryId height ->
+            let
+                log =
+                    Debug.log "height" height
+            in
             ( { model
                 | selectedCategoryId = Just categoryId
                 , selectedSiteId = Nothing

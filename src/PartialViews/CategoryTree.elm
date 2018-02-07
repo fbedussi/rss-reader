@@ -1,9 +1,11 @@
 module PartialViews.CategoryTree exposing (deleteSiteButton, renderCategory, renderSiteEntry)
 
+import DOM exposing (..)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, manageTransitionClass)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (on, onClick, onInput)
+import Json.Decode exposing (Decoder)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryButtons exposing (categoryButtons)
@@ -25,6 +27,20 @@ renderCategory model category =
             Nothing ->
                 renderViewCategory model category
         )
+
+
+onHeaderClick : (Float -> msg) -> Html.Attribute msg
+onHeaderClick msg =
+    on "click" (Json.Decode.map msg targetHeight)
+
+
+
+-- A `Json.Decoder` for grabbing `event.target.currentTime`.
+
+
+targetHeight : Decoder Float
+targetHeight =
+    target <| parentElement <| parentElement <| nextSibling <| childNode 0 offsetHeight
 
 
 renderViewCategory : Model -> Category -> List (Html Msg)
@@ -62,7 +78,7 @@ renderViewCategory model category =
         [ class "categoryButtons accordion-title" ]
         [ button
             [ class "categoryBtn"
-            , onClick (SelectCategory category.id)
+            , onHeaderClick (SelectCategory category.id)
             ]
             [ span
                 [ class "category-numberOfArticles badge primary" ]
@@ -80,9 +96,12 @@ renderViewCategory model category =
         [ class "accordion-content category-sitesInCategory"
         , attribute "data-tab-content" ""
         ]
-        (sitesInCategory
-            |> List.map (renderSiteEntry model.selectedSiteId)
-        )
+        [ div
+            [ class "accordion-content-inner" ]
+            (sitesInCategory
+                |> List.map (renderSiteEntry model.selectedSiteId)
+            )
+        ]
     ]
 
 

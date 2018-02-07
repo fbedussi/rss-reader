@@ -1,12 +1,13 @@
 module Msgs exposing (..)
 
 import Dom exposing (Error)
+import Json.Decode exposing (Decoder)
 import Models exposing (Article, Category, Id, LoginData, Site, UserUid)
 import Transit
 
 
 type Msg
-    = SelectCategory Id
+    = SelectCategory Id Float
     | SelectSite Id
     | ToggleDeleteActions Id
     | ToggleImportLayer
