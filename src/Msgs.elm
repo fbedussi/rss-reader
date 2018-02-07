@@ -35,6 +35,7 @@ type Msg
     | TransitMsg (Transit.Msg Msg)
     | ShowCategoryButtons Id
     | HideCategoryButtons Id
+    | NoOp
 
 
 type InfoForOutside

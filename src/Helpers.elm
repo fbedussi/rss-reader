@@ -1,6 +1,8 @@
 module Helpers exposing (..)
 
 import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Msgs exposing (..)
+import Transit
 
 
 getSitesInCategory : Int -> List Site -> List Site
@@ -101,6 +103,19 @@ getClass class selectedId id =
             ""
 
 
+isSelected : Maybe Int -> Int -> Bool
+isSelected selectedId id =
+    case selectedId of
+        Just selId ->
+            if selId == id then
+                True
+            else
+                False
+
+        Nothing ->
+            False
+
+
 getArticleSite : List Site -> Article -> Site
 getArticleSite sites article =
     let
@@ -113,3 +128,22 @@ getArticleSite sites article =
 
         Nothing ->
             createEmptySite
+
+
+manageTransitionClass : Transit.Transition -> Bool -> String
+manageTransitionClass transition selected =
+    let
+        transitionStep =
+            Transit.getStep transition
+    in
+    if selected && transitionStep /= Transit.Exit then
+        " is-visible is-open"
+    else if selected then
+        " is-visible"
+    else
+        ""
+
+
+isTransitionOver : Transit.Transition -> Bool
+isTransitionOver transition =
+    Transit.getStep transition == Transit.Done

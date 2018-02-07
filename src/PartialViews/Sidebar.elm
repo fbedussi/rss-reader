@@ -7,6 +7,7 @@ import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSi
 import Msgs exposing (..)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.SearchResult exposing (searchResult)
+import Transit
 
 
 sidebar : Model -> Html Msg

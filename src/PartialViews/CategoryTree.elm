@@ -1,6 +1,6 @@
 module PartialViews.CategoryTree exposing (deleteSiteButton, renderCategory, renderSiteEntry)
 
-import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites)
+import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, manageTransitionClass)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
@@ -12,7 +12,7 @@ import PartialViews.CategoryButtons exposing (categoryButtons)
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
     li
-        [ class ("accordion-item category " ++ getClass "is-selected" model.selectedCategoryId category.id)
+        [ class ("accordion-item category " ++ getClass "is-active" model.selectedCategoryId category.id)
         , attribute "data-accordion-item" ""
         ]
         (case model.categoryToEditId of
@@ -35,8 +35,30 @@ renderViewCategory model category =
 
         articlesInCategory =
             countArticlesInCategory sitesInCategory model.articles
+
+        deleting =
+            isSelected model.categoryToDeleteId category.id
     in
-    [ span
+    [ div
+        [ class ("delete-actions" ++ manageTransitionClass model.transition deleting) ]
+        [ button
+            [ class "button"
+            , onClick (DeleteCategories [ category.id ])
+            ]
+            [ text "Delete category only" ]
+        , button
+            [ class "button"
+            , onClick (DeleteCategoryAndSites [ category.id ] (extractId sitesInCategory))
+            , disabled
+                (if List.isEmpty sitesInCategory then
+                    True
+                 else
+                    False
+                )
+            ]
+            [ text "Delete sites as well" ]
+        ]
+    , span
         [ class "categoryButtons accordion-title" ]
         [ button
             [ class "categoryBtn"

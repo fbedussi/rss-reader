@@ -36,10 +36,10 @@ update msg model =
         ToggleDeleteActions categoryId ->
             case model.categoryToDeleteId of
                 Just id ->
-                    Transit.start TransitMsg (HideCategoryButtons categoryId) ( 2000, 0 ) { model | categoryButtonsToShow = Nothing }
+                    Transit.start TransitMsg (HideCategoryButtons categoryId) ( 500, 0 ) { model | categoryButtonsToShow = Nothing }
 
                 Nothing ->
-                    Transit.start TransitMsg (ShowCategoryButtons categoryId) ( 0, 0 ) { model | categoryToDeleteId = Just categoryId }
+                    Transit.start TransitMsg (ShowCategoryButtons categoryId) ( 10, 500 ) { model | categoryToDeleteId = Just categoryId }
 
         ShowCategoryButtons categoryId ->
             ( { model | categoryButtonsToShow = Just categoryId }, Cmd.none )
@@ -272,6 +272,9 @@ update msg model =
 
         UpdateSearch searchTerm ->
             ( { model | searchTerm = searchTerm }, Cmd.none )
+
+        NoOp ->
+            ( model, Cmd.none )
 
 
 deleteContents : List { a | id : Int } -> List Id -> List { a | id : Int }

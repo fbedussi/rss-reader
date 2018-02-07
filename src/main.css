@@ -8,27 +8,57 @@ ul {
   list-style-type: none;
 }
 
+button {
+  font-size: 1rem;
+}
+
 .sidebar ul {
   margin: 0;
 }
 
-.sitesWithoutCategory li {
-  padding: 1.25rem 1rem;
-}
-
 .category {
   display: block;
+  position: relative;
+}
+
+.accordion-title {
+  padding: 0;
+}
+
+.accordion-title::before {
+  content: none;
 }
 
 .categoryButtons {
+  position: relative;
   display: flex;
   align-content: center;
   justify-content: space-between;
+  background-color: white;
+  z-index: 2;  
 }
 
 .button-group,
 .button  {
   margin-bottom: 0;
+}
+
+.delete-actions {
+  display: none;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background-color: white;
+  transition: transform 0.5s;
+  z-index: 1;
+}
+
+.delete-actions.is-visible {
+  display: flex !important;
+}
+
+.delete-actions.is-open {
+  transform: translateX(100%)
 }
 
 .categoryBtn,
@@ -64,27 +94,6 @@ ul {
 
 .category-siteInCategory.is-active {
   background-color: beige;
-}
-
-.deleteButtonsWrapper {
-  position: relative;
-}
-
-.delete-actions {
-  display: none;
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: white;
-  transition: transform 2s;
-}
-
-.delete-actions.is-visible {
-  display: flex !important;
-}
-
-.delete-actions.is-open {
-  transform: translateX(100%)
 }
 
 /*Layers*/
