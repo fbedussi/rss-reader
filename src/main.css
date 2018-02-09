@@ -75,15 +75,12 @@ button {
   flex: 1;
 }
 
-.category.is-active .categoryButtons {
+.category.is-selected .categoryButtons {
   background-color: lightgray;
 }
 
-.category-sitesInCategory {
-  display: none;
-}
 
-.is-active .category-sitesInCategory {
+.is-selected .category-sitesInCategory {
   display: block;
 }
 
@@ -92,8 +89,18 @@ button {
   justify-content: space-between;
 }
 
-.category-siteInCategory.is-active {
+.category-siteInCategory.is-selected {
   background-color: beige;
+}
+
+.tabContentOuter {
+  transition: height 0.5s;
+  overflow: hidden;
+  height: 0;
+}
+
+.category.is-selected .tabContentOuter {
+  height: auto;
 }
 
 /*Layers*/

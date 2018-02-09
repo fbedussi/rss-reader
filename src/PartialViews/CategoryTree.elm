@@ -1,5 +1,6 @@
 module PartialViews.CategoryTree exposing (deleteSiteButton, renderCategory, renderSiteEntry)
 
+import Accordion exposing (closeTab, openTab)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, manageTransitionClass)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
@@ -11,9 +12,30 @@ import PartialViews.CategoryButtons exposing (categoryButtons)
 
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
+    let
+        domId =
+            "cat_" ++ toString category.id
+
+        selected =
+            isSelected model.selectedCategoryId category.id
+
+        triggerOpenTab =
+            if selected then
+                openTab ("#" ++ domId)
+            else
+                closeTab ("#" ++ domId)
+    in
     li
-        [ class ("accordion-item category " ++ getClass "is-active" model.selectedCategoryId category.id)
+        [ class
+            ("accordion-item category "
+                ++ (if selected then
+                        "is-selected"
+                    else
+                        ""
+                   )
+            )
         , attribute "data-accordion-item" ""
+        , id domId
         ]
         (case model.categoryToEditId of
             Just categoryToEditId ->
@@ -38,6 +60,9 @@ renderViewCategory model category =
 
         deleting =
             isSelected model.categoryToDeleteId category.id
+
+        domId =
+            "cat_" ++ toString category.id
     in
     [ div
         [ class ("delete-actions" ++ manageTransitionClass model.transition deleting) ]
@@ -76,13 +101,16 @@ renderViewCategory model category =
             ]
         , categoryButtons model category sitesInCategory
         ]
-    , ul
-        [ class "accordion-content category-sitesInCategory"
-        , attribute "data-tab-content" ""
+    , div
+        [ class "tabContentOuter" ]
+        [ ul
+            [ class "category-sitesInCategory tabContentInner"
+            , attribute "data-tab-content" ""
+            ]
+            (sitesInCategory
+                |> List.map (renderSiteEntry model.selectedSiteId)
+            )
         ]
-        (sitesInCategory
-            |> List.map (renderSiteEntry model.selectedSiteId)
-        )
     ]
 
 
@@ -153,3 +181,15 @@ countArticlesInCategory sitesInCategory articles =
             List.filter (isArticleInSites sitesInCategory) articles
     in
     List.length articlesInCategory
+
+
+selectCategory : Id -> String -> Msg
+selectCategory id domSelector =
+    let
+        triggerOpenTab =
+            openTab domSelector
+
+        log =
+            Debug.log "domSelector2" domSelector
+    in
+    SelectCategory id
