@@ -8,6 +8,7 @@ import Html.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryButtons exposing (categoryButtons)
+import PartialViews.Icons exposing (deleteIcon, editIcon)
 
 
 renderCategory : Model -> Category -> Html Msg
@@ -155,7 +156,13 @@ renderSiteButtons siteId =
             [ class "button"
             , onClick (ChangeEditSiteId siteId)
             ]
-            [ text "Edit" ]
+            [ span
+                [ class "icon" ]
+                [ editIcon ]
+            , span
+                [ class "text visuallyHidden" ]
+                [ text "Edit" ]
+            ]
         , deleteSiteButton siteId
         ]
 
@@ -166,7 +173,13 @@ deleteSiteButton siteId =
         [ class "button alert"
         , onClick (DeleteSites [ siteId ])
         ]
-        [ text "Delete" ]
+        [ span
+            [ class "icon" ]
+            [ deleteIcon ]
+        , span
+            [ class "text visuallyHidden" ]
+            [ text "Delete" ]
+        ]
 
 
 addParenthesis : String -> String

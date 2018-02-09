@@ -1,9 +1,11 @@
 module PartialViews.Toolbar exposing (toolbar)
 
-import Html exposing (Html, button, div, input, li, text, ul)
+import Html exposing (Html, button, div, input, li, span, text, ul)
 import Html.Attributes exposing (class, placeholder, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Msgs exposing (..)
+import PartialViews.IconButton exposing (iconButton)
+import PartialViews.Icons exposing (cancelIcon, importIcon, refreshIcon)
 
 
 toolbar : String -> List (Html Msg)
@@ -17,20 +19,10 @@ toolbar searchTerm =
                 [ text "Minimal RSS reader" ]
             , li
                 []
-                [ button
-                    [ class "button"
-                    , onClick RefreshFeeds
-                    ]
-                    [ text "refresh" ]
-                ]
+                [ iconButton refreshIcon ( "refresh", False ) [ onClick RefreshFeeds ] ]
             , li
                 []
-                [ button
-                    [ class "importButton button warning"
-                    , onClick ToggleImportLayer
-                    ]
-                    [ text "import" ]
-                ]
+                [ iconButton importIcon ( "import", True ) [ class "warning", onClick ToggleImportLayer ] ]
             ]
         ]
     , div
@@ -49,12 +41,7 @@ toolbar searchTerm =
                 ]
             , li
                 []
-                [ button
-                    [ class "button"
-                    , onClick (UpdateSearch "")
-                    ]
-                    [ text "clear" ]
-                ]
+                [ iconButton cancelIcon ( "clear", False ) [ onClick (UpdateSearch "") ] ]
             ]
         ]
     ]

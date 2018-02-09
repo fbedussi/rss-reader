@@ -6,6 +6,7 @@ import Html.Attributes exposing (class, disabled)
 import Html.Events exposing (onClick)
 import Models exposing (Category, Model, Site)
 import Msgs exposing (..)
+import PartialViews.Icons exposing (deleteIcon, editIcon)
 
 
 categoryButtons : Model -> Category -> List Site -> Html Msg
@@ -16,7 +17,13 @@ categoryButtons model category sitesInCategory =
             [ class "button"
             , onClick (EditCategoryId category.id)
             ]
-            [ text "edit " ]
+            [ span
+                [ class "icon" ]
+                [ editIcon ]
+            , span
+                [ class "text visuallyHidden" ]
+                [ text "edit " ]
+            ]
         , button
             [ class "button alert"
             , onClick
@@ -26,5 +33,11 @@ categoryButtons model category sitesInCategory =
                     NoOp
                 )
             ]
-            [ text "delete " ]
+            [ span
+                [ class "icon" ]
+                [ deleteIcon ]
+            , span
+                [ class "text visuallyHidden" ]
+                [ text "delete " ]
+            ]
         ]
