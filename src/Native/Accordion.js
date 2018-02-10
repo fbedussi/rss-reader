@@ -1,4 +1,6 @@
 var _user$project$Native_Accordion = (function() {
+    var prevTab;
+
     function closeOnEnd() {
         this.style.display = 'none';
     }
@@ -9,8 +11,13 @@ var _user$project$Native_Accordion = (function() {
 
     function openTab(domSelector) {
         var tab = document.querySelector(domSelector)
+        if (tab === prevTab) {
+            return;
+        }
+        prevTab = tab;
         var contentOuter = tab && tab.querySelector('.tabContentOuter');
         var contentInner = tab && contentOuter && contentOuter.querySelector('.tabContentInner');
+
 
         if (contentOuter && contentInner) {
             contentOuter.style.display = '';

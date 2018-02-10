@@ -82,7 +82,6 @@ type alias Model =
         , importLayerOpen : Bool
         , importData : String
         , searchTerm : String
-        , categoryButtonsToShow : Maybe Id
         }
 
 

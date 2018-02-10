@@ -34,15 +34,19 @@ update msg model =
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
 
         ToggleDeleteActions categoryId ->
+            let
+                updatedModel =
+                    { model | selectedCategoryId = Just categoryId }
+            in
             case model.categoryToDeleteId of
                 Just id ->
-                    Transit.start TransitMsg (HideCategoryButtons categoryId) ( 500, 0 ) { model | categoryButtonsToShow = Nothing }
+                    if id == categoryId then
+                        Transit.start TransitMsg (HideCategoryButtons categoryId) ( 500, 0 ) updatedModel
+                    else
+                        Transit.start TransitMsg NoOp ( 0, 0 ) { updatedModel | categoryToDeleteId = Just categoryId }
 
                 Nothing ->
-                    Transit.start TransitMsg (ShowCategoryButtons categoryId) ( 10, 500 ) { model | categoryToDeleteId = Just categoryId }
-
-        ShowCategoryButtons categoryId ->
-            ( { model | categoryButtonsToShow = Just categoryId }, Cmd.none )
+                    Transit.start TransitMsg NoOp ( 0, 0 ) { updatedModel | categoryToDeleteId = Just categoryId }
 
         HideCategoryButtons categoryId ->
             ( { model | categoryToDeleteId = Nothing }, Cmd.none )
@@ -133,7 +137,12 @@ update msg model =
             )
 
         EditCategoryId categoryToEditId ->
-            ( { model | categoryToEditId = Just categoryToEditId }, Cmd.none )
+            ( { model
+                | categoryToEditId = Just categoryToEditId
+                , selectedCategoryId = Just categoryToEditId
+              }
+            , Cmd.none
+            )
 
         EndCategoryEditing ->
             ( { model | categoryToEditId = Nothing }, Cmd.none )

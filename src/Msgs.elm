@@ -33,7 +33,6 @@ type Msg
     | RemoveErrorMsg String
     | UpdateSearch String
     | TransitMsg (Transit.Msg Msg)
-    | ShowCategoryButtons Id
     | HideCategoryButtons Id
     | NoOp
 

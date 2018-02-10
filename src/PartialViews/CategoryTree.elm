@@ -1,4 +1,4 @@
-module PartialViews.CategoryTree exposing (deleteSiteButton, renderCategory, renderSiteEntry)
+module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, manageTransitionClass)
@@ -8,7 +8,8 @@ import Html.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryButtons exposing (categoryButtons)
-import PartialViews.Icons exposing (deleteIcon, editIcon)
+import PartialViews.IconButton exposing (iconButton)
+import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon)
 
 
 renderCategory : Model -> Category -> Html Msg
@@ -105,9 +106,7 @@ renderViewCategory model category =
     , div
         [ class "tabContentOuter" ]
         [ ul
-            [ class "category-sitesInCategory tabContentInner"
-            , attribute "data-tab-content" ""
-            ]
+            [ class "category-sitesInCategory tabContentInner" ]
             (sitesInCategory
                 |> List.map (renderSiteEntry model.selectedSiteId)
             )
@@ -126,11 +125,7 @@ renderEditCategory model category =
             , onInput (UpdateCategoryName category.id)
             ]
             []
-        , button
-            [ class "button editCategoryName-button"
-            , onClick EndCategoryEditing
-            ]
-            [ text "ok" ]
+        , iconButton checkIcon ( "ok", False ) [ onClick EndCategoryEditing ]
         ]
     ]
 
@@ -152,33 +147,8 @@ renderSiteButtons : Id -> Html Msg
 renderSiteButtons siteId =
     span
         [ class "siteInCategory-actions button-group" ]
-        [ button
-            [ class "button"
-            , onClick (ChangeEditSiteId siteId)
-            ]
-            [ span
-                [ class "icon" ]
-                [ editIcon ]
-            , span
-                [ class "text visuallyHidden" ]
-                [ text "Edit" ]
-            ]
-        , deleteSiteButton siteId
-        ]
-
-
-deleteSiteButton : Id -> Html Msg
-deleteSiteButton siteId =
-    button
-        [ class "button alert"
-        , onClick (DeleteSites [ siteId ])
-        ]
-        [ span
-            [ class "icon" ]
-            [ deleteIcon ]
-        , span
-            [ class "text visuallyHidden" ]
-            [ text "Delete" ]
+        [ iconButton editIcon ( "edit", False ) [ onClick (ChangeEditSiteId siteId) ]
+        , iconButton deleteIcon ( "delete", False ) [ onClick (DeleteSites [ siteId ]) ]
         ]
 
 

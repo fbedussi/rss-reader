@@ -19,7 +19,6 @@ init =
       , importLayerOpen = False
       , importData = ""
       , searchTerm = ""
-      , categoryButtonsToShow = Nothing
       , transition = Transit.empty
       }
     , Cmd.none

@@ -5,7 +5,8 @@ import Html.Attributes exposing (attribute, checked, class, disabled, for, href,
 import Html.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import Msgs exposing (..)
-import PartialViews.CategoryTree exposing (deleteSiteButton)
+import PartialViews.IconButton exposing (iconButton)
+import PartialViews.Icons exposing (deleteIcon)
 
 
 editSiteLayer : Model -> Html Msg
@@ -154,7 +155,7 @@ renderEditSiteForm site categories =
                     , onClick EndEditSite
                     ]
                     [ text "close" ]
-                , deleteSiteButton site.id
+                , iconButton deleteIcon ( "delete", True ) [ onClick (DeleteSites [ site.id ]) ]
                 ]
             ]
         ]
