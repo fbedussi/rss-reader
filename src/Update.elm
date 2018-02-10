@@ -41,15 +41,18 @@ update msg model =
             case model.categoryToDeleteId of
                 Just id ->
                     if id == categoryId then
-                        Transit.start TransitMsg (HideCategoryButtons categoryId) ( 500, 0 ) updatedModel
+                        Transit.start TransitMsg HideCategoryButtons ( 500, 0 ) updatedModel
                     else
-                        Transit.start TransitMsg NoOp ( 0, 0 ) { updatedModel | categoryToDeleteId = Just categoryId }
+                        Transit.start TransitMsg NoOp ( 500, 0 ) { model | categoryToDeleteId = Just categoryId }
 
                 Nothing ->
-                    Transit.start TransitMsg NoOp ( 0, 0 ) { updatedModel | categoryToDeleteId = Just categoryId }
+                    Transit.start TransitMsg NoOp ( 0, 500 ) { updatedModel | categoryToDeleteId = Just categoryId }
 
-        HideCategoryButtons categoryId ->
+        HideCategoryButtons ->
             ( { model | categoryToDeleteId = Nothing }, Cmd.none )
+
+        ShowCategoryButtons categoryId ->
+            ( { model | categoryToDeleteId = Just categoryId }, Cmd.none )
 
         TransitMsg a ->
             Transit.tick TransitMsg a model

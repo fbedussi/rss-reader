@@ -138,7 +138,7 @@ manageTransitionClass transition selected =
     in
     if selected && transitionStep /= Transit.Exit then
         " is-visible is-open"
-    else if selected then
+    else if selected || transitionStep == Transit.Exit then
         " is-visible"
     else
         ""
