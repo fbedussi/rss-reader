@@ -1,13 +1,12 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
-import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, manageTransitionClass)
+import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, isTransitionOver, manageTransitionClass)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
-import PartialViews.CategoryButtons exposing (categoryButtons)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon)
 
@@ -60,14 +59,11 @@ renderViewCategory model category =
         articlesInCategory =
             countArticlesInCategory sitesInCategory model.articles
 
-        deleting =
-            isSelected model.categoryToDeleteId category.id
-
         domId =
             "cat_" ++ toString category.id
     in
     [ div
-        [ class ("delete-actions" ++ manageTransitionClass model.transition deleting) ]
+        [ class ("delete-actions" ++ manageTransitionClass model.categoryPanelStates category.id) ]
         [ button
             [ class "button"
             , onClick (DeleteCategories [ category.id ])
@@ -112,6 +108,40 @@ renderViewCategory model category =
             )
         ]
     ]
+
+
+categoryButtons : Model -> Category -> List Site -> Html Msg
+categoryButtons model category sitesInCategory =
+    span
+        [ class "category-action button-group" ]
+        [ button
+            [ class "button"
+            , onClick (EditCategoryId category.id)
+            ]
+            [ span
+                [ class "icon" ]
+                [ editIcon ]
+            , span
+                [ class "text visuallyHidden" ]
+                [ text "edit " ]
+            ]
+        , button
+            [ class "button alert"
+            , onClick
+                (if isTransitionOver model.transition then
+                    ToggleDeleteActions category.id
+                 else
+                    NoOp
+                )
+            ]
+            [ span
+                [ class "icon" ]
+                [ deleteIcon ]
+            , span
+                [ class "text visuallyHidden" ]
+                [ text "delete " ]
+            ]
+        ]
 
 
 renderEditCategory : Model -> Category -> List (Html Msg)

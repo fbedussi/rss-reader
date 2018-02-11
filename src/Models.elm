@@ -68,6 +68,17 @@ type alias SelectedSiteId =
     Maybe Id
 
 
+type AnimationState
+    = Hidden
+    | Opening
+    | Open
+    | Closing
+
+
+type alias CategoryPanelState =
+    ( Id, AnimationState )
+
+
 type alias Model =
     Transit.WithTransition
         { errorMsgs : List String
@@ -76,7 +87,7 @@ type alias Model =
         , articles : List Article
         , selectedCategoryId : SelectedCategoryId
         , selectedSiteId : SelectedSiteId
-        , categoryToDeleteId : Maybe Id
+        , categoryPanelStates : List CategoryPanelState
         , categoryToEditId : Maybe Id
         , siteToEditId : Maybe Id
         , importLayerOpen : Bool

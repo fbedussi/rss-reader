@@ -133,6 +133,7 @@ switchInfoForElm infoForElm model =
                 | categories = categories
                 , sites = sites
                 , articles = savedArticles
+                , categoryPanelStates = categories |> List.map (\category -> ( category.id, Hidden ))
               }
             , Cmd.none
             )

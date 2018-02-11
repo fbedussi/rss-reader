@@ -1,6 +1,6 @@
 module Helpers exposing (..)
 
-import Models exposing (AnimationState(..), Article, Category, CategoryPanelState, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import Msgs exposing (..)
 import Transit
 
@@ -132,23 +132,22 @@ getArticleSite sites article =
 
 manageTransitionClass : List CategoryPanelState -> Id -> String
 manageTransitionClass categoryPanelStates categoryId =
-    let
-        panelStatus =
-            categoryPanelStates
-                |> List.filter (\categoryPanelState -> Tuple.first categoryPanelState == categoryId)
-                |> List.head
-    in
-    case panelStatus of
-        Nothing ->
-            ""
+    let 
+        List.filter (\categoryPanelState -> )
+    if not List.member (categoryId, _) categoryPanelStates
+    then ""
+    else if 
 
-        Just ( id, status ) ->
-            if status == Open then
-                " is-visible is-open"
-            else if status == Closing || status == Opening then
-                " is-visible"
-            else
-                ""
+    let
+        transitionStep =
+            Transit.getStep transition
+    in
+    if selected && transitionStep /= Transit.Exit then
+        " is-visible is-open"
+    else if selected then
+        " is-visible"
+    else
+        ""
 
 
 isTransitionOver : Transit.Transition -> Bool
