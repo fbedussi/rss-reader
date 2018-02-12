@@ -2,7 +2,7 @@ module InitModel exposing (..)
 
 import Models exposing (Model)
 import Msgs exposing (Msg)
-import Transit
+import TransitionManager
 
 
 init : ( Model, Cmd Msgs.Msg )
@@ -13,13 +13,12 @@ init =
       , articles = []
       , selectedCategoryId = Nothing
       , selectedSiteId = Nothing
-      , categoryPanelStates = []
       , categoryToEditId = Nothing
       , siteToEditId = Nothing
       , importLayerOpen = False
       , importData = ""
       , searchTerm = ""
-      , transition = Transit.empty
+      , transitionStore = TransitionManager.empty
       }
     , Cmd.none
     )

@@ -4,14 +4,12 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (AnimationState(..), Article, Category, CategoryPanelState, Id, Model, Site)
+import Models exposing (Article, Category, Id, Model, Site)
 import Msgs exposing (..)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
-import Process
 import Task
-import Time exposing (Time)
-import Transit
+import TransitionManager exposing (closeAll, delay, hideClosing, isOpen, open, prepareOpening, toTransitionManagerId, triggerClosing)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -39,46 +37,20 @@ update msg model =
             let
                 updatedModel =
                     { model | selectedCategoryId = Just categoryId }
-            in
-            if isPanelOpen model.categoryPanelStates categoryId then
-                ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Open Closing }, delay 500 HideDeleteActionPanels )
-            else
-                ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Hidden Opening }, delay 10 (OpenDeleteActionPanel categoryId) )
 
-        TransitMsg a ->
-            Transit.tick TransitMsg a model
+                transitionManagerId =
+                    toTransitionManagerId "cat" categoryId
+            in
+            if isOpen model.transitionStore transitionManagerId then
+                ( { updatedModel | transitionStore = triggerClosing transitionManagerId model.transitionStore }, delay 500 HideDeleteActionPanels )
+            else
+                ( { updatedModel | transitionStore = closeAll model.transitionStore |> prepareOpening transitionManagerId }, Cmd.batch [ delay 10 OpenDeleteActionPanel, delay 500 HideDeleteActionPanels ] )
 
         HideDeleteActionPanels ->
-            let
-                newPanelStates =
-                    model.categoryPanelStates
-                        |> List.map
-                            (\panelState ->
-                                let
-                                    ( id, state ) =
-                                        panelState
-                                in
-                                if state == Closing then
-                                    ( id, Hidden )
-                                else
-                                    ( id, state )
-                            )
-            in
-            ( { model | categoryPanelStates = newPanelStates }, Cmd.none )
+            ( { model | transitionStore = hideClosing model.transitionStore }, Cmd.none )
 
-        OpenDeleteActionPanel categoryId ->
-            let
-                newPanelStates =
-                    model.categoryPanelStates
-                        |> List.map
-                            (\panelState ->
-                                if panelState == ( categoryId, Opening ) then
-                                    ( categoryId, Open )
-                                else
-                                    ( panelState |> Tuple.first, Closing )
-                            )
-            in
-            ( { model | categoryPanelStates = newPanelStates }, delay 500 HideDeleteActionPanels )
+        OpenDeleteActionPanel ->
+            ( { model | transitionStore = open model.transitionStore }, Cmd.none )
 
         ToggleImportLayer ->
             ( { model
@@ -96,7 +68,7 @@ update msg model =
                 newModel =
                     executeImport model
             in
-            ( { newModel | categoryPanelStates = newModel.categories |> List.map (\category -> ( category.id, Hidden )) }, getDataToSaveInDb newModel |> SaveAllData |> sendInfoOutside )
+            ( newModel, getDataToSaveInDb newModel |> SaveAllData |> sendInfoOutside )
 
         DeleteCategories categoryToDeleteIds ->
             let
@@ -362,31 +334,3 @@ createNewSite sites =
 getDataToSaveInDb : Model -> ( List Category, List Site, List Article )
 getDataToSaveInDb model =
     ( model.categories, model.sites, model.articles |> List.filter (\article -> article.starred) )
-
-
-isPanelOpen : List CategoryPanelState -> Id -> Bool
-isPanelOpen categoryPanelStates categoryId =
-    List.member ( categoryId, Open ) categoryPanelStates
-
-
-setCategoryPanelState : List CategoryPanelState -> Id -> AnimationState -> AnimationState -> List CategoryPanelState
-setCategoryPanelState panelStates categoryId oldState newState =
-    panelStates
-        |> List.map
-            (\panelState ->
-                let
-                    ( catId, state ) =
-                        panelState
-                in
-                if catId == categoryId && state == oldState then
-                    ( catId, newState )
-                else
-                    panelState
-            )
-
-
-delay : Time -> msg -> Cmd msg
-delay time msg =
-    Process.sleep time
-        |> Task.andThen (always <| Task.succeed msg)
-        |> Task.perform identity

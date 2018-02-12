@@ -10,7 +10,7 @@ type Msg
     | SelectSite Id
     | ToggleDeleteActions Id
     | HideDeleteActionPanels
-    | OpenDeleteActionPanel Id
+    | OpenDeleteActionPanel
     | ToggleImportLayer
     | StoreImportData String
     | ExecuteImport
@@ -34,7 +34,6 @@ type Msg
     | RefreshFeeds
     | RemoveErrorMsg String
     | UpdateSearch String
-    | TransitMsg (Transit.Msg Msg)
     | NoOp
 
 

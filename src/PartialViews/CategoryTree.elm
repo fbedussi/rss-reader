@@ -1,7 +1,7 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
-import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected, isTransitionOver, manageTransitionClass)
+import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
 import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
 import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Events exposing (onClick, onInput)
@@ -9,6 +9,7 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon)
+import TransitionManager exposing (isTransitionOver, manageTransitionClass, toTransitionManagerId)
 
 
 renderCategory : Model -> Category -> Html Msg
@@ -63,7 +64,7 @@ renderViewCategory model category =
             "cat_" ++ toString category.id
     in
     [ div
-        [ class ("delete-actions" ++ manageTransitionClass model.categoryPanelStates category.id) ]
+        [ class ("delete-actions" ++ manageTransitionClass model.transitionStore (toTransitionManagerId "cat" category.id)) ]
         [ button
             [ class "button"
             , onClick (DeleteCategories [ category.id ])
@@ -128,7 +129,7 @@ categoryButtons model category sitesInCategory =
         , button
             [ class "button alert"
             , onClick
-                (if isTransitionOver model.transition then
+                (if isTransitionOver model.transitionStore (toTransitionManagerId "cat" category.id) then
                     ToggleDeleteActions category.id
                  else
                     NoOp

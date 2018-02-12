@@ -1,7 +1,7 @@
 module Models exposing (..)
 
 import Json.Encode
-import Transit
+import TransitionManager
 
 
 type alias UserUid =
@@ -68,26 +68,14 @@ type alias SelectedSiteId =
     Maybe Id
 
 
-type AnimationState
-    = Hidden
-    | Opening
-    | Open
-    | Closing
-
-
-type alias CategoryPanelState =
-    ( Id, AnimationState )
-
-
 type alias Model =
-    Transit.WithTransition
+    TransitionManager.WithTransitionStore
         { errorMsgs : List String
         , categories : List Category
         , sites : List Site
         , articles : List Article
         , selectedCategoryId : SelectedCategoryId
         , selectedSiteId : SelectedSiteId
-        , categoryPanelStates : List CategoryPanelState
         , categoryToEditId : Maybe Id
         , siteToEditId : Maybe Id
         , importLayerOpen : Bool
