@@ -1,4 +1,4 @@
-module TransitionManager exposing (WithTransitionStore, closeAll, delay, empty, hideClosing, isOpen, isTransitionOver, manageTransitionClass, open, prepareOpening, toTransitionManagerId, triggerClosing)
+module TransitionManager exposing (Id, TransitionStore, WithTransitionStore, closeAll, delay, empty, hideClosing, isOpen, isTransitionOver, manageTransitionClass, open, prepareOpening, toTransitionManagerId, triggerClosing)
 
 import Process
 import Task
@@ -20,8 +20,8 @@ type alias ElementState =
     ( Id, TransitionState )
 
 
-type alias TransitionStore =
-    List ElementState
+type TransitionStore
+    = T (List ElementState)
 
 
 type alias WithTransitionStore model =
@@ -35,11 +35,11 @@ toTransitionManagerId prefix a =
 
 empty : TransitionStore
 empty =
-    []
+    T []
 
 
 isOpen : TransitionStore -> Id -> Bool
-isOpen transitionStore id =
+isOpen (T transitionStore) id =
     transitionStore |> List.member ( id, Open )
 
 
@@ -49,7 +49,7 @@ triggerClosing id transitionStore =
 
 
 hideClosing : TransitionStore -> TransitionStore
-hideClosing transitionStore =
+hideClosing (T transitionStore) =
     transitionStore
         |> List.filter
             (\elementState ->
@@ -59,10 +59,11 @@ hideClosing transitionStore =
                 in
                 state /= Closing
             )
+        |> T
 
 
 prepareOpening : Id -> TransitionStore -> TransitionStore
-prepareOpening id transitionStore =
+prepareOpening id (T transitionStore) =
     let
         elementState =
             transitionStore
@@ -79,13 +80,14 @@ prepareOpening id transitionStore =
     case elementState of
         Nothing ->
             transitionStore ++ [ ( id, Opening ) ]
+                |> T
 
         Just ( id, state ) ->
-            setElementState transitionStore id Hidden Opening
+            setElementState (T transitionStore) id Hidden Opening
 
 
 open : TransitionStore -> TransitionStore
-open transitionStore =
+open (T transitionStore) =
     transitionStore
         |> List.map
             (\elementState ->
@@ -98,10 +100,11 @@ open transitionStore =
                 else
                     elementState
             )
+        |> T
 
 
-closeAll : TransitionStore -> TransitionStore
-closeAll transitionStore =
+closeAll : String -> TransitionStore -> TransitionStore
+closeAll idMatch (T transitionStore) =
     transitionStore
         |> List.map
             (\elementState ->
@@ -109,15 +112,16 @@ closeAll transitionStore =
                     ( id, state ) =
                         elementState
                 in
-                if state == Open then
+                if String.contains idMatch id && state == Open then
                     ( id, Closing )
                 else
                     elementState
             )
+        |> T
 
 
 setElementState : TransitionStore -> Id -> TransitionState -> TransitionState -> TransitionStore
-setElementState transitionStore id oldState newState =
+setElementState (T transitionStore) id oldState newState =
     transitionStore
         |> List.map
             (\elementState ->
@@ -130,6 +134,7 @@ setElementState transitionStore id oldState newState =
                 else
                     elementState
             )
+        |> T
 
 
 delay : Time -> msg -> Cmd msg
@@ -140,7 +145,7 @@ delay time msg =
 
 
 manageTransitionClass : TransitionStore -> Id -> String
-manageTransitionClass transitionStore id =
+manageTransitionClass (T transitionStore) id =
     let
         elementState =
             transitionStore
@@ -161,5 +166,7 @@ manageTransitionClass transitionStore id =
 
 
 isTransitionOver : TransitionStore -> Id -> Bool
-isTransitionOver transitionStore id =
-    transitionStore |> List.filter (\elementStore -> elementStore == ( id, Closing ) || elementStore == ( id, Opening )) |> List.isEmpty
+isTransitionOver (T transitionStore) id =
+    transitionStore 
+        |> List.filter (\elementStore -> elementStore == ( id, Closing ) || elementStore == ( id, Opening )) 
+        |> List.isEmpty

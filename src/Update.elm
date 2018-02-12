@@ -9,8 +9,8 @@ import Msgs exposing (..)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import TransitionManager exposing (closeAll, delay, hideClosing, isOpen, open, prepareOpening, toTransitionManagerId, triggerClosing)
-
+import TransitionManager exposing (closeAll, delay, hideClosing, isOpen, open, prepareOpening, triggerClosing)
+import PartialViews.DeleteActions exposing (getDeleteActionsTransitionId)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -39,12 +39,12 @@ update msg model =
                     { model | selectedCategoryId = Just categoryId }
 
                 transitionManagerId =
-                    toTransitionManagerId "cat" categoryId
+                    getDeleteActionsTransitionId categoryId
             in
             if isOpen model.transitionStore transitionManagerId then
                 ( { updatedModel | transitionStore = triggerClosing transitionManagerId model.transitionStore }, delay 500 HideDeleteActionPanels )
             else
-                ( { updatedModel | transitionStore = closeAll model.transitionStore |> prepareOpening transitionManagerId }, Cmd.batch [ delay 10 OpenDeleteActionPanel, delay 500 HideDeleteActionPanels ] )
+                ( { updatedModel | transitionStore = model.transitionStore |> closeAll "cat"  |> prepareOpening transitionManagerId }, Cmd.batch [ delay 10 OpenDeleteActionPanel, delay 500 HideDeleteActionPanels ] )
 
         HideDeleteActionPanels ->
             ( { model | transitionStore = hideClosing model.transitionStore }, Cmd.none )

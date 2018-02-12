@@ -9,7 +9,8 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon)
-import TransitionManager exposing (isTransitionOver, manageTransitionClass, toTransitionManagerId)
+import TransitionManager exposing (isTransitionOver, manageTransitionClass)
+import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
 
 
 renderCategory : Model -> Category -> Html Msg
@@ -63,25 +64,7 @@ renderViewCategory model category =
         domId =
             "cat_" ++ toString category.id
     in
-    [ div
-        [ class ("delete-actions" ++ manageTransitionClass model.transitionStore (toTransitionManagerId "cat" category.id)) ]
-        [ button
-            [ class "button"
-            , onClick (DeleteCategories [ category.id ])
-            ]
-            [ text "Delete category only" ]
-        , button
-            [ class "button"
-            , onClick (DeleteCategoryAndSites [ category.id ] (extractId sitesInCategory))
-            , disabled
-                (if List.isEmpty sitesInCategory then
-                    True
-                 else
-                    False
-                )
-            ]
-            [ text "Delete sites as well" ]
-        ]
+    [ deleteActions model.transitionStore category (extractId sitesInCategory)
     , span
         [ class "categoryButtons accordion-title" ]
         [ button
@@ -129,7 +112,7 @@ categoryButtons model category sitesInCategory =
         , button
             [ class "button alert"
             , onClick
-                (if isTransitionOver model.transitionStore (toTransitionManagerId "cat" category.id) then
+                (if isTransitionOver model.transitionStore (getDeleteActionsTransitionId category.id) then
                     ToggleDeleteActions category.id
                  else
                     NoOp
