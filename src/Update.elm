@@ -41,18 +41,44 @@ update msg model =
                     { model | selectedCategoryId = Just categoryId }
             in
             if isPanelOpen model.categoryPanelStates categoryId then
-                ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Open Closing }, delay 500 (HideDeleteActionPanel categoryId) )
+                ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Open Closing }, delay 500 HideDeleteActionPanels )
             else
                 ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Hidden Opening }, delay 10 (OpenDeleteActionPanel categoryId) )
 
         TransitMsg a ->
             Transit.tick TransitMsg a model
 
-        HideDeleteActionPanel categoryId ->
-            ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Closing Hidden }, Cmd.none )
+        HideDeleteActionPanels ->
+            let
+                newPanelStates =
+                    model.categoryPanelStates
+                        |> List.map
+                            (\panelState ->
+                                let
+                                    ( id, state ) =
+                                        panelState
+                                in
+                                if state == Closing then
+                                    ( id, Hidden )
+                                else
+                                    ( id, state )
+                            )
+            in
+            ( { model | categoryPanelStates = newPanelStates }, Cmd.none )
 
         OpenDeleteActionPanel categoryId ->
-            ( { model | categoryPanelStates = setCategoryPanelState model.categoryPanelStates categoryId Opening Open }, Cmd.none )
+            let
+                newPanelStates =
+                    model.categoryPanelStates
+                        |> List.map
+                            (\panelState ->
+                                if panelState == ( categoryId, Opening ) then
+                                    ( categoryId, Open )
+                                else
+                                    ( panelState |> Tuple.first, Closing )
+                            )
+            in
+            ( { model | categoryPanelStates = newPanelStates }, delay 500 HideDeleteActionPanels )
 
         ToggleImportLayer ->
             ( { model

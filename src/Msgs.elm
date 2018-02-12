@@ -9,7 +9,7 @@ type Msg
     = SelectCategory Id
     | SelectSite Id
     | ToggleDeleteActions Id
-    | HideDeleteActionPanel Id
+    | HideDeleteActionPanels
     | OpenDeleteActionPanel Id
     | ToggleImportLayer
     | StoreImportData String
