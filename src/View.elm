@@ -21,5 +21,5 @@ view model =
         , sidebar model
         , mainContent model
         , editSiteLayer model
-        , importLayer model.importLayerOpen
+        , importLayer model.transitionStore
         ]

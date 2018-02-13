@@ -78,7 +78,6 @@ type alias Model =
         , selectedSiteId : SelectedSiteId
         , categoryToEditId : Maybe Id
         , siteToEditId : Maybe Id
-        , importLayerOpen : Bool
         , importData : String
         , searchTerm : String
         }

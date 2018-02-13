@@ -15,7 +15,6 @@ init =
       , selectedSiteId = Nothing
       , categoryToEditId = Nothing
       , siteToEditId = Nothing
-      , importLayerOpen = False
       , importData = ""
       , searchTerm = ""
       , transitionStore = TransitionManager.empty

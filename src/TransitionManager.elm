@@ -1,4 +1,4 @@
-module TransitionManager exposing (Id, TransitionStore, WithTransitionStore, closeAll, delay, empty, hideClosing, isOpen, isTransitionOver, manageTransitionClass, open, prepareOpening, toTransitionManagerId, triggerClosing)
+module TransitionManager exposing (toggleStateSelfish, transitionStart, transitionEnd, Id, TransitionStore, WithTransitionStore, closeAll, delay, empty, hideClosing, isOpen, isTransitionOver, manageTransitionClass, open, prepareOpening, toTransitionManagerId, triggerClosing, toggleState)
 
 import Process
 import Task
@@ -26,6 +26,49 @@ type TransitionStore
 
 type alias WithTransitionStore model =
     { model | transitionStore : TransitionStore }
+
+
+type alias IdPrefix = 
+    String
+
+
+toggleState : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ({a | transitionStore : TransitionStore }, Cmd msg )
+toggleState model prefix id transitionStartMsg transitionEndMsg transitionDuration =
+    toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration False
+
+
+toggleStateSelfish : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ({a | transitionStore : TransitionStore }, Cmd msg )
+toggleStateSelfish model prefix id transitionStartMsg transitionEndMsg transitionDuration =
+    toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration True
+
+
+toggleState_ : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> Bool -> ({a | transitionStore : TransitionStore }, Cmd msg )
+toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration selfish =
+    let
+        transitionManagerId = toTransitionManagerId prefix id
+    in
+    if  isOpen model.transitionStore transitionManagerId then
+        ( { model | transitionStore = triggerClosing transitionManagerId model.transitionStore }, delay transitionDuration transitionEndMsg )
+    else
+        let
+            updatedTransitionStore =
+                if selfish 
+                then 
+                    model.transitionStore |> prepareOpening transitionManagerId
+                else 
+                    model.transitionStore |> closeAll prefix  |> prepareOpening transitionManagerId
+        in
+        ( { model | transitionStore = updatedTransitionStore }, Cmd.batch [ delay 10 transitionStartMsg, delay transitionDuration transitionEndMsg ] )
+
+
+transitionEnd : {a | transitionStore : TransitionStore } -> ({a | transitionStore : TransitionStore }, Cmd msg)
+transitionEnd model =
+    ( { model | transitionStore = hideClosing model.transitionStore }, Cmd.none )
+
+
+transitionStart: {a | transitionStore : TransitionStore } -> ({a | transitionStore : TransitionStore }, Cmd msg)
+transitionStart model =
+    ( { model | transitionStore = open model.transitionStore }, Cmd.none )
 
 
 toTransitionManagerId : String -> a -> Id

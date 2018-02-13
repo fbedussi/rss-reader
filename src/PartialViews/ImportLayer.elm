@@ -4,19 +4,13 @@ import Html exposing (Html, button, div, p, text, textarea)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onInput)
 import Msgs exposing (..)
+import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
 
-
-importLayer : Bool -> Html Msg
-importLayer layerOpen =
+importLayer : TransitionStore -> Html Msg
+importLayer transitionStore =
     div
         [ class
-            ("editSiteLayer layer layer--top "
-                ++ (if layerOpen then
-                        "is-open"
-                    else
-                        ""
-                   )
-            )
+            ("editSiteLayer layer layer--top" ++ (toTransitionManagerId "panel" "import" |> manageTransitionClass transitionStore))
         ]
         [ div
             [ class "layer-inner" ]

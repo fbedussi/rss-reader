@@ -9,7 +9,6 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon)
-import TransitionManager exposing (isTransitionOver, manageTransitionClass)
 import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
 
 
@@ -112,11 +111,7 @@ categoryButtons model category sitesInCategory =
         , button
             [ class "button alert"
             , onClick
-                (if isTransitionOver model.transitionStore (getDeleteActionsTransitionId category.id) then
-                    ToggleDeleteActions category.id
-                 else
-                    NoOp
-                )
+                (ToggleDeleteActions category.id)
             ]
             [ span
                 [ class "icon" ]

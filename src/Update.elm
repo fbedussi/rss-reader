@@ -9,8 +9,7 @@ import Msgs exposing (..)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import TransitionManager exposing (closeAll, delay, hideClosing, isOpen, open, prepareOpening, triggerClosing)
-import PartialViews.DeleteActions exposing (getDeleteActionsTransitionId)
+import TransitionManager exposing (transitionStart, transitionEnd, toggleState)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -34,31 +33,16 @@ update msg model =
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
 
         ToggleDeleteActions categoryId ->
-            let
-                updatedModel =
-                    { model | selectedCategoryId = Just categoryId }
+            toggleState ({ model | selectedCategoryId = Just categoryId }) "cat" categoryId TransitionStart TransitionEnd 500
 
-                transitionManagerId =
-                    getDeleteActionsTransitionId categoryId
-            in
-            if isOpen model.transitionStore transitionManagerId then
-                ( { updatedModel | transitionStore = triggerClosing transitionManagerId model.transitionStore }, delay 500 HideDeleteActionPanels )
-            else
-                ( { updatedModel | transitionStore = model.transitionStore |> closeAll "cat"  |> prepareOpening transitionManagerId }, Cmd.batch [ delay 10 OpenDeleteActionPanel, delay 500 HideDeleteActionPanels ] )
+        TransitionEnd ->
+            transitionEnd model
 
-        HideDeleteActionPanels ->
-            ( { model | transitionStore = hideClosing model.transitionStore }, Cmd.none )
-
-        OpenDeleteActionPanel ->
-            ( { model | transitionStore = open model.transitionStore }, Cmd.none )
+        TransitionStart ->
+            transitionStart model
 
         ToggleImportLayer ->
-            ( { model
-                | importLayerOpen = not model.importLayerOpen
-                , importData = ""
-              }
-            , Cmd.none
-            )
+            toggleState model "panel" "import" TransitionStart TransitionEnd 500
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )

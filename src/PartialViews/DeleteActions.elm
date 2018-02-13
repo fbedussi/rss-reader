@@ -5,7 +5,7 @@ import Html.Attributes exposing (class, disabled)
 import Html.Events exposing (onClick)
 import Models exposing (Category, Id)
 import Msgs exposing (..)
-import TransitionManager exposing (TransitionStore, isTransitionOver, manageTransitionClass, toTransitionManagerId)
+import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
 
 getDeleteActionsTransitionId : a -> TransitionManager.Id
 getDeleteActionsTransitionId categoryId =

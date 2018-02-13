@@ -9,8 +9,8 @@ type Msg
     = SelectCategory Id
     | SelectSite Id
     | ToggleDeleteActions Id
-    | HideDeleteActionPanels
-    | OpenDeleteActionPanel
+    | TransitionEnd
+    | TransitionStart
     | ToggleImportLayer
     | StoreImportData String
     | ExecuteImport
