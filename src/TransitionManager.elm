@@ -25,11 +25,16 @@ type TransitionStore
 
 
 type alias WithTransitionStore model =
-    { model | transitionStore : TransitionStore }
+    { model | transitionStore : TransitionStore
+    , defaultTransitionDuration : Time }
 
 
 type alias IdPrefix = 
     String
+
+empty : TransitionStore
+empty =
+    T []
 
 
 toggleState : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ({a | transitionStore : TransitionStore }, Cmd msg )
@@ -74,12 +79,6 @@ transitionStart model =
 toTransitionManagerId : String -> a -> Id
 toTransitionManagerId prefix a =
     prefix ++ toString a
-
-
-empty : TransitionStore
-empty =
-    T []
-
 
 isOpen : TransitionStore -> Id -> Bool
 isOpen (T transitionStore) id =

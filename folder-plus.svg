@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg4"
+   viewBox="0 0 16 16"
+   height="16"
+   width="16"
+   version="1.1"
+   sodipodi:docname="folder-plus.svg"
+   inkscape:version="0.92.1 r15371">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1147"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="41.7193"
+     inkscape:cx="5.7886272"
+     inkscape:cy="8.4736371"
+     inkscape:window-x="1592"
+     inkscape:window-y="22"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <path
+     style="fill:#000000"
+     id="path2"
+     d="M 9,4 7,2 H 0 V 15 H 16 V 4 Z" />
+  <rect
+     y="9"
+     x="5.0169487"
+     height="2.0000002"
+     width="5.9830508"
+     id="plusHorizontal"
+     style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.18588829;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  <rect
+     transform="rotate(90)"
+     style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.18588829;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="plusVertica"
+     width="5.9830508"
+     height="2.0000002"
+     x="7.0084743"
+     y="-9.0084743" />
+  <rect
+     style="fill:#ffaaaa;fill-opacity:1;stroke:none;stroke-width:2.15232706;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect4485"
+     width="2.0000005"
+     height="5.9830508"
+     x="7.0084743"
+     y="7.0084743" />
+</svg>

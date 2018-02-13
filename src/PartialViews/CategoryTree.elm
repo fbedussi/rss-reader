@@ -8,7 +8,7 @@ import Html.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
-import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon)
+import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
 
 
@@ -68,9 +68,12 @@ renderViewCategory model category =
         [ class "categoryButtons accordion-title" ]
         [ button
             [ class "categoryBtn"
-            , onClick (SelectCategory category.id)
+            , onClick <| SelectCategory category.id
             ]
-            [ span
+            [ span 
+                [ class "icon folderIcon"]
+                [folderIcon]
+            , span
                 [ class "category-numberOfArticles badge primary" ]
                 [ articlesInCategory
                     |> toString
@@ -99,7 +102,7 @@ categoryButtons model category sitesInCategory =
         [ class "category-action button-group" ]
         [ button
             [ class "button"
-            , onClick (EditCategoryId category.id)
+            , onClick <| EditCategoryId category.id
             ]
             [ span
                 [ class "icon" ]
@@ -110,8 +113,7 @@ categoryButtons model category sitesInCategory =
             ]
         , button
             [ class "button alert"
-            , onClick
-                (ToggleDeleteActions category.id)
+            , onClick <| ToggleDeleteActions category.id
             ]
             [ span
                 [ class "icon" ]
@@ -129,9 +131,9 @@ renderEditCategory model category =
         [ class "editCategoryName accordion-title" ]
         [ input
             [ class "editCategoryName-input"
-            , id ("editCategoryName-" ++ toString category.id)
+            , id <| "editCategoryName-" ++ toString category.id
             , value category.name
-            , onInput (UpdateCategoryName category.id)
+            , onInput <| UpdateCategoryName category.id
             ]
             []
         , iconButton checkIcon ( "ok", False ) [ onClick EndCategoryEditing ]
@@ -142,10 +144,10 @@ renderEditCategory model category =
 renderSiteEntry : SelectedSiteId -> Site -> Html Msg
 renderSiteEntry selectedSiteId site =
     li
-        [ class ("category-siteInCategory " ++ getClass "is-selected" selectedSiteId site.id) ]
+        [ class <| "category-siteInCategory " ++ getClass "is-selected" selectedSiteId site.id ]
         [ button
             [ class "siteInCategoryBtn"
-            , onClick (SelectSite site.id)
+            , onClick <| SelectSite site.id
             ]
             [ site.name |> text ]
         , renderSiteButtons site.id
@@ -156,8 +158,8 @@ renderSiteButtons : Id -> Html Msg
 renderSiteButtons siteId =
     span
         [ class "siteInCategory-actions button-group" ]
-        [ iconButton editIcon ( "edit", False ) [ onClick (ChangeEditSiteId siteId) ]
-        , iconButton deleteIcon ( "delete", False ) [ onClick (DeleteSites [ siteId ]) ]
+        [ iconButton editIcon ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just siteId ]
+        , iconButton deleteIcon ( "delete", False ) [ onClick <| DeleteSites [ siteId ] ]
         ]
 
 

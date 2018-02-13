@@ -2,7 +2,6 @@ module Msgs exposing (..)
 
 import Dom exposing (Error)
 import Models exposing (Article, Category, Id, LoginData, Site, UserUid)
-import Transit
 
 
 type Msg
@@ -23,8 +22,7 @@ type Msg
     | AddNewCategory
     | AddNewSite
     | FocusResult (Result Error ())
-    | ChangeEditSiteId Id
-    | EndEditSite
+    | ChangeEditSiteId (Maybe Id)
     | UpdateSite Site
     | GetArticles (Result String (List Article))
     | DeleteArticles (List Id)

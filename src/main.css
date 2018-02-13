@@ -94,6 +94,15 @@ button {
   text-align: left;
 }
 
+.folderIcon .plusVertical {
+  transition: transform 0.5s;
+  transform-origin: center center;
+}
+
+.is-selected .folderIcon .plusVertical {
+  transform: rotate(90deg);
+}
+
 .editCategoryName {
   display: flex;
 }

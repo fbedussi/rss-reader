@@ -33,7 +33,7 @@ update msg model =
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
 
         ToggleDeleteActions categoryId ->
-            toggleState ({ model | selectedCategoryId = Just categoryId }) "cat" categoryId TransitionStart TransitionEnd 500
+            toggleState ({ model | selectedCategoryId = Just categoryId }) "cat" categoryId TransitionStart TransitionEnd model.defaultTransitionDuration
 
         TransitionEnd ->
             transitionEnd model
@@ -42,7 +42,7 @@ update msg model =
             transitionStart model
 
         ToggleImportLayer ->
-            toggleState model "panel" "import" TransitionStart TransitionEnd 500
+            toggleState model "panel" "import" TransitionStart TransitionEnd model.defaultTransitionDuration
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -173,10 +173,10 @@ update msg model =
                     ( model, Cmd.none )
 
         ChangeEditSiteId siteId ->
-            ( { model | siteToEditId = Just siteId }, Cmd.none )
-
-        EndEditSite ->
-            ( { model | siteToEditId = Nothing }, Cmd.none )
+            let
+                updatedModel = { model | siteToEditId = siteId }
+            in
+            toggleState model "panel" "editSite" TransitionStart TransitionEnd model.defaultTransitionDuration
 
         AddNewSite ->
             let

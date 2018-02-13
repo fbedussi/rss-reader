@@ -82,3 +82,14 @@ checkIcon =
         [ Svg.path [ d "M13.5 2l-7.5 7.5-3.5-3.5-2.5 2.5 6 6 10-10z" ]
             []
         ]
+
+
+folderIcon = 
+    svg [viewBox "0 0 16 16" ]
+    [ Svg.path [ d "M9 4L7 2H0v13h16V4z" ]
+        []
+    , Svg.path [ d "M5.017 9H11v2H5.017z", fill "#fff", class "plusHorizontal" ]
+        []
+    , Svg.path [ d "M7.008 7.008h2v5.983h-2z", fill "#fff", class "plusVertical" ]
+        []
+    ]

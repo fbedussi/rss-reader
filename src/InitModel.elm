@@ -18,6 +18,7 @@ init =
       , importData = ""
       , searchTerm = ""
       , transitionStore = TransitionManager.empty
+      , defaultTransitionDuration = 500
       }
     , Cmd.none
     )

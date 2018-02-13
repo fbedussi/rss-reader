@@ -7,27 +7,23 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
-
+import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
 
 editSiteLayer : Model -> Html Msg
 editSiteLayer model =
     let
-        ( layerOpen, siteId, site ) =
+        site =
             case model.siteToEditId of
                 Just id ->
-                    ( True, id, getSiteToEdit id model.sites )
+                    getSiteToEdit id model.sites
 
                 Nothing ->
-                    ( False, 0, Just createEmptySite )
+                    Just createEmptySite
     in
     div
         [ class
-            ("callout secondary editSiteLayer layer layer--top "
-                ++ (if layerOpen then
-                        "is-open"
-                    else
-                        ""
-                   )
+                ("callout secondary editSiteLayer layer layer--top "
+                ++ (toTransitionManagerId "panel" "editSite" |> manageTransitionClass model.transitionStore)
             )
         ]
         [ case site of
@@ -37,7 +33,7 @@ editSiteLayer model =
             Nothing ->
                 div
                     [ class "error" ]
-                    [ text ("Error: no site with id " ++ toString siteId) ]
+                    [ text "Error: no site found" ]
         ]
 
 
@@ -152,7 +148,7 @@ renderEditSiteForm site categories =
                 [ class "cell editSite-buttonGroup" ]
                 [ button
                     [ class "button"
-                    , onClick EndEditSite
+                    , onClick (ChangeEditSiteId Nothing)
                     ]
                     [ text "close" ]
                 , iconButton deleteIcon ( "delete", True ) [ onClick (DeleteSites [ site.id ]) ]
