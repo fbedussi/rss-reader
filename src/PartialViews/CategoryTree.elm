@@ -63,7 +63,7 @@ renderViewCategory model category =
         domId =
             "cat_" ++ toString category.id
     in
-    [ deleteActions model.transitionStore category (extractId sitesInCategory)
+    [ deleteActions model.transitionStore category (extractId sitesInCategory) 
     , span
         [ class "categoryButtons accordion-title" ]
         [ button
