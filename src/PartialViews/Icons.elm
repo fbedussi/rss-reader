@@ -1,6 +1,6 @@
 module PartialViews.Icons exposing (..)
 
-import Html exposing (Html)
+import Html.Styled exposing (Html)
 import Msgs exposing (..)
 import Svg exposing (path, svg)
 import Svg.Attributes exposing (..)

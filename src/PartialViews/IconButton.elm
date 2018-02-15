@@ -1,9 +1,9 @@
 module PartialViews.IconButton exposing (iconButton)
 
-import Html exposing (Attribute, Html, button, span, text)
-import Html.Attributes exposing (class, disabled)
+import Html.Styled exposing (Attribute, Html, button, span, text)
+import Html.Styled.Attributes exposing (class, disabled)
 import Msgs exposing (..)
-
+import PartialViews.UiKit exposing (btn)
 
 type alias Icon =
     Html Msg
@@ -23,7 +23,7 @@ iconButton icon labelData attributes =
         ( label, showLabel ) =
             labelData
     in
-    button
+    btn
         ([ class "button" ]
             ++ attributes
         )

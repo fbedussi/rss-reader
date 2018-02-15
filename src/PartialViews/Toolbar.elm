@@ -1,8 +1,8 @@
 module PartialViews.Toolbar exposing (toolbar)
 
-import Html exposing (Html, button, div, input, li, span, text, ul)
-import Html.Attributes exposing (class, placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Styled exposing (Html, button, div, input, li, span, text, ul)
+import Html.Styled.Attributes exposing (class, placeholder, type_, value)
+import Html.Styled.Events exposing (onClick, onInput)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (cancelIcon, importIcon, refreshIcon)

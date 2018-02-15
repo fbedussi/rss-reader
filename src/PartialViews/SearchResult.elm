@@ -5,7 +5,7 @@ import Html.Attributes exposing (class)
 import Models exposing (SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.CategoryTree exposing (renderSiteEntry)
-
+import Html.Styled exposing (toUnstyled)
 
 searchResult : SelectedSiteId -> List Site -> String -> Html Msg
 searchResult selectedSiteId sites searchTerm =
@@ -15,4 +15,4 @@ searchResult selectedSiteId sites searchTerm =
     in
     ul
         [ class "searchResult" ]
-        (selectedSites |> List.map (renderSiteEntry selectedSiteId))
+        (selectedSites |> List.map (toUnstyled << renderSiteEntry selectedSiteId)) 

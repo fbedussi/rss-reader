@@ -1,42 +1,32 @@
 module PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
 
-import Css exposing (..)
-import Html exposing (Html)
+
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, class, disabled)
+import Html.Styled.Attributes exposing ( class, disabled)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Category, Id)
 import Msgs exposing (..)
 import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
-
-
-theme : { secondary : Color, primary : Color }
-theme =
-    { primary = hex "55af6a"
-    , secondary = rgb 250 240 230
-    }
-
+import PartialViews.UiKit exposing (btn, alertBtn)
 
 getDeleteActionsTransitionId : a -> TransitionManager.Id
 getDeleteActionsTransitionId categoryId =
     toTransitionManagerId "cat" categoryId
 
 
-deleteActions : TransitionStore -> Category -> List Id -> Html.Html Msg
+deleteActions : TransitionStore -> Category -> List Id -> Html Msg
 deleteActions transitionStore category sitesInCategoryIds =
-    toUnstyled <| div 
+    div 
         [ class ("delete-actions" ++ (getDeleteActionsTransitionId category.id |> manageTransitionClass transitionStore)) ]
-        [ button
+        [ btn
             [ class "button"
             , onClick (DeleteCategories [ category.id ])
-            , css 
-                [backgroundColor theme.primary]
             ]
             [ text "Delete category only" ]
-        , button
+        , alertBtn
             [ class "button"
             , onClick (DeleteCategoryAndSites [ category.id ] sitesInCategoryIds)
-            , Html.Styled.Attributes.disabled
+            , disabled
                 (if List.isEmpty sitesInCategoryIds then
                     True
                  else

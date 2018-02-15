@@ -1,10 +1,12 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
+
+import Html.Events
 import Accordion exposing (closeTab, openTab)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
-import Html exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul)
-import Html.Attributes exposing (attribute, class, disabled, href, id, src, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Styled exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul, fromUnstyled, toUnstyled)
+import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
+import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
@@ -72,7 +74,7 @@ renderViewCategory model category =
             ]
             [ span 
                 [ class "icon folderIcon"]
-                [folderIcon]
+                [  fromUnstyled <| folderIcon]
             , span
                 [ class "category-numberOfArticles badge primary" ]
                 [ articlesInCategory
@@ -106,7 +108,7 @@ categoryButtons model category sitesInCategory =
             ]
             [ span
                 [ class "icon" ]
-                [ editIcon ]
+                [  fromUnstyled <| editIcon ]
             , span
                 [ class "text visuallyHidden" ]
                 [ text "edit " ]
@@ -117,7 +119,7 @@ categoryButtons model category sitesInCategory =
             ]
             [ span
                 [ class "icon" ]
-                [ deleteIcon ]
+                [ fromUnstyled <| deleteIcon ]
             , span
                 [ class "text visuallyHidden" ]
                 [ text "delete " ]
@@ -136,7 +138,7 @@ renderEditCategory model category =
             , onInput <| UpdateCategoryName category.id
             ]
             []
-        , iconButton checkIcon ( "ok", False ) [ onClick EndCategoryEditing ]
+        ,  iconButton checkIcon ( "ok", False ) [ Html.Events.onClick EndCategoryEditing ]
         ]
     ]
 
@@ -158,8 +160,8 @@ renderSiteButtons : Id -> Html Msg
 renderSiteButtons siteId =
     span
         [ class "siteInCategory-actions button-group" ]
-        [ iconButton editIcon ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just siteId ]
-        , iconButton deleteIcon ( "delete", False ) [ onClick <| DeleteSites [ siteId ] ]
+        [ fromUnstyled <| iconButton editIcon ( "edit", False ) [ Html.Events.onClick <| ChangeEditSiteId <| Just siteId ]
+        , fromUnstyled <| iconButton deleteIcon ( "delete", False ) [ Html.Events.onClick <| DeleteSites [ siteId ] ]
         ]
 
 

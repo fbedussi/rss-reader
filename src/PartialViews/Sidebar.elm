@@ -9,6 +9,7 @@ import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
+import Html.Styled exposing (toUnstyled)
 
 
 sidebar : Model -> Html Msg
@@ -26,7 +27,7 @@ sidebar model =
             (if String.isEmpty model.searchTerm then
                 model.sites
                     |> List.filter (\site -> List.isEmpty site.categoriesId)
-                    |> List.map (renderSiteEntry model.selectedSiteId)
+                    |> List.map (toUnstyled << renderSiteEntry model.selectedSiteId)
              else
                 []
             )
@@ -36,7 +37,7 @@ sidebar model =
             ]
             (if String.isEmpty model.searchTerm then
                 model.categories
-                    |> List.map (renderCategory model)
+                    |> List.map (toUnstyled << renderCategory model)
              else
                 []
             )
