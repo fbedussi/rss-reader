@@ -1,8 +1,8 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
-import Html exposing (Html, a, article, aside, button, div, form, h2, input, label, li, main_, option, select, span, text, ul)
-import Html.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
-import Html.Events exposing (on, onClick, onInput, targetChecked)
+import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, input, label, li, main_, option, select, span, text, ul)
+import Html.Styled.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
+import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)

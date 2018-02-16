@@ -1,7 +1,7 @@
 module PartialViews.Header exposing (siteHeader)
 
-import Html exposing (Html, button, div, header, text)
-import Html.Attributes exposing (class)
+import Html.Styled exposing (Html, button, div, header, text)
+import Html.Styled.Attributes exposing (class)
 import Models exposing (Model)
 import Msgs exposing (..)
 import PartialViews.Toolbar exposing (toolbar)

@@ -1,47 +1,50 @@
 module PartialViews.Toolbar exposing (toolbar)
 
-import Html.Styled exposing (Html, button, div, input, li, span, text, ul)
+import Css exposing (..)
+import Html.Styled exposing (Html, button, div, li, span, text, ul, styled)
 import Html.Styled.Attributes exposing (class, placeholder, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (cancelIcon, importIcon, refreshIcon)
-
+import PartialViews.UiKit exposing (input, theme)
 
 toolbar : String -> List (Html Msg)
 toolbar searchTerm =
-    [ div
-        [ class "top-bar-left" ]
-        [ ul
-            [ class "dropdown menu" ]
-            [ li
-                [ class "menu-text" ]
-                [ text "Minimal RSS reader" ]
-            , li
-                []
-                [ iconButton refreshIcon ( "refresh", False ) [ onClick RefreshFeeds ] ]
-            , li
-                []
-                [ iconButton importIcon ( "import", True ) [ class "warning", onClick ToggleImportLayer ] ]
-            ]
+    [ styled div
+        [ displayFlex
+        , justifyContent spaceBetween
+        , padding theme.distanceXXS
+        , borderBottom3 theme.hairlineWidth solid theme.hairline
         ]
-    , div
-        [ class "top-bar-right" ]
-        [ ul
-            [ class "menu" ]
-            [ li
+        []
+        [ styled span
+            [ displayFlex
+            , alignItems stretch
+            ]
+            []
+            [ styled span
+                [ fontSize theme.fontSizeTitle
+                , marginRight (em 0.5)
+                ]
                 []
-                [ input
+                [ text "Minimal RSS reader" ]
+            , iconButton refreshIcon ( "refresh", False ) [ onClick RefreshFeeds ]
+            , iconButton importIcon ( "import", True ) [ class "warning", onClick ToggleImportLayer ]
+            ]
+        ,styled span
+            [ displayFlex
+            , alignItems stretch
+            ]
+            [ ]
+            [ input
                     [ type_ "search"
                     , placeholder "search site"
                     , onInput UpdateSearch
                     , value searchTerm
                     ]
                     []
-                ]
-            , li
-                []
-                [ iconButton cancelIcon ( "clear", False ) [ onClick (UpdateSearch "") ] ]
+            , iconButton cancelIcon ( "clear", False ) [ onClick (UpdateSearch "") ] 
             ]
         ]
     ]

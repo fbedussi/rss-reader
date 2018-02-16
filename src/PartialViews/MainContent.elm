@@ -1,19 +1,23 @@
 module PartialViews.MainContent exposing (..)
 
+import Css exposing (flex, int)
 import Helpers exposing (getArticleSite, getSelectedArticles)
-import Html exposing (Html, a, article, button, div, h2, input, label, li, main_, span, text, ul)
-import Html.Attributes exposing (checked, class, for, href, id, src, type_)
-import Html.Events exposing (onCheck)
+import Html.Attributes
+import Html.Attributes.Aria exposing (ariaLabel)
+import Html.Styled exposing (Html, a, article, button, div, h2, input, label, li, main_, span, styled, text, ul)
+import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
+import Html.Styled.Events exposing (onCheck)
 import Json.Encode
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
 import PartialViews.Icons exposing (starIcon)
-import Html.Attributes.Aria exposing (ariaLabel)
+
 
 mainContent : Model -> Html Msg
 mainContent model =
-    main_
-        [ class "mainContent cell medium-8" ]
+    styled main_
+        [ flex (int 1) ]
+        [ class "mainContent" ]
         [ ul
             [ class "selectedArticles" ]
             (getSelectedArticles model.selectedCategoryId model.selectedSiteId model.sites model.articles
@@ -37,11 +41,19 @@ renderArticle sites articleToRender =
     li
         [ class "article" ]
         [ article
-            [ class "article card" ]
+            [ class "article" ]
             [ div
                 [ class "card-divider" ]
                 [ div
-                    [ class ("article-starred " ++ if articleToRender.starred then "is-starred" else "")]
+                    [ class
+                        ("article-starred "
+                            ++ (if articleToRender.starred then
+                                    "is-starred"
+                                else
+                                    ""
+                               )
+                        )
+                    ]
                     [ input
                         [ type_ "checkbox"
                         , id ("starred_" ++ toString articleToRender.id)
@@ -57,13 +69,13 @@ renderArticle sites articleToRender =
                         []
                     , label
                         [ for ("starred_" ++ toString articleToRender.id)
-                            , ariaLabel "starred"
-                         ]
-                        [ span 
-                            [class "icon"
+                        , ariaLabel "starred" |> fromUnstyled
+                        ]
+                        [ span
+                            [ class "icon"
                             ]
-                            [starIcon ]
-                         ]
+                            [ starIcon ]
+                        ]
                     ]
                 , div
                     [ class "articleSiteAndTitle" ]
@@ -77,6 +89,7 @@ renderArticle sites articleToRender =
                             , href articleToRender.link
                             , Json.Encode.string articleToRender.title
                                 |> Html.Attributes.property "innerHTML"
+                                |> fromUnstyled
                             ]
                             []
                         ]
@@ -86,6 +99,7 @@ renderArticle sites articleToRender =
                 [ class "article-excerpt card-section"
                 , Json.Encode.string articleToRender.excerpt
                     |> Html.Attributes.property "innerHTML"
+                    |> fromUnstyled
                 ]
                 []
             ]

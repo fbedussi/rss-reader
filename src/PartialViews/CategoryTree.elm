@@ -1,10 +1,10 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 
-import Html.Events
+
 import Accordion exposing (closeTab, openTab)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
-import Html.Styled exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul, fromUnstyled, toUnstyled)
+import Html.Styled exposing (Html, a, article, button, div, h2, input, li, main_, span, text, ul, styled)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
@@ -12,7 +12,8 @@ import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
-
+import PartialViews.UiKit exposing (sidebarSelectionBtn, sidebarRow, tabContentOuter)
+import Css exposing (flexShrink, int)
 
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
@@ -66,15 +67,15 @@ renderViewCategory model category =
             "cat_" ++ toString category.id
     in
     [ deleteActions model.transitionStore category (extractId sitesInCategory) 
-    , span
+    , sidebarRow
         [ class "categoryButtons accordion-title" ]
-        [ button
+        [ sidebarSelectionBtn
             [ class "categoryBtn"
             , onClick <| SelectCategory category.id
             ]
             [ span 
                 [ class "icon folderIcon"]
-                [  fromUnstyled <| folderIcon]
+                [ folderIcon]
             , span
                 [ class "category-numberOfArticles badge primary" ]
                 [ articlesInCategory
@@ -87,9 +88,10 @@ renderViewCategory model category =
             ]
         , categoryButtons model category sitesInCategory
         ]
-    , div
+    , tabContentOuter
         [ class "tabContentOuter" ]
-        [ ul
+        [ styled ul
+            []
             [ class "category-sitesInCategory tabContentInner" ]
             (sitesInCategory
                 |> List.map (renderSiteEntry model.selectedSiteId)
@@ -102,28 +104,8 @@ categoryButtons : Model -> Category -> List Site -> Html Msg
 categoryButtons model category sitesInCategory =
     span
         [ class "category-action button-group" ]
-        [ button
-            [ class "button"
-            , onClick <| EditCategoryId category.id
-            ]
-            [ span
-                [ class "icon" ]
-                [  fromUnstyled <| editIcon ]
-            , span
-                [ class "text visuallyHidden" ]
-                [ text "edit " ]
-            ]
-        , button
-            [ class "button alert"
-            , onClick <| ToggleDeleteActions category.id
-            ]
-            [ span
-                [ class "icon" ]
-                [ fromUnstyled <| deleteIcon ]
-            , span
-                [ class "text visuallyHidden" ]
-                [ text "delete " ]
-            ]
+        [ iconButton editIcon ("edit", False) [ onClick <| EditCategoryId category.id]
+        , iconButton deleteIcon ("delete", False) [onClick <| ToggleDeleteActions category.id]
         ]
 
 
@@ -138,7 +120,7 @@ renderEditCategory model category =
             , onInput <| UpdateCategoryName category.id
             ]
             []
-        ,  iconButton checkIcon ( "ok", False ) [ Html.Events.onClick EndCategoryEditing ]
+        ,  iconButton checkIcon ( "ok", False ) [ onClick EndCategoryEditing ]
         ]
     ]
 
@@ -147,21 +129,25 @@ renderSiteEntry : SelectedSiteId -> Site -> Html Msg
 renderSiteEntry selectedSiteId site =
     li
         [ class <| "category-siteInCategory " ++ getClass "is-selected" selectedSiteId site.id ]
-        [ button
-            [ class "siteInCategoryBtn"
-            , onClick <| SelectSite site.id
+        [ sidebarRow
+            []
+            [ sidebarSelectionBtn
+                [ class "siteInCategoryBtn"
+                , onClick <| SelectSite site.id
+                ]
+                [ site.name |> text ]
+            , renderSiteButtons site.id
             ]
-            [ site.name |> text ]
-        , renderSiteButtons site.id
         ]
 
 
 renderSiteButtons : Id -> Html Msg
 renderSiteButtons siteId =
-    span
+    styled span
+        [flexShrink (int 0)]
         [ class "siteInCategory-actions button-group" ]
-        [ fromUnstyled <| iconButton editIcon ( "edit", False ) [ Html.Events.onClick <| ChangeEditSiteId <| Just siteId ]
-        , fromUnstyled <| iconButton deleteIcon ( "delete", False ) [ Html.Events.onClick <| DeleteSites [ siteId ] ]
+        [ iconButton editIcon ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just siteId ]
+        , iconButton deleteIcon ( "delete", False ) [ onClick <| DeleteSites [ siteId ] ]
         ]
 
 
