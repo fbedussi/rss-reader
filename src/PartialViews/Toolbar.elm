@@ -15,7 +15,7 @@ toolbar searchTerm =
         [ displayFlex
         , justifyContent spaceBetween
         , padding theme.distanceXXS
-        , borderBottom3 theme.hairlineWidth solid theme.hairline
+        , borderBottom3 theme.hairlineWidth solid theme.colorHairline
         ]
         []
         [ styled span

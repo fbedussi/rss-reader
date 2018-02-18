@@ -1,4 +1,23 @@
-module TransitionManager exposing (toggleStateSelfish, transitionStart, transitionEnd, Id, TransitionStore, WithTransitionStore, closeAll, delay, empty, hideClosing, isOpen, isTransitionOver, manageTransitionClass, open, prepareOpening, toTransitionManagerId, triggerClosing, toggleState)
+module TransitionManager exposing (toggleStateSelfish
+    , transitionStart
+    , transitionEnd
+    , Id
+    , TransitionStore
+    , TransitionState(..)
+    , WithTransitionStore
+    , closeAll
+    , delay
+    , empty
+    , hideClosing
+    , isOpen
+    , isTransitionOver
+    , manageTransitionClass
+    , open
+    , prepareOpening
+    , toTransitionManagerId
+    , triggerClosing
+    , toggleState
+    , getTransitionState)
 
 import Process
 import Task
@@ -205,6 +224,21 @@ manageTransitionClass (T transitionStore) id =
                 " is-visible"
             else
                 ""
+
+getTransitionState : TransitionStore -> Id -> TransitionState
+getTransitionState (T transitionStore) id =
+    let
+        elementState =
+            transitionStore
+                |> List.filter (\elementState -> Tuple.first elementState == id)
+                |> List.head
+    in
+    case elementState of
+        Nothing ->
+            Hidden
+
+        Just ( id, status ) ->
+            status
 
 
 isTransitionOver : TransitionStore -> Id -> Bool

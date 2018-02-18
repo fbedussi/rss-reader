@@ -4,14 +4,14 @@ import Html.Styled exposing (Html, button, div, p, text, textarea)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick, onInput)
 import Msgs exposing (..)
-import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
+import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
+import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
+
 
 importLayer : TransitionStore -> Html Msg
 importLayer transitionStore =
-    div
-        [ class
-            ("editSiteLayer layer layer--top" ++ (toTransitionManagerId "panel" "import" |> manageTransitionClass transitionStore))
-        ]
+    layerTop (toTransitionManagerId "panel" "import" |> getTransitionState transitionStore)
+        [ class "editSiteLayer" ]
         [ div
             [ class "layer-inner" ]
             [ div
@@ -26,12 +26,12 @@ importLayer transitionStore =
                     []
                 , div
                     [ class "button-group" ]
-                    [ button
+                    [ btn
                         [ class "executeImportButton button"
                         , onClick ExecuteImport
                         ]
                         [ text "import" ]
-                    , button
+                    , secondaryBtn
                         [ class "button"
                         , onClick ToggleImportLayer
                         ]

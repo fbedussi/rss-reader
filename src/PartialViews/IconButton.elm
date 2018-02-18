@@ -1,10 +1,10 @@
-module PartialViews.IconButton exposing (iconButton)
+module PartialViews.IconButton exposing (iconButton, iconButtonAlert)
 
-import Css exposing (em, marginLeft)
-import Html.Styled exposing (Attribute, Html, button, span, styled, text)
+import Css exposing (em, marginLeft, Style, backgroundColor)
+import Html.Styled exposing (Attribute, Html, button, span, styled, text, styled)
 import Html.Styled.Attributes exposing (class, disabled)
 import Msgs exposing (..)
-import PartialViews.UiKit exposing (btn)
+import PartialViews.UiKit exposing (btn, theme)
 
 
 type alias Icon =
@@ -19,13 +19,14 @@ type alias ShowLabel =
     Bool
 
 
-iconButton : Icon -> ( Label, ShowLabel ) -> List (Attribute Msg) -> Html Msg
-iconButton icon labelData attributes =
+iconButton_ : Icon -> ( Label, ShowLabel ) -> List Style -> List (Attribute Msg) -> Html Msg
+iconButton_ icon labelData styles attributes =
     let
         ( label, showLabel ) =
             labelData
     in
-    btn
+    styled btn
+        styles
         attributes
         [ span
             []
@@ -41,3 +42,13 @@ iconButton icon labelData attributes =
             ]
             [ text label ]
         ]
+
+
+iconButton : Icon -> ( Label, ShowLabel ) -> List (Attribute Msg) -> Html Msg
+iconButton icon labelData attributes =
+    iconButton_ icon labelData [] attributes 
+
+iconButtonAlert : Icon -> ( Label, ShowLabel ) -> List (Attribute Msg) -> Html Msg
+iconButtonAlert icon labelData attributes =
+    iconButton_ icon labelData [backgroundColor theme.colorAlert] attributes 
+    

@@ -42,7 +42,6 @@ var _user$project$Native_Accordion = (function() {
         var contentOuter = tab && tab.querySelector('.tabContentOuter');
         
         if (contentOuter) {
-            console.log('contentOuter.offsetHeight', contentOuter.offsetHeight);
             contentOuter.style.height = contentOuter.offsetHeight + 'px';
             setTimeout(function() {
                 contentOuter.style.height = 0;

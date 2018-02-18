@@ -6,8 +6,8 @@ import Html.Styled.Attributes exposing ( class, disabled)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Category, Id)
 import Msgs exposing (..)
-import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
-import PartialViews.UiKit exposing (btn, alertBtn)
+import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
+import PartialViews.UiKit exposing (btn, alertBtn, deleteActionsPanel)
 
 getDeleteActionsTransitionId : a -> TransitionManager.Id
 getDeleteActionsTransitionId categoryId =
@@ -16,8 +16,8 @@ getDeleteActionsTransitionId categoryId =
 
 deleteActions : TransitionStore -> Category -> List Id -> Html Msg
 deleteActions transitionStore category sitesInCategoryIds =
-    div 
-        [ class ("delete-actions" ++ (getDeleteActionsTransitionId category.id |> manageTransitionClass transitionStore)) ]
+    deleteActionsPanel (getDeleteActionsTransitionId category.id |> getTransitionState transitionStore)
+        [ class "delete-actions" ]
         [ btn
             [ class "button"
             , onClick (DeleteCategories [ category.id ])

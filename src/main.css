@@ -19,52 +19,8 @@ ul {
   width: 1px;
 }
 
-/* .category {
-  display: block;
-  position: relative;
-}
 
-.accordion-title {
-  padding: 0;
-}
-
-.accordion-title::before {
-  content: none;
-}
-
-.categoryButtons {
-  position: relative;
-  display: flex;
-  align-content: center;
-  justify-content: space-between;
-  background-color: white;
-  z-index: 2;  
-}
-
-.button-group,
-.button  {
-  margin-bottom: 0;
-}
-
-.delete-actions {
-  display: none;
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  background-color: white;
-  transition: transform 0.5s;
-  z-index: 1;
-}
-
-.delete-actions.is-visible {
-  display: flex !important;
-}
-
-.delete-actions.is-open {
-  transform: translateX(100%)
-}
-
-.categoryBtn,
+/*.categoryBtn,
 .siteInCategoryBtn {
   flex: 1;
   text-align: left;
@@ -103,37 +59,11 @@ ul {
 
 .category-siteInCategory.is-selected {
   background-color: beige;
-}
-
-.tabContentOuter {
-  transition: height 0.5s;
-  overflow: hidden;
-  height: 0;
-}
-
-.category.is-selected .tabContentOuter {
-  height: auto;
-}
+}*/
 
 
-.layer {
-  position: fixed;
-  z-index: 10;
-  transition: transform 0.5s;
-  background-color: white;
-}
 
-.layer--top {
-  top: 0;
-  left: 0;
-  width: 100%;
-  transform: translateY(-100%);
-} 
-
-.layer--top.is-open {
-  transform: translateY(0);
-}
-
+/*
 .editSite-buttonGroup {
   justify-content: space-between;
   display: flex;

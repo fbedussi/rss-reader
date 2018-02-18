@@ -173,10 +173,7 @@ update msg model =
                     ( model, Cmd.none )
 
         ChangeEditSiteId siteId ->
-            let
-                updatedModel = { model | siteToEditId = siteId }
-            in
-            toggleState model "panel" "editSite" TransitionStart TransitionEnd model.defaultTransitionDuration
+            toggleState { model | siteToEditId = siteId } "panel" "editSite" TransitionStart TransitionEnd model.defaultTransitionDuration
 
         AddNewSite ->
             let

@@ -5,6 +5,8 @@ import Msgs exposing (..)
 import Svg.Styled exposing (path, svg, styled)
 import Svg.Styled.Attributes exposing (viewBox, d, strokeWidth, strokeLinecap, strokeLinejoin, fill, class)
 import Css exposing (batch, display, width, height, vertical, inlineBlock, em, currentColor, verticalAlign, middle)
+
+iconStyle : Css.Style
 iconStyle =
     batch 
         [ display inlineBlock
@@ -108,10 +110,10 @@ checkIcon =
             []
         ]
 
-folderIcon : Html msg
-folderIcon = 
+folderIcon : List(Css.Style) -> Html msg
+folderIcon styles = 
     styled svg
-        [iconStyle]
+        ([iconStyle] ++ styles)
         [viewBox "0 0 16 16" ]
         [ path [ d "M9 4L7 2H0v13h16V4z" ]
             []

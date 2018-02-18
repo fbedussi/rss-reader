@@ -10,13 +10,15 @@ import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import Html.Styled exposing (toUnstyled)
-import Css exposing (width, pct, padding, displayFlex, justifyContent, stretch, marginLeft, zero)
+import Css exposing (width, pct, padding, displayFlex, justifyContent, stretch, marginLeft, zero, minWidth, rem)
 import PartialViews.UiKit exposing (theme)
 
 sidebar : Model -> Html Msg
 sidebar model =
     styled aside
-        [width (pct 25)]
+        [width (pct 25)
+        , minWidth (Css.rem 25)
+        ]
         [ class "sidebar" ]
         [ styled div
             [padding theme.distanceXXS

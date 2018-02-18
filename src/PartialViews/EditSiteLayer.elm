@@ -7,7 +7,9 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
-import TransitionManager exposing (TransitionStore, manageTransitionClass, toTransitionManagerId)
+import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
+import PartialViews.UiKit exposing (layerTop)
+
 
 editSiteLayer : Model -> Html Msg
 editSiteLayer model =
@@ -20,12 +22,8 @@ editSiteLayer model =
                 Nothing ->
                     Just createEmptySite
     in
-    div
-        [ class
-                ("callout secondary editSiteLayer layer layer--top "
-                ++ (toTransitionManagerId "panel" "editSite" |> manageTransitionClass model.transitionStore)
-            )
-        ]
+    layerTop (toTransitionManagerId "panel" "editSite" |> getTransitionState model.transitionStore)
+        [ class "editSiteLayer" ]
         [ case site of
             Just site ->
                 renderEditSiteForm site model.categories
