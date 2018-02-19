@@ -19,56 +19,12 @@ ul {
   width: 1px;
 }
 
-
-/*.categoryBtn,
-.siteInCategoryBtn {
-  flex: 1;
-  text-align: left;
+.mouseNavigation *:focus {
+  outline: none;
 }
-
-.folderIcon .plusVertical {
-  transition: transform 0.5s;
-  transform-origin: center center;
-}
-
-.is-selected .folderIcon .plusVertical {
-  transform: rotate(90deg);
-}
-
-.editCategoryName {
-  display: flex;
-}
-
-.editCategoryName-input {
-  flex: 1;
-}
-
-.category.is-selected .categoryButtons {
-  background-color: lightgray;
-}
-
-
-.is-selected .category-sitesInCategory {
-  display: block;
-}
-
-.category-siteInCategory {
-  display: flex;
-  justify-content: space-between;
-}
-
-.category-siteInCategory.is-selected {
-  background-color: beige;
-}*/
-
 
 
 /*
-.editSite-buttonGroup {
-  justify-content: space-between;
-  display: flex;
-}
-
 .article {
   clear: both;
   margin-bottom: 1em;

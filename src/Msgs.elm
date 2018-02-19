@@ -2,10 +2,12 @@ module Msgs exposing (..)
 
 import Dom exposing (Error)
 import Models exposing (Article, Category, Id, LoginData, Site, UserUid)
-
+import Keyboard exposing (KeyCode)
 
 type Msg
-    = SelectCategory Id
+    = SetMouseNavigation
+    | VerifyKeyboardNavigation KeyCode
+    | ToggleSelectedCategory Id
     | SelectSite Id
     | ToggleDeleteActions Id
     | TransitionEnd
@@ -32,6 +34,7 @@ type Msg
     | RefreshFeeds
     | RemoveErrorMsg String
     | UpdateSearch String
+    | CloseAllPanels
     | NoOp
 
 

@@ -74,7 +74,7 @@ renderArticle sites articleToRender =
                         [ span
                             [ class "icon"
                             ]
-                            [ starIcon ]
+                            [ starIcon [] ]
                         ]
                     ]
                 , div

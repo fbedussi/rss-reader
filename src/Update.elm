@@ -9,7 +9,7 @@ import Msgs exposing (..)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import TransitionManager exposing (transitionStart, transitionEnd, toggleState)
+import TransitionManager exposing (transitionStart, transitionEnd, toggleState, closeAll)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -21,11 +21,30 @@ update msg model =
             in
             ( { model | errorMsgs = model.errorMsgs ++ [ toString err ] }, Cmd.none )
 
-        SelectCategory categoryId ->
-            ( { model
-                | selectedCategoryId = Just categoryId
+        SetMouseNavigation ->
+            ( { model | keyboardNavigation = False }, Cmd.none )
+        
+        VerifyKeyboardNavigation keyCode ->
+            ( { model | keyboardNavigation = if keyCode == 9 then True else False }, Cmd.none )
+        
+        ToggleSelectedCategory categoryId ->
+            let
+                newSelectedCategoryId = 
+                    case model.selectedCategoryId of
+                        Nothing ->
+                            Just categoryId
+
+                        Just id -> 
+                            if id == categoryId
+                            then
+                                Nothing
+                            else 
+                                Just categoryId
+            in
+            ({ model
+                | selectedCategoryId = newSelectedCategoryId
                 , selectedSiteId = Nothing
-              }
+            }                
             , Cmd.none
             )
 
@@ -43,6 +62,9 @@ update msg model =
 
         ToggleImportLayer ->
             toggleState model "panel" "import" TransitionStart TransitionEnd model.defaultTransitionDuration
+
+        CloseAllPanels -> 
+            ({model | transitionStore = closeAll "panel" model.transitionStore}, Cmd.none)
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )

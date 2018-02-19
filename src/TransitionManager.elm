@@ -1,23 +1,27 @@
-module TransitionManager exposing (toggleStateSelfish
-    , transitionStart
-    , transitionEnd
-    , Id
-    , TransitionStore
-    , TransitionState(..)
-    , WithTransitionStore
-    , closeAll
-    , delay
-    , empty
-    , hideClosing
-    , isOpen
-    , isTransitionOver
-    , manageTransitionClass
-    , open
-    , prepareOpening
-    , toTransitionManagerId
-    , triggerClosing
-    , toggleState
-    , getTransitionState)
+module TransitionManager
+    exposing
+        ( Id
+        , TransitionState(..)
+        , TransitionStore
+        , WithTransitionStore
+        , closeAll
+        , delay
+        , empty
+        , getTransitionState
+        , hideClosing
+        , isOpen
+        , isSomethingOpen
+        , isTransitionOver
+        , manageTransitionClass
+        , open
+        , prepareOpening
+        , toTransitionManagerId
+        , toggleState
+        , toggleStateSelfish
+        , transitionEnd
+        , transitionStart
+        , triggerClosing
+        )
 
 import Process
 import Task
@@ -44,53 +48,56 @@ type TransitionStore
 
 
 type alias WithTransitionStore model =
-    { model | transitionStore : TransitionStore
-    , defaultTransitionDuration : Time }
+    { model
+        | transitionStore : TransitionStore
+        , defaultTransitionDuration : Time
+    }
 
 
-type alias IdPrefix = 
+type alias IdPrefix =
     String
+
 
 empty : TransitionStore
 empty =
     T []
 
 
-toggleState : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ({a | transitionStore : TransitionStore }, Cmd msg )
+toggleState : { a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 toggleState model prefix id transitionStartMsg transitionEndMsg transitionDuration =
     toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration False
 
 
-toggleStateSelfish : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ({a | transitionStore : TransitionStore }, Cmd msg )
+toggleStateSelfish : { a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 toggleStateSelfish model prefix id transitionStartMsg transitionEndMsg transitionDuration =
     toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration True
 
 
-toggleState_ : {a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> Bool -> ({a | transitionStore : TransitionStore }, Cmd msg )
+toggleState_ : { a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> Bool -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration selfish =
     let
-        transitionManagerId = toTransitionManagerId prefix id
+        transitionManagerId =
+            toTransitionManagerId prefix id
     in
-    if  isOpen model.transitionStore transitionManagerId then
+    if isOpen model.transitionStore transitionManagerId then
         ( { model | transitionStore = triggerClosing transitionManagerId model.transitionStore }, delay transitionDuration transitionEndMsg )
     else
         let
             updatedTransitionStore =
-                if selfish 
-                then 
+                if selfish then
                     model.transitionStore |> prepareOpening transitionManagerId
-                else 
-                    model.transitionStore |> closeAll prefix  |> prepareOpening transitionManagerId
+                else
+                    model.transitionStore |> closeAll prefix |> prepareOpening transitionManagerId
         in
         ( { model | transitionStore = updatedTransitionStore }, Cmd.batch [ delay 10 transitionStartMsg, delay transitionDuration transitionEndMsg ] )
 
 
-transitionEnd : {a | transitionStore : TransitionStore } -> ({a | transitionStore : TransitionStore }, Cmd msg)
+transitionEnd : { a | transitionStore : TransitionStore } -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 transitionEnd model =
     ( { model | transitionStore = hideClosing model.transitionStore }, Cmd.none )
 
 
-transitionStart: {a | transitionStore : TransitionStore } -> ({a | transitionStore : TransitionStore }, Cmd msg)
+transitionStart : { a | transitionStore : TransitionStore } -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 transitionStart model =
     ( { model | transitionStore = open model.transitionStore }, Cmd.none )
 
@@ -98,6 +105,7 @@ transitionStart model =
 toTransitionManagerId : String -> a -> Id
 toTransitionManagerId prefix a =
     prefix ++ toString a
+
 
 isOpen : TransitionStore -> Id -> Bool
 isOpen (T transitionStore) id =
@@ -140,7 +148,8 @@ prepareOpening id (T transitionStore) =
     in
     case elementState of
         Nothing ->
-            transitionStore ++ [ ( id, Opening ) ]
+            transitionStore
+                ++ [ ( id, Opening ) ]
                 |> T
 
         Just ( id, state ) ->
@@ -225,6 +234,7 @@ manageTransitionClass (T transitionStore) id =
             else
                 ""
 
+
 getTransitionState : TransitionStore -> Id -> TransitionState
 getTransitionState (T transitionStore) id =
     let
@@ -241,8 +251,16 @@ getTransitionState (T transitionStore) id =
             status
 
 
+isSomethingOpen : TransitionStore -> String -> Bool
+isSomethingOpen (T transitionStore) partialId =
+    transitionStore
+        |> List.filter (\elementState -> let (id, state) = elementState in String.contains partialId id && state == Open)
+        |> List.isEmpty
+        |> not
+
+
 isTransitionOver : TransitionStore -> Id -> Bool
 isTransitionOver (T transitionStore) id =
-    transitionStore 
-        |> List.filter (\elementStore -> elementStore == ( id, Closing ) || elementStore == ( id, Opening )) 
+    transitionStore
+        |> List.filter (\elementStore -> elementStore == ( id, Closing ) || elementStore == ( id, Opening ))
         |> List.isEmpty

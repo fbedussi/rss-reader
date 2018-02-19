@@ -2,8 +2,11 @@ module PartialViews.UiKit exposing (..)
 
 import Css exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (class)
+import Html.Styled.Events exposing (onClick)
+import Models exposing (Selected)
 import TransitionManager exposing (TransitionState(..))
-
+import Msgs exposing (..)
 
 inputHeight : Rem
 inputHeight =
@@ -53,6 +56,16 @@ transition val =
     property "transition" val
 
 
+transformOrigin : String -> Style
+transformOrigin val =
+    property "transform-origin" val
+
+
+pointerEventsNone : Style
+pointerEventsNone =
+    property "pointer-events" "none"
+
+
 btnStyle : Style
 btnStyle =
     batch
@@ -82,12 +95,18 @@ btnNoStyleStyle =
         , backgroundColor transparent
         , fontSize theme.fontSizeBase
         , padding zero
+        , color currentColor
         ]
 
 
 standardPadding : Style
 standardPadding =
     padding theme.distanceXXS
+
+
+sidebarBoxStyle : Style
+sidebarBoxStyle =
+    batch [ standardPadding ]
 
 
 btn : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -135,17 +154,29 @@ sidebarSelectionBtn =
         ]
 
 
-sidebarRow : Bool -> List (Attribute msg) -> List (Html msg) -> Html msg
+sidebarRow : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
 sidebarRow selected =
+    let
+        selectedStyle =
+            if selected then
+                [ backgroundColor theme.colorPrimaryLight
+                , color theme.white
+                ]
+            else
+                []
+    in
     styled div
         ([ displayFlex
-        , justifyContent spaceBetween
-        , position relative
-        , alignItems center
-        , backgroundColor theme.colorBackground
-        , zIndex (int 2)
-        ] ++ if selected then [borderBottom3 (px 2) solid theme.colorHairline] else [])
- 
+         , standardPadding
+         , justifyContent spaceBetween
+         , position relative
+         , alignItems center
+         , backgroundColor theme.colorBackground
+         , zIndex (int 2)
+         ]
+            ++ selectedStyle
+        )
+
 
 input : List (Attribute msg) -> List (Html msg) -> Html msg
 input =
@@ -157,7 +188,7 @@ input =
         ]
 
 
-tabContentOuter : Bool -> List (Attribute msg) -> List (Html msg) -> Html msg
+tabContentOuter : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
 tabContentOuter selected =
     styled div
         [ transition "height 0.5s"
@@ -197,7 +228,12 @@ deleteActionsPanel transitionState =
 categoryWrapper : List (Attribute msg) -> List (Html msg) -> Html msg
 categoryWrapper =
     styled li
-        [ position relative ]
+        [ position relative
+        , minHeight (Css.rem 2)
+        , border3 (px 2) solid theme.colorHairline
+        , borderBottom zero
+        , lastChild [ borderBottom3 (px 2) solid theme.colorHairline ]
+        ]
 
 
 badge : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -249,3 +285,47 @@ layerTop transitionState =
          ]
             ++ transitionStyle
         )
+
+
+inputRow : List (Attribute msg) -> List (Html msg) -> Html msg
+inputRow attributes children =
+    styled div
+        [ marginBottom (Css.rem 0.5)
+        , displayFlex ]
+        ([ class "inputRow" ] ++ attributes)
+        children
+
+
+layerInner : List (Attribute msg) -> List (Html msg) -> Html msg
+layerInner attributes children =
+    styled div
+        [ width (pct 100) ]
+        ([ class "layer-inner" ] ++ attributes)
+        children
+
+overlay : Bool -> Html Msg
+overlay active = 
+    let
+        activeStyle = if active 
+        then batch [
+            opacity (int 1)
+        ]
+        else batch [opacity (int 0)
+            , pointerEventsNone
+        ]
+    in
+        styled div
+            [position absolute
+            , width (vw 100)
+            , height (vh 100)
+            , top zero
+            , left zero
+            , backgroundColor (rgba 0 0 0 0.5)
+            , transition "opacity 0.5s"
+            , zIndex (int 2)
+            , activeStyle
+            ]
+            [ class "overlay"
+            , onClick CloseAllPanels
+            ]
+            []

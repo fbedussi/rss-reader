@@ -6,7 +6,7 @@ import Html.Styled.Attributes exposing (class, placeholder, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
-import PartialViews.Icons exposing (cancelIcon, importIcon, refreshIcon)
+import PartialViews.Icons exposing (importIcon, refreshIcon)
 import PartialViews.UiKit exposing (input, theme)
 
 toolbar : String -> List (Html Msg)
@@ -29,8 +29,8 @@ toolbar searchTerm =
                 ]
                 []
                 [ text "Minimal RSS reader" ]
-            , iconButton refreshIcon ( "refresh", False ) [ onClick RefreshFeeds ]
-            , iconButton importIcon ( "import", True ) [ class "warning", onClick ToggleImportLayer ]
+            , iconButton (refreshIcon []) ( "refresh", False ) [ onClick RefreshFeeds ]
+            , iconButton (importIcon []) ( "import", True ) [ class "warning", onClick ToggleImportLayer ]
             ]
         ,styled span
             [ displayFlex
@@ -44,7 +44,6 @@ toolbar searchTerm =
                     , value searchTerm
                     ]
                     []
-            , iconButton cancelIcon ( "clear", False ) [ onClick (UpdateSearch "") ] 
             ]
         ]
     ]

@@ -1,7 +1,7 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
-import Css exposing (auto, em, flexShrink, height, int, marginRight, middle, verticalAlign, backgroundColor)
+import Css exposing (auto, em, flexShrink, height, int, marginRight, middle, verticalAlign, backgroundColor, fill)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
@@ -9,11 +9,9 @@ import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site)
 import Msgs exposing (..)
 import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
-import PartialViews.IconButton exposing (iconButton, iconButtonAlert)
+import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
-import Svg.Styled
-import Svg.Styled.Attributes exposing (fill)
 
 
 renderCategory : Model -> Category -> Html Msg
@@ -25,6 +23,7 @@ renderCategory model category =
         selected =
             isSelected model.selectedCategoryId category.id
 
+        log = Debug.log ("selected " ++ domId) selected
         triggerOpenTab =
             if selected then
                 openTab ("#" ++ domId)
@@ -32,15 +31,7 @@ renderCategory model category =
                 closeTab ("#" ++ domId)
     in
     categoryWrapper
-        [ class
-            ("accordion-item category "
-                ++ (if selected then
-                        "is-selected"
-                    else
-                        ""
-                   )
-            )
-        , attribute "data-accordion-item" ""
+        [ class"accordion-item category"
         , id domId
         ]
         (case model.categoryToEditId of
@@ -72,13 +63,13 @@ renderViewCategory model category selected =
         [ class "categoryButtons accordion-title" ]
         ([ sidebarSelectionBtn
             [ class "categoryBtn"
-            , onClick <| SelectCategory category.id
+            , onClick <| ToggleSelectedCategory category.id
             ]
             [ styled span
                 [verticalAlign middle
                 , marginRight (em 0.5)]
                 [ class "icon folderIcon" ]
-                [ folderIcon [Css.fill theme.colorPrimary]
+                [ folderIcon [Css.fill theme.colorPrimary] selected
                 ]
             , badge
                 [ class "category-numberOfArticles" ]
@@ -86,7 +77,8 @@ renderViewCategory model category selected =
                     |> toString
                     |> text
                 ]
-            , span
+            , styled span
+                [verticalAlign middle]
                 [ class "category-name" ]
                 [ text (" " ++ category.name) ]
             ]
@@ -113,8 +105,8 @@ categoryButtons : Model -> Category -> List Site -> Html Msg
 categoryButtons model category sitesInCategory =
     span
         [ class "category-action button-group" ]
-        [ iconButton editIcon ( "edit", False ) [ onClick <| EditCategoryId category.id ]
-        , iconButtonAlert deleteIcon ( "delete", False ) [ onClick <| ToggleDeleteActions category.id ]
+        [ iconButtonNoStyle (editIcon [fill theme.white]) ( "edit", False ) [ onClick <| EditCategoryId category.id ]
+        , iconButtonNoStyle (deleteIcon [fill theme.white])  ( "delete", False ) [ onClick <| ToggleDeleteActions category.id ]
         ]
 
 
@@ -130,7 +122,7 @@ renderEditCategory model category =
             , onInput <| UpdateCategoryName category.id
             ]
             []
-        , iconButton checkIcon ( "ok", False ) [ onClick EndCategoryEditing ]
+        , iconButton (checkIcon []) ( "ok", False ) [ onClick EndCategoryEditing ]
         ]
     ]
 
@@ -170,8 +162,8 @@ renderSiteButtons siteId =
     styled span
         [ flexShrink (int 0) ]
         [ class "siteInCategory-actions button-group" ]
-        [ iconButton editIcon ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just siteId ]
-        , iconButtonAlert deleteIcon ( "delete", False ) [ onClick <| DeleteSites [ siteId ] ]
+        [ iconButtonNoStyle (editIcon [fill theme.white]) ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just siteId ]
+        , iconButtonNoStyle (deleteIcon [fill theme.white]) ( "delete", False ) [ onClick <| DeleteSites [ siteId ] ]
         ]
 
 
@@ -188,14 +180,3 @@ countArticlesInCategory sitesInCategory articles =
     in
     List.length articlesInCategory
 
-
-selectCategory : Id -> String -> Msg
-selectCategory id domSelector =
-    let
-        triggerOpenTab =
-            openTab domSelector
-
-        log =
-            Debug.log "domSelector2" domSelector
-    in
-    SelectCategory id

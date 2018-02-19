@@ -18,6 +18,7 @@ init =
       , importData = ""
       , searchTerm = ""
       , transitionStore = TransitionManager.empty
+      , keyboardNavigation = False
       , defaultTransitionDuration = 500
       }
     , Cmd.none

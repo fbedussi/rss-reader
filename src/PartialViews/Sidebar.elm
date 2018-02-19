@@ -10,8 +10,8 @@ import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import Html.Styled exposing (toUnstyled)
-import Css exposing (width, pct, padding, displayFlex, justifyContent, stretch, marginLeft, zero, minWidth, rem)
-import PartialViews.UiKit exposing (theme)
+import Css exposing (width, pct, padding, displayFlex, justifyContent, stretch, marginLeft, zero, minWidth, rem, px, border3)
+import PartialViews.UiKit exposing (theme, sidebarBoxStyle)
 
 sidebar : Model -> Html Msg
 sidebar model =
@@ -26,12 +26,12 @@ sidebar model =
             , justifyContent stretch
             ]
             [ class "sidebar-toolbar" ]
-            [ (iconButton plusIcon ( "new category", True ) [ onClick AddNewCategory ])
-            , (iconButton plusIcon ( "new site", True ) [ onClick AddNewSite ])
+            [ (iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ])
+            , (iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ])
             ]
         , searchResult model.selectedSiteId model.sites model.searchTerm
         , styled ul
-            [padding theme.distanceXXS]
+            [sidebarBoxStyle]
             [ class "sitesWithoutCategory" ]
             (if String.isEmpty model.searchTerm then
                 model.sites
@@ -41,9 +41,8 @@ sidebar model =
                 []
             )
         , styled ul
-            [padding theme.distanceXXS]
+            [sidebarBoxStyle]
             [ class "categories accordion"
-            , attribute "data-accordion" ""
             ]
             (if String.isEmpty model.searchTerm then
                 model.categories

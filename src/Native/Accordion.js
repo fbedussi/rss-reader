@@ -40,6 +40,10 @@ var _user$project$Native_Accordion = (function() {
     function closeTab(domSelector) {
         var tab = document.querySelector(domSelector)
         var contentOuter = tab && tab.querySelector('.tabContentOuter');
+
+        if (tab === prevTab) {
+            prevTab = null;
+        }
         
         if (contentOuter) {
             contentOuter.style.height = contentOuter.offsetHeight + 'px';

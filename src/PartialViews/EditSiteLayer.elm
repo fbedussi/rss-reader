@@ -1,14 +1,15 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
-import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, input, label, li, main_, option, select, span, text, ul)
+import Css exposing (displayFlex, flex, int, justifyContent, spaceBetween)
+import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, select, span, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import Msgs exposing (..)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
+import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop)
 import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
-import PartialViews.UiKit exposing (layerTop)
 
 
 editSiteLayer : Model -> Html Msg
@@ -44,113 +45,65 @@ getSiteToEdit siteToEditId sites =
 
 renderEditSiteForm : Site -> List Category -> Html Msg
 renderEditSiteForm site categories =
-    div
-        [ class "layer-inner" ]
-        [ div
-            [ class "editSiteForm" ]
+    layerInner
+        []
+        [ inputRow
+            []
             [ div
-                [ class "inputRow cell" ]
-                [ div
-                    [ class "inputLabel" ]
-                    [ text "Site id: " ]
-                , div
-                    [ class "input is-disabled" ]
-                    [ toString site.id |> text ]
-                ]
+                [ class "inputLabel" ]
+                [ text "Site id: " ]
             , div
-                [ class "inputRow cell" ]
-                [ label
-                    [ class "inputLabel"
-                    , for "siteNameInput"
-                    ]
-                    [ text "Name: " ]
-                , input
-                    [ class "input"
-                    , id "siteNameInput"
-                    , value site.name
-                    , onInput (\name -> UpdateSite { site | name = name })
-                    , type_ "text"
-                    ]
-                    []
+                [ class "input is-disabled" ]
+                [ toString site.id |> text ]
+            ]
+        , inputRowText "Name" "siteNameInput" site.name (\name -> UpdateSite { site | name = name })
+        , inputRowText "Rss link" "rssLinkInput" site.rssLink (\rssLink -> UpdateSite { site | rssLink = rssLink })
+        , inputRowText "Web link" "webLinkInput" site.webLink (\webLink -> UpdateSite { site | webLink = webLink })
+        , inputRow
+            []
+            [ input
+                [ class "checkbox"
+                , type_ "checkbox"
+                , id "starredCheckbox"
+                , onClick (UpdateSite { site | starred = not site.starred })
+                , checked site.starred
                 ]
-            , div
-                [ class "inputRow cell" ]
-                [ label
-                    [ class "inputLabel"
-                    , for "rssLinkInput"
-                    ]
-                    [ text "Rss link: " ]
-                , input
-                    [ class "input"
-                    , id "rssLinkInput"
-                    , onInput (\rssLink -> UpdateSite { site | rssLink = rssLink })
-                    , value site.rssLink
-                    , type_ "text"
-                    ]
-                    []
+                []
+            , label
+                [ class "checkboxLabel"
+                , for "starredCheckbox"
                 ]
-            , div
-                [ class "inputRow cell" ]
-                [ label
-                    [ class "inputLabel"
-                    , for "webLinkInput"
-                    ]
-                    [ text "Web link: "
-                    ]
-                , input
-                    [ class "input"
-                    , id "webLinkInput"
-                    , onInput (\webLink -> UpdateSite { site | webLink = webLink })
-                    , value site.webLink
-                    , type_ "text"
-                    ]
-                    []
+                [ text "Starred" ]
+            ]
+        , inputRow
+            []
+            [ select
+                [ class "siteCategorySelect"
+                , onInput (\categoryId -> UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
                 ]
-            , div
-                [ class "inputRow cell" ]
-                [ input
-                    [ class "checkbox"
-                    , type_ "checkbox"
-                    , id "starredCheckbox"
-                    , onClick (UpdateSite { site | starred = not site.starred })
-                    , checked site.starred
+                (option
+                    [ selected
+                        (if List.isEmpty site.categoriesId then
+                            True
+                         else
+                            False
+                        )
                     ]
-                    []
-                , label
-                    [ class "checkboxLabel"
-                    , for "starredCheckbox"
-                    ]
-                    [ text "Starred" ]
-                ]
-            , div
-                [ class "inputRow cell" ]
-                [ select
-                    [ class "siteCategorySelect"
-                    , onInput (\categoryId -> UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
-                    ]
-                    (option
-                        [ selected
-                            (if List.isEmpty site.categoriesId then
-                                True
-                             else
-                                False
-                            )
-                        ]
-                        [ text "Select site category" ]
-                        :: (categories
-                                |> List.map (renderCategoryOptions site.categoriesId)
-                           )
-                    )
-                ]
-            , div
-                [ class "cell editSite-buttonGroup" ]
-                [ button
-                    [ class "button"
-                    , onClick (ChangeEditSiteId Nothing)
-                    ]
-                    [ text "close" ]
-                , iconButton deleteIcon ( "delete", True ) [ onClick (DeleteSites [ site.id ]) ]
-                ]
+                    [ text "Select site category" ]
+                    :: (categories
+                            |> List.map (renderCategoryOptions site.categoriesId)
+                       )
+                )
+            ]
+        , styled div
+            [ displayFlex
+            , justifyContent spaceBetween
+            ]
+            []
+            [ btn
+                [ onClick (ChangeEditSiteId Nothing) ]
+                [ text "close" ]
+            , iconButton (deleteIcon []) ( "delete", True ) [ onClick (DeleteSites [ site.id ]) ]
             ]
         ]
 
@@ -177,3 +130,25 @@ convertCategoryIdToInt string =
 
         Err err ->
             []
+
+
+inputRowText : String -> String -> String -> (String -> msg) -> Html msg
+inputRowText idText labelText val inputHandler =
+    inputRow
+        []
+        [ styled label
+            [ flex (int 1) ]
+            [ class "inputLabel"
+            , for idText
+            ]
+            [ text (labelText ++ ": ") ]
+        , styled input
+            [flex (int 5)]
+            [ class "input"
+            , id idText
+            , value val
+            , onInput inputHandler
+            , type_ "text"
+            ]
+            []
+        ]

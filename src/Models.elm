@@ -80,7 +80,11 @@ type alias Model =
         , siteToEditId : Maybe Id
         , importData : String
         , searchTerm : String
+        , keyboardNavigation: Bool
         }
+
+type alias Selected =
+    Bool
 
 
 createEmptySite : Site
