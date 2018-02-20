@@ -1,13 +1,12 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
-import Css exposing (auto, backgroundColor, em, fill, flexShrink, height, int, marginRight, middle, verticalAlign, pct, width, displayFlex)
+import Css exposing (auto, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, Selected)
-import Msgs exposing (..)
+import Models exposing (Article, Category, Id, Model, Selected, SelectedCategoryId, SelectedSiteId, Site, Msg(..))
 import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
@@ -63,6 +62,7 @@ renderCategory model category =
             ]
         ]
 
+
 renderCaregoryName : Category -> Selected -> Int -> List (Html Msg)
 renderCaregoryName category selected articlesInCategory =
     [ sidebarSelectionBtn
@@ -104,7 +104,8 @@ renderEditCategory : Category -> List (Html Msg)
 renderEditCategory category =
     [ styled div
         [ displayFlex
-        , width (pct 100)]
+        , width (pct 100)
+        ]
         [ class "editCategoryName" ]
         [ styled input
             [ Css.flex (Css.int 1) ]
@@ -136,21 +137,17 @@ renderSiteEntry selectedSiteId site =
                 [ site.name |> text ]
              ]
                 ++ (if selected then
-                        [ renderSiteButtons site.id ]
+                        [ styled span
+                            [ flexShrink (int 0) ]
+                            [ class "siteInCategory-actions button-group" ]
+                            [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just site.id ]
+                            , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| DeleteSites [ site.id ] ]
+                            ]
+                        ]
                     else
                         []
                    )
             )
-        ]
-
-
-renderSiteButtons : Id -> Html Msg
-renderSiteButtons siteId =
-    styled span
-        [ flexShrink (int 0) ]
-        [ class "siteInCategory-actions button-group" ]
-        [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just siteId ]
-        , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| DeleteSites [ siteId ] ]
         ]
 
 

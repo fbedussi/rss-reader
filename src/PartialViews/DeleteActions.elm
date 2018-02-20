@@ -4,8 +4,7 @@ module PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTrans
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing ( class, disabled)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (Category, Id)
-import Msgs exposing (..)
+import Models exposing (Category, Id, Msg(..))
 import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
 import PartialViews.UiKit exposing (btn, alertBtn, deleteActionsPanel)
 

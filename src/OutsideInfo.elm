@@ -3,7 +3,6 @@ port module OutsideInfo exposing (..)
 import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
 import Json.Encode exposing (..)
 import Models exposing (..)
-import Msgs exposing (..)
 
 
 port infoForOutside : GenericOutsideData -> Cmd msg

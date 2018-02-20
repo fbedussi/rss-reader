@@ -3,7 +3,6 @@ module GetFeeds exposing (getFeeds)
 import Decoder exposing (feedDecoder)
 import Http exposing (Error, encodeUri)
 import Models exposing (..)
-import Msgs exposing (..)
 import Task exposing (Task, sequence)
 
 

@@ -2,8 +2,7 @@ module PartialViews.SearchResult exposing (searchResult)
 
 import Html.Styled exposing (Html, div, input, ul, styled)
 import Html.Styled.Attributes exposing (class)
-import Models exposing (SelectedSiteId, Site)
-import Msgs exposing (..)
+import Models exposing (SelectedSiteId, Site, Msg)
 import PartialViews.CategoryTree exposing (renderSiteEntry)
 import PartialViews.UiKit exposing (sidebarBoxStyle)
 

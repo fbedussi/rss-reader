@@ -5,7 +5,7 @@ import Html.Styled exposing (Html, button, div, header, span, text)
 import Html.Styled.Attributes exposing (class, fromUnstyled)
 import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled.Events exposing (onClick)
-import Msgs exposing (..)
+import Models exposing (Msg(..))
 
 
 errorContainer : List String -> Html Msg

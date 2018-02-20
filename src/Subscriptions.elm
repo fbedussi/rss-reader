@@ -1,7 +1,6 @@
 module Subscriptions exposing (..)
 
-import Models exposing (Model)
-import Msgs exposing (..)
+import Models exposing (Model, Msg(..))
 import OutsideInfo exposing (getInfoFromOutside)
 
 

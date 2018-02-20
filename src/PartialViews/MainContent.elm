@@ -7,8 +7,7 @@ import Html.Attributes
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
 import Json.Encode
-import Models exposing (Article, Category, Model, Site)
-import Msgs exposing (..)
+import Models exposing (Article, Category, Model, Site, Msg(..))
 import PartialViews.UiKit exposing (clear, standardPadding, starBtn, theme, articleTitle, article)
 
 

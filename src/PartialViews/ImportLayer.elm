@@ -3,7 +3,7 @@ module PartialViews.ImportLayer exposing (importLayer)
 import Html.Styled exposing (Html, button, div, p, text, textarea)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick, onInput)
-import Msgs exposing (..)
+import Models exposing (Msg(..))
 import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
 import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
 

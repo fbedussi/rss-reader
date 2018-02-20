@@ -1,6 +1,8 @@
 module Models exposing (..)
 
+import Dom exposing (Error)
 import Json.Encode
+import Keyboard exposing (KeyCode)
 import TransitionManager
 
 
@@ -68,6 +70,23 @@ type alias SelectedSiteId =
     Maybe Id
 
 
+type alias Selected =
+    Bool
+
+
+type alias Modal =
+    { open : Bool
+    , text : String
+    , action : Msg
+    }
+
+
+type alias GenericOutsideData =
+    { tag : String
+    , data : Json.Encode.Value
+    }
+
+
 type alias Model =
     TransitionManager.WithTransitionStore
         { errorMsgs : List String
@@ -80,12 +99,32 @@ type alias Model =
         , siteToEditId : Maybe Id
         , importData : String
         , searchTerm : String
-        , keyboardNavigation: Bool
+        , keyboardNavigation : Bool
         , fetchingRss : Bool
+        , modal : Modal
         }
 
-type alias Selected =
-    Bool
+
+init : ( Model, Cmd Msg )
+init =
+    ( { errorMsgs = []
+      , categories = []
+      , sites = []
+      , articles = []
+      , selectedCategoryId = Nothing
+      , selectedSiteId = Nothing
+      , categoryToEditId = Nothing
+      , siteToEditId = Nothing
+      , importData = ""
+      , searchTerm = ""
+      , transitionStore = TransitionManager.empty
+      , keyboardNavigation = False
+      , fetchingRss = False
+      , modal = {open = False, text = "", action = NoOp}
+      , defaultTransitionDuration = 500
+      }
+    , Cmd.none
+    )
 
 
 createEmptySite : Site
@@ -99,11 +138,56 @@ createEmptySite =
         False
 
 
+type Msg
+    = SetMouseNavigation
+    | VerifyKeyboardNavigation KeyCode
+    | ToggleSelectedCategory Id
+    | SelectSite Id
+    | ToggleDeleteActions Id
+    | TransitionEnd
+    | TransitionStart
+    | ToggleImportLayer
+    | StoreImportData String
+    | ExecuteImport
+    | DeleteCategories (List Id)
+    | DeleteSites (List Id)
+    | DeleteCategoryAndSites (List Id) (List Id)
+    | EditCategoryId Id
+    | UpdateCategoryName Id String
+    | EndCategoryEditing
+    | AddNewCategory
+    | AddNewSite
+    | FocusResult (Result Error ())
+    | ChangeEditSiteId (Maybe Id)
+    | UpdateSite Site
+    | GetArticles (Result String (List Article))
+    | DeleteArticles (List Id)
+    | SaveArticle Article
+    | Outside InfoForElm
+    | LogErr String
+    | RefreshFeeds
+    | RemoveErrorMsg String
+    | UpdateSearch String
+    | CloseAllPanels
+    | NoOp
 
---OutsideInfo
+
+type InfoForOutside
+    = LoginRequest LoginData
+    | OpenDb UserUid
+    | ReadAllData
+    | AddCategoryInDb Category
+    | DeleteCategoriesInDb (List Id)
+    | UpdateCategoryInDb Category
+    | AddSiteInDb Site
+    | DeleteSitesInDb (List Id)
+    | UpdateSiteInDb Site
+    | AddArticleInDb Article
+    | DeleteArticlesInDb (List Id)
+    | SaveAllData ( List Category, List Site, List Article )
 
 
-type alias GenericOutsideData =
-    { tag : String
-    , data : Json.Encode.Value
-    }
+type InfoForElm
+    = UserLoggedIn UserUid
+    | DbOpened
+    | NewData (List Category) (List Site) (List Article)

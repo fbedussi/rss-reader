@@ -1,11 +1,10 @@
 module PartialViews.Icons exposing (..)
 
 import Html.Styled exposing (Html)
-import Msgs exposing (..)
 import Svg.Styled exposing (path, svg, styled)
 import Svg.Styled.Attributes exposing (viewBox, d, strokeWidth, strokeLinecap, strokeLinejoin, fill, class, style)
 import Css exposing (batch, display, width, height, vertical, inlineBlock, em, currentColor, verticalAlign, middle)
-import Models exposing (Selected)
+import Models exposing (Selected, Msg)
 
 iconStyle : Css.Style
 iconStyle =
