@@ -1,22 +1,23 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (flex, int)
+import Css exposing (auto, displayFlex, flex, float, height, int, left, margin2, marginBottom, px, width, zero, overflow, hidden, maxHeight)
+import Css.Foreign exposing (descendants, typeSelector)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
-import Html.Attributes.Aria exposing (ariaLabel)
-import Html.Styled exposing (Html, a, article, button, div, h2, input, label, li, main_, span, styled, text, ul)
+import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
-import Html.Styled.Events exposing (onCheck)
 import Json.Encode
 import Models exposing (Article, Category, Model, Site)
 import Msgs exposing (..)
-import PartialViews.Icons exposing (starIcon)
+import PartialViews.UiKit exposing (clear, standardPadding, starBtn, theme, articleTitle, article)
 
 
 mainContent : Model -> Html Msg
 mainContent model =
     styled main_
-        [ flex (int 1) ]
+        [ flex (int 1)
+        , standardPadding
+        ]
         [ class "mainContent" ]
         [ ul
             [ class "selectedArticles" ]
@@ -42,47 +43,24 @@ renderArticle sites articleToRender =
         [ class "article" ]
         [ article
             [ class "article" ]
-            [ div
-                [ class "card-divider" ]
-                [ div
-                    [ class
-                        ("article-starred "
-                            ++ (if articleToRender.starred then
-                                    "is-starred"
-                                else
-                                    ""
-                               )
-                        )
-                    ]
-                    [ input
-                        [ type_ "checkbox"
-                        , id ("starred_" ++ toString articleToRender.id)
-                        , onCheck
-                            (\checked ->
-                                if checked then
-                                    SaveArticle articleToRender
-                                else
-                                    DeleteArticles [ articleToRender.id ]
-                            )
-                        , checked articleToRender.starred
-                        ]
-                        []
-                    , label
-                        [ for ("starred_" ++ toString articleToRender.id)
-                        , ariaLabel "starred" |> fromUnstyled
-                        ]
-                        [ span
-                            [ class "icon"
-                            ]
-                            [ starIcon [] ]
-                        ]
-                    ]
+            [ styled div
+                [ displayFlex
+                , marginBottom theme.distanceXXS ]
+                [ class "starAndSiteAndTitle" ]
+                [ starBtn ("starred_" ++ toString articleToRender.id)
+                    articleToRender.starred
+                    (\checked ->
+                        if checked then
+                            SaveArticle articleToRender
+                        else
+                            DeleteArticles [ articleToRender.id ]
+                    )
                 , div
                     [ class "articleSiteAndTitle" ]
                     [ div
                         [ class "articleSite" ]
                         [ text site.name ]
-                    , h2
+                    , articleTitle
                         [ class "article-title" ]
                         [ a
                             [ class "article-link"
@@ -95,7 +73,16 @@ renderArticle sites articleToRender =
                         ]
                     ]
                 ]
-            , div
+            , styled div
+                [ descendants
+                    [ typeSelector "img"
+                        [ width (px 100)
+                        , height auto
+                        , float left
+                        , margin2 zero (Css.rem 1)
+                        ]
+                    ]
+                ]
                 [ class "article-excerpt card-section"
                 , Json.Encode.string articleToRender.excerpt
                     |> Html.Attributes.property "innerHTML"

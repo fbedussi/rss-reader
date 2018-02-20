@@ -133,12 +133,7 @@ renderSiteEntry selectedSiteId site =
         selected =
             isSelected selectedSiteId site.id
     in
-    styled li
-        (if selected then
-            [ backgroundColor theme.colorSecondaryLight ]
-         else
-            []
-        )
+    li
         [ class "category-siteInCategory " ]
         [ sidebarRow selected
             []

@@ -1,27 +1,31 @@
 module PartialViews.UiKit exposing (..)
 
 import Css exposing (..)
+import Css.Foreign exposing (descendants, selector)
+import Html.Attributes.Aria exposing (ariaLabel)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class)
-import Html.Styled.Events exposing (onClick)
+import Html.Styled.Attributes exposing (class, for, id, type_)
+import Html.Styled.Events exposing (onCheck, onClick)
 import Models exposing (Selected)
-import TransitionManager exposing (TransitionState(..))
 import Msgs exposing (..)
+import PartialViews.Icons exposing (starIcon)
+import TransitionManager exposing (TransitionState(..))
+
 
 inputHeight : Rem
 inputHeight =
     Css.rem 2
 
-
-theme : { black : Color, buttonHeight : Rem, colorAccent : Color, colorAlert : Color, colorBackground : Color, colorPrimary : Color, colorPrimaryLight : Color, colorSecondaryLight : Color, distanceL : Rem, distanceM : Rem, distanceS : Rem, distanceXL : Rem, distanceXS : Rem, distanceXXL : Rem, distanceXXS : Rem, distanceXXXL : Rem, distanceXXXS : Rem, fontSizeBase : Rem, fontSizeSubtitle : Rem, fontSizeTitle : Rem, hairlineWidth : Px, inputHeight : Rem, secondary : Color, white : Color, colorHairline : Color }
+theme : { black : Color , buttonHeight : Rem , colorAccent : Color , colorAlert : Color , colorBackground : Color , colorHairline : Color , colorPrimaryLight : Color , colorSecondary : Color , colorSecondaryLight : Color , colorTransparent : Color , distanceL : Rem , distanceM : Rem , distanceS : Rem , distanceXL : Rem , distanceXS : Rem , distanceXXL : Rem , distanceXXS : Rem , distanceXXXL : Rem , distanceXXXS : Rem , fontSizeBase : Rem , fontSizeSubtitle : Rem , fontSizeTitle : Rem , hairlineWidth : Px , inputHeight : Rem , white : Color , colorPrimary : Color }
 theme =
     { colorPrimary = hex "4D79BC"
-    , secondary = hex "673C4F"
+    , colorSecondary = hex "673C4F"
     , colorAccent = hex "EAC435"
     , colorPrimaryLight = hex "03CEA4"
     , colorSecondaryLight = hex "FB4D3D"
     , colorHairline = hex "e4e4e4"
     , colorBackground = hex "ffffff"
+    , colorTransparent = rgba 0 0 0 0
     , colorAlert = hex "673C4F"
     , white = hex "ffffff"
     , black = hex "000000"
@@ -41,6 +45,16 @@ theme =
     , fontSizeSubtitle = Css.rem 1.25
     , fontSizeTitle = Css.rem 1.5
     }
+
+
+customCss : String -> String -> Style
+customCss prop val =
+    property prop val
+
+
+stroke : String -> Style
+stroke val =
+    property "stroke" val
 
 
 appearance : String -> Style
@@ -64,6 +78,38 @@ transformOrigin val =
 pointerEventsNone : Style
 pointerEventsNone =
     property "pointer-events" "none"
+
+
+clear : String -> Style
+clear val =
+    property "clear" val
+
+
+clipZero : Style
+clipZero =
+    property "clip" "rect(0 0 0 0)"
+
+
+pseudoContent =
+    property "content" "\"\""
+
+noStyle : Style
+noStyle =
+    batch []
+
+
+visuallyHiddenStyle : Style
+visuallyHiddenStyle =
+    batch
+        [ border zero
+        , height (px 1)
+        , margin (px -1)
+        , overflow hidden
+        , padding zero
+        , position absolute
+        , width (px 1)
+        , clipZero
+        ]
 
 
 btnStyle : Style
@@ -163,7 +209,7 @@ sidebarRow selected =
                 , color theme.white
                 ]
             else
-                []
+                [ customCss "padding-right" "calc(3.75rem + 2em)" ]
     in
     styled div
         ([ displayFlex
@@ -173,6 +219,7 @@ sidebarRow selected =
          , alignItems center
          , backgroundColor theme.colorBackground
          , zIndex (int 2)
+         , transition "background-color 0.5s"
          ]
             ++ selectedStyle
         )
@@ -242,7 +289,7 @@ badge =
         [ display inlineBlock
         , backgroundColor theme.colorAccent
         , color theme.white
-        , width (Css.rem 1.5)
+        , minWidth (Css.rem 1.5)
         , height (Css.rem 1.5)
         , borderRadius (pct 50)
         , textAlign center
@@ -291,7 +338,8 @@ inputRow : List (Attribute msg) -> List (Html msg) -> Html msg
 inputRow attributes children =
     styled div
         [ marginBottom (Css.rem 0.5)
-        , displayFlex ]
+        , displayFlex
+        ]
         ([ class "inputRow" ] ++ attributes)
         children
 
@@ -303,29 +351,100 @@ layerInner attributes children =
         ([ class "layer-inner" ] ++ attributes)
         children
 
+
 overlay : Bool -> Html Msg
-overlay active = 
+overlay active =
     let
-        activeStyle = if active 
-        then batch [
-            opacity (int 1)
-        ]
-        else batch [opacity (int 0)
-            , pointerEventsNone
-        ]
+        activeStyle =
+            if active then
+                batch
+                    [ opacity (int 1)
+                    ]
+            else
+                batch
+                    [ opacity (int 0)
+                    , pointerEventsNone
+                    ]
     in
-        styled div
-            [position absolute
-            , width (vw 100)
-            , height (vh 100)
-            , top zero
-            , left zero
-            , backgroundColor (rgba 0 0 0 0.5)
-            , transition "opacity 0.5s"
-            , zIndex (int 2)
-            , activeStyle
-            ]
-            [ class "overlay"
-            , onClick CloseAllPanels
+    styled div
+        [ position absolute
+        , width (vw 100)
+        , height (vh 100)
+        , top zero
+        , left zero
+        , backgroundColor (rgba 0 0 0 0.5)
+        , transition "opacity 0.5s"
+        , zIndex (int 2)
+        , activeStyle
+        ]
+        [ class "overlay"
+        , onClick CloseAllPanels
+        ]
+        []
+
+
+starBtn : String -> Bool -> (Bool -> Msg) -> Html Msg
+starBtn idString selected clickHandle =
+    let
+        iconFill =
+            if selected then
+                theme.colorAccent
+            else
+                rgba 0 0 0 0
+    in
+    styled span
+        [ marginRight theme.distanceXXS ]
+        [ class "starBtn" ]
+        [ styled Html.Styled.input
+            [ display none ]
+            [ type_ "checkbox"
+            , id ("starred_" ++ idString)
+            , onCheck clickHandle
+            , Html.Styled.Attributes.checked selected
             ]
             []
+        , label
+            [ for ("starred_" ++ idString)
+            , ariaLabel "starred" |> Html.Styled.Attributes.fromUnstyled
+            ]
+            [ starIcon
+                [ width (Css.rem 1.3)
+                , height (Css.rem 1.3)
+                , stroke theme.colorAccent.value
+                , transition "fill 0.5s"
+                , Css.fill iconFill
+                ]
+            ]
+        ]
+
+article : List (Attribute msg) -> List (Html msg) -> Html msg
+article =
+    styled Html.Styled.article
+        [ descendants
+            [ selector "a"
+                [ color theme.colorPrimary ]
+            ]
+        ,clear "both"
+        , marginBottom theme.distanceM
+        , overflow hidden
+        , maxHeight (Css.rem 10)
+        , position relative
+        , after [
+            pseudoContent
+            ,position absolute
+            ,bottom zero
+            ,left zero
+            ,width (pct 100)
+            , height theme.distanceXXL
+            ,backgroundImage <| linearGradient  (stop2 theme.colorTransparent <| pct 0) (stop theme.colorBackground) []
+        ]
+        ]
+
+articleTitle : List (Attribute msg) -> List (Html msg) -> Html msg
+articleTitle =
+    styled h2
+        [ descendants
+            [ selector "a"
+                [ color theme.colorPrimary ]
+            ]
+        ]

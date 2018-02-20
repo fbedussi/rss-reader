@@ -1,4 +1,3 @@
-import './main.css';
 import { Main } from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
 import authInterface from './auth/authFacade';
