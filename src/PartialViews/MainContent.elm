@@ -1,6 +1,6 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (auto, displayFlex, flex, float, height, int, left, margin2, marginBottom, px, width, zero, overflow, hidden, maxHeight)
+import Css exposing (auto, displayFlex, flex, float, height, int, left, margin2, marginBottom, px, width, zero, overflow, hidden, maxHeight, maxWidth, pct, calc, minus)
 import Css.Foreign exposing (descendants, typeSelector)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
@@ -15,7 +15,8 @@ import PartialViews.UiKit exposing (clear, standardPadding, starBtn, theme, arti
 mainContent : Model -> Html Msg
 mainContent model =
     styled main_
-        [ flex (int 1)
+        [ width (pct 75)
+        , maxWidth <| calc (pct 100) minus (Css.rem 25)
         , standardPadding
         ]
         [ class "mainContent" ]

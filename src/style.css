@@ -1,0 +1,19 @@
+@keyframes spin {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.fetchingRss .refreshButton svg {
+    animation: spin 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}

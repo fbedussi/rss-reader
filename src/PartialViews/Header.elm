@@ -33,7 +33,7 @@ siteHeader searchTerm =
                 ]
                 []
                 [ text "Minimal RSS reader" ]
-            , iconButton (refreshIcon []) ( "refresh", False ) [ onClick RefreshFeeds ]
+            , iconButton (refreshIcon []) ( "refresh", False ) [ class "refreshButton", onClick RefreshFeeds ]
             , iconButton (importIcon []) ( "import", True ) [ class "warning", onClick ToggleImportLayer ]
             ]
         ,styled span

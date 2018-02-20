@@ -81,6 +81,7 @@ type alias Model =
         , importData : String
         , searchTerm : String
         , keyboardNavigation: Bool
+        , fetchingRss : Bool
         }
 
 type alias Selected =

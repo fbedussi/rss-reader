@@ -19,6 +19,7 @@ init =
       , searchTerm = ""
       , transitionStore = TransitionManager.empty
       , keyboardNavigation = False
+      , fetchingRss = False
       , defaultTransitionDuration = 500
       }
     , Cmd.none

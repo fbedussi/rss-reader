@@ -1,8 +1,11 @@
 module View exposing (view)
 
-import Html.Styled exposing (Html, div, p, text, Attribute)
+import Css exposing (borderBox, boxSizing, displayFlex, fontFamily, listStyleType, margin, none, outline, padding, sansSerif, zero)
+import Css.Foreign exposing (everything, global, selector)
+import Html.Styled exposing (Attribute, Html, div, p, styled, text)
 import Html.Styled.Attributes exposing (class)
-import Html.Styled.Events exposing (onClick, on, keyCode)
+import Html.Styled.Events exposing (keyCode, on, onClick)
+import Json.Decode as Json
 import Models exposing (Model)
 import Msgs exposing (..)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
@@ -11,40 +14,53 @@ import PartialViews.Header exposing (siteHeader)
 import PartialViews.ImportLayer exposing (importLayer)
 import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Sidebar exposing (sidebar)
-import Css exposing (displayFlex, fontFamily, sansSerif, outline, none, margin, zero, padding, boxSizing, borderBox, listStyleType)
-import Html.Styled exposing (styled)
-import Json.Decode as Json
 import PartialViews.UiKit exposing (overlay)
 import TransitionManager exposing (isSomethingOpen)
-import Css.Foreign exposing (global, selector, everything)
+
 
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (Json.map tagger keyCode)
 
+
 view : Model -> Html Msg
 view model =
+    let
+        bodyClass =
+            "appWrapper"
+                ++ (if model.keyboardNavigation then
+                        " keyboardNavigation"
+                    else
+                        " mouseNavigation"
+                   )
+                ++ (if model.fetchingRss then
+                        " fetchingRss"
+                    else
+                        ""
+                   )
+    in
     styled div
         [ fontFamily sansSerif
         ]
-        [ class ("appWrapper" ++ if model.keyboardNavigation then " keyboardNavigation" else " mouseNavigation")
+        [ class bodyClass
         , onClick SetMouseNavigation
         , onKeyDown VerifyKeyboardNavigation
         ]
         [ global
-            [ everything [ margin zero
+            [ everything
+                [ margin zero
                 , padding zero
                 , boxSizing borderBox
-            ]
+                ]
             , selector "ul"
-                [listStyleType none]
+                [ listStyleType none ]
             , selector ".mouseNavigation *:focus"
                 [ outline none ]
-            ] 
+            ]
         , siteHeader model.searchTerm
         , errorContainer model.errorMsgs
-        , styled div        
-            [displayFlex]
+        , styled div
+            [ displayFlex ]
             []
             [ sidebar model
             , mainContent model

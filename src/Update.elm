@@ -238,6 +238,9 @@ update msg model =
             ( { model | articles = updatedArticles }, DeleteArticlesInDb articleToDeleteIds |> sendInfoOutside )
 
         GetArticles rssResult ->
+            let
+                updatedModel = {model | fetchingRss = False}
+            in
             case rssResult of
                 Ok feeds ->
                     let
@@ -245,10 +248,10 @@ update msg model =
                             feeds
                                 |> List.map (\article -> { article | id = hashString 12345 article.link })
                     in
-                    ( { model | articles = mergeArticles rssArticles model.articles }, Cmd.none )
+                    ( { updatedModel | articles = mergeArticles rssArticles model.articles }, Cmd.none )
 
                 Err err ->
-                    ( { model | errorMsgs = model.errorMsgs ++ [ err ] }, Cmd.none )
+                    ( { updatedModel | errorMsgs = model.errorMsgs ++ [ err ] }, Cmd.none )
 
         SaveArticle articleToSave ->
             let
@@ -268,7 +271,7 @@ update msg model =
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
         RefreshFeeds ->
-            ( model, getFeeds model.sites |> Cmd.batch )
+            ( {model | fetchingRss = True}, getFeeds model.sites |> Cmd.batch )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
