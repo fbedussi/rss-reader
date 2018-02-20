@@ -34,17 +34,8 @@ renderCategory model category =
         [ class"accordion-item category"
         , id domId
         ]
-        (case model.categoryToEditId of
-            Just categoryToEditId ->
-                if categoryToEditId == category.id then
-                    renderEditCategory model category
-                else
-                    renderViewCategory model category selected
-
-            Nothing ->
-                renderViewCategory model category selected
-        )
-
+        (renderViewCategory model category selected)
+        
 
 renderViewCategory : Model -> Category -> Bool -> List (Html Msg)
 renderViewCategory model category selected =
@@ -61,7 +52,31 @@ renderViewCategory model category selected =
     [ deleteActions model.transitionStore category (extractId sitesInCategory)
     , sidebarRow selected
         [ class "categoryButtons accordion-title" ]
-        ([ sidebarSelectionBtn
+        (case model.categoryToEditId of
+            Just categoryToEditId ->
+                if categoryToEditId == category.id then
+                    renderEditCategory model category 
+                else
+                    renderCaregoryName model category selected sitesInCategory articlesInCategory
+
+            Nothing ->
+                renderCaregoryName model category selected sitesInCategory articlesInCategory
+        )       
+    
+    , tabContentOuter selected
+        [ class "tabContentOuter" ]
+        [ styled ul
+            []
+            [ class "category-sitesInCategory tabContentInner" ]
+            (sitesInCategory
+                |> List.map (renderSiteEntry model.selectedSiteId)
+            )
+        ]
+    ]
+
+
+renderCaregoryName model category selected sitesInCategory articlesInCategory = 
+    ([sidebarSelectionBtn
             [ class "categoryBtn"
             , onClick <| ToggleSelectedCategory category.id
             ]
@@ -82,24 +97,11 @@ renderViewCategory model category selected =
                 [ class "category-name" ]
                 [ text (" " ++ category.name) ]
             ]
-         ]
-            ++ (if selected then
-                    [ categoryButtons model category sitesInCategory ]
+    ] ++ (if selected then
+                    [categoryButtons model category sitesInCategory]
                 else
                     []
-               )
-        )
-    , tabContentOuter selected
-        [ class "tabContentOuter" ]
-        [ styled ul
-            []
-            [ class "category-sitesInCategory tabContentInner" ]
-            (sitesInCategory
-                |> List.map (renderSiteEntry model.selectedSiteId)
-            )
-        ]
-    ]
-
+               ))
 
 categoryButtons : Model -> Category -> List Site -> Html Msg
 categoryButtons model category sitesInCategory =
