@@ -8,7 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOuts
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import TransitionManager exposing (transitionStart, transitionEnd, toggleState, closeAll)
+import TransitionManager exposing (transitionStart, transitionEnd, toggleState, closeAll, hideClosing)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -51,7 +51,7 @@ update msg model =
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
 
         ToggleDeleteActions categoryId ->
-            toggleState ({ model | selectedCategoryId = Just categoryId }) "cat" categoryId TransitionStart TransitionEnd model.defaultTransitionDuration
+            toggleState ({ model | selectedCategoryId = Just categoryId }) "cat"  (toString categoryId) TransitionStart TransitionEnd model.defaultTransitionDuration
 
         TransitionEnd ->
             transitionEnd model
@@ -66,14 +66,7 @@ update msg model =
             ({model | transitionStore = closeAll "panel" model.transitionStore}, Cmd.none)
 
         CloseModal ->
-            let
-                modalData = Modal
-                    False
-                    ""
-                    NoOp
-                
-            in
-            ({model | modal = modalData}, Cmd.none)
+            toggleState model "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -101,11 +94,14 @@ update msg model =
                 modalData = Modal
                     True
                     "Are you sure you want to delete this site?"
-                    (DeleteSites sitesToDeleteId)
+                    (CloseDialogAndDeleteSites sitesToDeleteId)
                 
             in
-            ({model | modal = modalData}, Cmd.none)
+            toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
         
+        CloseDialogAndDeleteSites sitesToDeleteId ->
+            toggleState model "panel" "modal" TransitionStart (DeleteSites sitesToDeleteId) model.defaultTransitionDuration
+
         DeleteSites sitesToDeleteId ->
             let
                 updatedSites =
@@ -129,6 +125,7 @@ update msg model =
                 | sites = updatedSites
                 , articles = updatedArticles
                 , siteToEditId = updatedSiteToEditId
+                , transitionStore = hideClosing model.transitionStore
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside

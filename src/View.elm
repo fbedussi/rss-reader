@@ -14,7 +14,7 @@ import PartialViews.ImportLayer exposing (importLayer)
 import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (overlay)
-import TransitionManager exposing (isSomethingOpen)
+import TransitionManager exposing (isSomethingOpen, getTransitionState)
 import PartialViews.Modal exposing (modal)
 
 onKeyDown : (Int -> msg) -> Attribute msg
@@ -64,8 +64,8 @@ view model =
             [ sidebar model
             , mainContent model
             ]
-        , overlay (isSomethingOpen model.transitionStore "panel" || model.modal.open)
-        , modal model.modal
+        , overlay (isSomethingOpen model.transitionStore "panel")
+        , modal model.modal <| getTransitionState model.transitionStore "panelmodal"
         , editSiteLayer model
         , importLayer model.transitionStore
         ]

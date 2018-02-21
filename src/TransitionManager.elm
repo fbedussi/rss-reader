@@ -63,17 +63,17 @@ empty =
     T []
 
 
-toggleState : { a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ( { a | transitionStore : TransitionStore }, Cmd msg )
+toggleState : { a | transitionStore : TransitionStore } -> IdPrefix -> String -> msg -> msg -> Time -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 toggleState model prefix id transitionStartMsg transitionEndMsg transitionDuration =
     toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration False
 
 
-toggleStateSelfish : { a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> ( { a | transitionStore : TransitionStore }, Cmd msg )
+toggleStateSelfish : { a | transitionStore : TransitionStore } -> IdPrefix -> String -> msg -> msg -> Time -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 toggleStateSelfish model prefix id transitionStartMsg transitionEndMsg transitionDuration =
     toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration True
 
 
-toggleState_ : { a | transitionStore : TransitionStore } -> IdPrefix -> b -> msg -> msg -> Time -> Bool -> ( { a | transitionStore : TransitionStore }, Cmd msg )
+toggleState_ : { a | transitionStore : TransitionStore } -> IdPrefix -> String -> msg -> msg -> Time -> Bool -> ( { a | transitionStore : TransitionStore }, Cmd msg )
 toggleState_ model prefix id transitionStartMsg transitionEndMsg transitionDuration selfish =
     let
         transitionManagerId =
@@ -102,9 +102,9 @@ transitionStart model =
     ( { model | transitionStore = open model.transitionStore }, Cmd.none )
 
 
-toTransitionManagerId : String -> a -> Id
-toTransitionManagerId prefix a =
-    prefix ++ toString a
+toTransitionManagerId : String -> String -> Id
+toTransitionManagerId prefix suffix =
+    prefix ++ suffix
 
 
 isOpen : TransitionStore -> Id -> Bool

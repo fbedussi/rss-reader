@@ -10,7 +10,7 @@ import PartialViews.UiKit exposing (btn, alertBtn, deleteActionsPanel)
 
 getDeleteActionsTransitionId : a -> TransitionManager.Id
 getDeleteActionsTransitionId categoryId =
-    toTransitionManagerId "cat" categoryId
+    toTransitionManagerId "cat" (toString categoryId)
 
 
 deleteActions : TransitionStore -> Category -> List Id -> Html Msg

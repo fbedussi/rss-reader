@@ -151,6 +151,7 @@ type Msg
     | ExecuteImport
     | DeleteCategories (List Id)
     | RequestDeleteSites (List Id)
+    | CloseDialogAndDeleteSites (List Id)
     | DeleteSites (List Id)
     | DeleteCategoryAndSites (List Id) (List Id)
     | EditCategoryId Id

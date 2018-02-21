@@ -6,7 +6,7 @@ import Html.Attributes.Aria exposing (ariaLabel)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, for, id, type_)
 import Html.Styled.Events exposing (onCheck, onClick)
-import Models exposing (Selected, Msg(..))
+import Models exposing (Msg(..), Selected)
 import PartialViews.Icons exposing (starIcon)
 import TransitionManager exposing (TransitionState(..))
 
@@ -15,7 +15,8 @@ inputHeight : Rem
 inputHeight =
     Css.rem 2
 
-theme : { black : Color , buttonHeight : Rem , colorAccent : Color , colorAlert : Color , colorBackground : Color , colorHairline : Color , colorPrimaryLight : Color , colorSecondary : Color , colorSecondaryLight : Color , colorTransparent : Color , distanceL : Rem , distanceM : Rem , distanceS : Rem , distanceXL : Rem , distanceXS : Rem , distanceXXL : Rem , distanceXXS : Rem , distanceXXXL : Rem , distanceXXXS : Rem , fontSizeBase : Rem , fontSizeSubtitle : Rem , fontSizeTitle : Rem , hairlineWidth : Px , inputHeight : Rem , white : Color , colorPrimary : Color }
+
+theme : { black : Color, buttonHeight : Rem, colorAccent : Color, colorAlert : Color, colorBackground : Color, colorHairline : Color, colorPrimaryLight : Color, colorSecondary : Color, colorSecondaryLight : Color, colorTransparent : Color, distanceL : Rem, distanceM : Rem, distanceS : Rem, distanceXL : Rem, distanceXS : Rem, distanceXXL : Rem, distanceXXS : Rem, distanceXXXL : Rem, distanceXXXS : Rem, fontSizeBase : Rem, fontSizeSubtitle : Rem, fontSizeTitle : Rem, hairlineWidth : Px, inputHeight : Rem, white : Color, colorPrimary : Color }
 theme =
     { colorPrimary = hex "4D79BC"
     , colorSecondary = hex "673C4F"
@@ -91,6 +92,7 @@ clipZero =
 
 pseudoContent =
     property "content" "\"\""
+
 
 noStyle : Style
 noStyle =
@@ -416,6 +418,7 @@ starBtn idString selected clickHandle =
             ]
         ]
 
+
 article : List (Attribute msg) -> List (Html msg) -> Html msg
 article =
     styled Html.Styled.article
@@ -423,21 +426,22 @@ article =
             [ selector "a"
                 [ color theme.colorPrimary ]
             ]
-        ,clear "both"
+        , clear "both"
         , marginBottom theme.distanceM
         , overflow hidden
         , maxHeight (Css.rem 10)
         , position relative
-        , after [
-            pseudoContent
-            ,position absolute
-            ,bottom zero
-            ,left zero
-            ,width (pct 100)
+        , after
+            [ pseudoContent
+            , position absolute
+            , bottom zero
+            , left zero
+            , width (pct 100)
             , height theme.distanceXXL
-            ,backgroundImage <| linearGradient  (stop2 theme.colorTransparent <| pct 0) (stop theme.colorBackground) []
+            , backgroundImage <| linearGradient (stop2 theme.colorTransparent <| pct 0) (stop theme.colorBackground) []
+            ]
         ]
-        ]
+
 
 articleTitle : List (Attribute msg) -> List (Html msg) -> Html msg
 articleTitle =
