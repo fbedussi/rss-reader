@@ -150,6 +150,7 @@ type Msg
     | StoreImportData String
     | ExecuteImport
     | DeleteCategories (List Id)
+    | RequestDeleteSites (List Id)
     | DeleteSites (List Id)
     | DeleteCategoryAndSites (List Id) (List Id)
     | EditCategoryId Id
@@ -169,6 +170,7 @@ type Msg
     | RemoveErrorMsg String
     | UpdateSearch String
     | CloseAllPanels
+    | CloseModal
     | NoOp
 
 

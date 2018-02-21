@@ -141,7 +141,7 @@ renderSiteEntry selectedSiteId site =
                             [ flexShrink (int 0) ]
                             [ class "siteInCategory-actions button-group" ]
                             [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| ChangeEditSiteId <| Just site.id ]
-                            , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| DeleteSites [ site.id ] ]
+                            , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| RequestDeleteSites [ site.id ] ]
                             ]
                         ]
                     else

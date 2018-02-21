@@ -4,7 +4,7 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOutside(..))
+import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOutside(..), Modal)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
@@ -65,6 +65,16 @@ update msg model =
         CloseAllPanels -> 
             ({model | transitionStore = closeAll "panel" model.transitionStore}, Cmd.none)
 
+        CloseModal ->
+            let
+                modalData = Modal
+                    False
+                    ""
+                    NoOp
+                
+            in
+            ({model | modal = modalData}, Cmd.none)
+
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
 
@@ -86,6 +96,16 @@ update msg model =
             , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
             )
 
+        RequestDeleteSites sitesToDeleteId ->
+            let
+                modalData = Modal
+                    True
+                    "Are you sure you want to delete this site?"
+                    (DeleteSites sitesToDeleteId)
+                
+            in
+            ({model | modal = modalData}, Cmd.none)
+        
         DeleteSites sitesToDeleteId ->
             let
                 updatedSites =

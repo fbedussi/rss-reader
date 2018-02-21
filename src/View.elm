@@ -64,7 +64,7 @@ view model =
             [ sidebar model
             , mainContent model
             ]
-        , overlay (isSomethingOpen model.transitionStore "panel")
+        , overlay (isSomethingOpen model.transitionStore "panel" || model.modal.open)
         , modal model.modal
         , editSiteLayer model
         , importLayer model.transitionStore
