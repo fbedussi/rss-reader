@@ -149,10 +149,11 @@ type Msg
     | ToggleImportLayer
     | StoreImportData String
     | ExecuteImport
+    | RequestDeleteCategories (List Id)
     | DeleteCategories (List Id)
     | RequestDeleteSites (List Id)
-    | CloseDialogAndDeleteSites (List Id)
     | DeleteSites (List Id)
+    | RequestDeleteCategoryAndSites (List Id) (List Id)
     | DeleteCategoryAndSites (List Id) (List Id)
     | EditCategoryId Id
     | UpdateCategoryName Id String
@@ -171,7 +172,6 @@ type Msg
     | RemoveErrorMsg String
     | UpdateSearch String
     | CloseAllPanels
-    | CloseModal
     | NoOp
 
 

@@ -1,12 +1,12 @@
 module PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
 
-
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing ( class, disabled)
+import Html.Styled exposing (Html, styled, text)
+import Html.Styled.Attributes exposing (class, disabled)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Category, Id, Msg(..))
+import PartialViews.UiKit exposing (alertBtn, btn, deleteActionsPanel, standardPadding)
 import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
-import PartialViews.UiKit exposing (btn, alertBtn, deleteActionsPanel)
+import Css exposing (height, rem)
 
 getDeleteActionsTransitionId : a -> TransitionManager.Id
 getDeleteActionsTransitionId categoryId =
@@ -17,14 +17,18 @@ deleteActions : TransitionStore -> Category -> List Id -> Html Msg
 deleteActions transitionStore category sitesInCategoryIds =
     deleteActionsPanel (getDeleteActionsTransitionId category.id |> getTransitionState transitionStore)
         [ class "delete-actions" ]
-        [ btn
+        [ styled btn
+            [ height (Css.rem 3)
+            ]
             [ class "button"
-            , onClick (DeleteCategories [ category.id ])
+            , onClick (RequestDeleteCategories [ category.id ])
             ]
             [ text "Delete category only" ]
-        , alertBtn
+        , styled alertBtn
+            [ height (Css.rem 3)
+            ]
             [ class "button"
-            , onClick (DeleteCategoryAndSites [ category.id ] sitesInCategoryIds)
+            , onClick (RequestDeleteCategoryAndSites [ category.id ] sitesInCategoryIds)
             , disabled
                 (if List.isEmpty sitesInCategoryIds then
                     True
@@ -34,4 +38,3 @@ deleteActions transitionStore category sitesInCategoryIds =
             ]
             [ text "Delete sites as well" ]
         ]
-    

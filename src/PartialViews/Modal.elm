@@ -5,7 +5,7 @@ import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Modal, Msg(..))
 import PartialViews.UiKit exposing (btn, secondaryBtn, transition, theme, standardPadding)
-import Css exposing (display, block, none, int, opacity, width, maxWidth, em, pct, zIndex, position, absolute, top, left, transforms, translate2, backgroundColor, displayFlex, justifyContent, spaceBetween, margin2, zero, auto)
+import Css exposing (display, block, none, int, opacity, width, maxWidth, em, pct, zIndex, position, absolute, top, left, transforms, translate2, backgroundColor, displayFlex, justifyContent, spaceBetween, margin2, zero, auto, marginBottom)
 import TransitionManager exposing (TransitionState(..))
 
 modal : Modal -> TransitionState -> Html Msg
@@ -36,7 +36,8 @@ modal data transitionState =
         , transitionStyles
         ]
         [class "modal"]
-        [ div
+        [ styled div
+            [marginBottom (em 1)]
             [class "modal-text"]
             [text data.text]
         , styled div
@@ -52,7 +53,7 @@ modal data transitionState =
                 [text "yes"]
             , secondaryBtn
                 [class "modal-cancelButton"
-                ,onClick CloseModal]
+                ,onClick CloseAllPanels]
                 [text "no"]
             ]
         ]

@@ -8,7 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOuts
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import TransitionManager exposing (transitionStart, transitionEnd, toggleState, closeAll, hideClosing)
+import TransitionManager exposing (transitionStart, transitionEnd, toggleState, closeAll, hideClosing, triggerClosing, delay)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -65,9 +65,6 @@ update msg model =
         CloseAllPanels -> 
             ({model | transitionStore = closeAll "panel" model.transitionStore}, Cmd.none)
 
-        CloseModal ->
-            toggleState model "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
-
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
 
@@ -78,6 +75,16 @@ update msg model =
             in
             ( newModel, getDataToSaveInDb newModel |> SaveAllData |> sendInfoOutside )
 
+        RequestDeleteCategories categoryToDeleteIds ->
+            let
+                modalData = Modal
+                    True
+                    "Are you sure you want to delete this category?"
+                    (DeleteCategories categoryToDeleteIds)
+                
+            in
+            toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
+        
         DeleteCategories categoryToDeleteIds ->
             let
                 updatedCategories =
@@ -85,8 +92,12 @@ update msg model =
             in
             ( { model
                 | categories = updatedCategories
+                , transitionStore = triggerClosing "panelmodal" model.transitionStore
               }
-            , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
+            , Cmd.batch
+                [DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
+                , delay model.defaultTransitionDuration TransitionEnd
+                ]
             )
 
         RequestDeleteSites sitesToDeleteId ->
@@ -94,14 +105,11 @@ update msg model =
                 modalData = Modal
                     True
                     "Are you sure you want to delete this site?"
-                    (CloseDialogAndDeleteSites sitesToDeleteId)
+                    (DeleteSites sitesToDeleteId)
                 
             in
             toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
-        
-        CloseDialogAndDeleteSites sitesToDeleteId ->
-            toggleState model "panel" "modal" TransitionStart (DeleteSites sitesToDeleteId) model.defaultTransitionDuration
-
+    
         DeleteSites sitesToDeleteId ->
             let
                 updatedSites =
@@ -125,13 +133,24 @@ update msg model =
                 | sites = updatedSites
                 , articles = updatedArticles
                 , siteToEditId = updatedSiteToEditId
-                , transitionStore = hideClosing model.transitionStore
+                , transitionStore = triggerClosing "panelmodal" model.transitionStore
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
                 , DeleteArticlesInDb articleToDeleteInDbIds |> sendInfoOutside
+                , delay model.defaultTransitionDuration TransitionEnd
                 ]
             )
+
+        RequestDeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
+            let
+                modalData = Modal
+                    True
+                    "Are you sure you want to delete this category and all its sites?"
+                    (DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId)
+                
+            in
+            toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
 
         DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
             let
@@ -148,11 +167,13 @@ update msg model =
                 | categories = updatedCategories
                 , sites = updatedSites
                 , articles = updatedArticles
+                , transitionStore = triggerClosing "panelmodal" model.transitionStore
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
                 , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
                 , DeleteArticlesInDb articleToDeleteInDbIds |> sendInfoOutside
+                , delay model.defaultTransitionDuration TransitionEnd
                 ]
             )
 

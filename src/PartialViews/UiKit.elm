@@ -90,6 +90,7 @@ clipZero =
     property "clip" "rect(0 0 0 0)"
 
 
+pseudoContent : Style
 pseudoContent =
     property "content" "\"\""
 
@@ -117,7 +118,7 @@ btnStyle : Style
 btnStyle =
     batch
         [ display inlineBlock
-        , height theme.buttonHeight
+        , minHeight theme.buttonHeight
         , padding2 theme.distanceXXXS theme.distanceXS
         , backgroundColor theme.colorPrimary
         , color theme.white
@@ -174,6 +175,16 @@ alertBtn =
         ]
 
 
+input : List (Attribute msg) -> List (Html msg) -> Html msg
+input =
+    styled Html.Styled.input
+        [ display inlineBlock
+        , height theme.inputHeight
+        , padding2 theme.distanceXXXS theme.distanceXS
+        , border3 theme.hairlineWidth solid theme.colorHairline
+        ]
+
+
 secondaryBtn : List (Attribute msg) -> List (Html msg) -> Html msg
 secondaryBtn =
     styled button
@@ -201,6 +212,17 @@ sidebarSelectionBtn =
         ]
 
 
+categoryWrapper : List (Attribute msg) -> List (Html msg) -> Html msg
+categoryWrapper =
+    styled li
+        [ position relative
+        , minHeight (Css.rem 2)
+        , border3 (px 2) solid theme.colorHairline
+        , borderBottom zero
+        , lastChild [ borderBottom3 (px 2) solid theme.colorHairline ]
+        ]
+
+
 sidebarRow : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
 sidebarRow selected =
     let
@@ -224,16 +246,6 @@ sidebarRow selected =
          ]
             ++ selectedStyle
         )
-
-
-input : List (Attribute msg) -> List (Html msg) -> Html msg
-input =
-    styled Html.Styled.input
-        [ display inlineBlock
-        , height theme.inputHeight
-        , padding2 theme.distanceXXXS theme.distanceXS
-        , border3 theme.hairlineWidth solid theme.colorHairline
-        ]
 
 
 tabContentOuter : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
@@ -271,17 +283,6 @@ deleteActionsPanel transitionState =
          ]
             ++ transitionStyles
         )
-
-
-categoryWrapper : List (Attribute msg) -> List (Html msg) -> Html msg
-categoryWrapper =
-    styled li
-        [ position relative
-        , minHeight (Css.rem 2)
-        , border3 (px 2) solid theme.colorHairline
-        , borderBottom zero
-        , lastChild [ borderBottom3 (px 2) solid theme.colorHairline ]
-        ]
 
 
 badge : List (Attribute msg) -> List (Html msg) -> Html msg
