@@ -14,8 +14,8 @@ import PartialViews.ImportLayer exposing (importLayer)
 import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (overlay)
-import TransitionManager exposing (isSomethingOpen, getTransitionState)
 import PartialViews.Modal exposing (modal)
+import PanelsManager exposing (isPanelOpen)
 
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
@@ -64,8 +64,8 @@ view model =
             [ sidebar model
             , mainContent model
             ]
-        , overlay (isSomethingOpen model.transitionStore "panel")
-        , modal model.modal <| getTransitionState model.transitionStore "panelmodal"
-        , editSiteLayer model
-        , importLayer model.transitionStore
+        --, overlay (isSomethingOpen model.transitionStore "panel")
+        --, modal model.modal <| getTransitionState model.transitionStore "panelmodal"
+        --, editSiteLayer model
+        , importLayer (isPanelOpen "import" model.panelsOpen)
         ]

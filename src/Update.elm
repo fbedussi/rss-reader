@@ -8,7 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOuts
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import TransitionManager exposing (transitionStart, transitionEnd, toggleState, closeAll, hideClosing, triggerClosing, delay)
+import PanelsManager exposing (PanelsOpen, closeAllPanels, openPanel, closePanel, isPanelOpen)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -51,19 +51,18 @@ update msg model =
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
 
         ToggleDeleteActions categoryId ->
-            toggleState ({ model | selectedCategoryId = Just categoryId }) "cat"  (toString categoryId) TransitionStart TransitionEnd model.defaultTransitionDuration
-
-        TransitionEnd ->
-            transitionEnd model
-
-        TransitionStart ->
-            transitionStart model
+            --toggleState ({ model | selectedCategoryId = Just categoryId }) "cat"  (toString categoryId) TransitionStart TransitionEnd model.defaultTransitionDuration
+            (model, Cmd.none)
 
         ToggleImportLayer ->
-            toggleState model "panel" "import" TransitionStart TransitionEnd model.defaultTransitionDuration
+            let
+                updatedPanelsOpen = 
+                    if isPanelOpen "import" model.panelsOpen
+                    then closePanel "import"
+                    else openPanel "import"
+            in
+            ({model | panelsOpen = updatedPanelsOpen }, Cmd.none)
 
-        CloseAllPanels -> 
-            ({model | transitionStore = closeAll "panel" model.transitionStore}, Cmd.none)
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -83,7 +82,10 @@ update msg model =
                     (DeleteCategories categoryToDeleteIds)
                 
             in
-            toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
+            ({model 
+                | modal = modalData
+                , panelsOpen = openModal model.panelsOpen
+            }, Cmd.none)
         
         DeleteCategories categoryToDeleteIds ->
             let
@@ -92,13 +94,9 @@ update msg model =
             in
             ( { model
                 | categories = updatedCategories
-                , transitionStore = triggerClosing "panelmodal" model.transitionStore
+                , panelsOpen = closeModal model.panelsOpen
               }
-            , Cmd.batch
-                [DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
-                , delay model.defaultTransitionDuration TransitionEnd
-                ]
-            )
+            , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside )
 
         RequestDeleteSites sitesToDeleteId ->
             let
@@ -108,7 +106,10 @@ update msg model =
                     (DeleteSites sitesToDeleteId)
                 
             in
-            toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
+            ({model 
+                | modal = modalData
+                , panelsOpen = openModal model.panelsOpen
+            }, Cmd.none)
     
         DeleteSites sitesToDeleteId ->
             let
@@ -133,12 +134,11 @@ update msg model =
                 | sites = updatedSites
                 , articles = updatedArticles
                 , siteToEditId = updatedSiteToEditId
-                , transitionStore = triggerClosing "panelmodal" model.transitionStore
+                , panelsOpen = closeModal model.panelsOpen
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
                 , DeleteArticlesInDb articleToDeleteInDbIds |> sendInfoOutside
-                , delay model.defaultTransitionDuration TransitionEnd
                 ]
             )
 
@@ -150,7 +150,10 @@ update msg model =
                     (DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId)
                 
             in
-            toggleState {model | modal = modalData} "panel" "modal" TransitionStart TransitionEnd model.defaultTransitionDuration
+            ({model
+                | modal = modalData
+                , panelsOpen = openModal model.panelsOpen
+            }, Cmd.none)
 
         DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
             let
@@ -167,13 +170,12 @@ update msg model =
                 | categories = updatedCategories
                 , sites = updatedSites
                 , articles = updatedArticles
-                , transitionStore = triggerClosing "panelmodal" model.transitionStore
+                , panelsOpen = closeModal model.panelsOpen
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
                 , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
                 , DeleteArticlesInDb articleToDeleteInDbIds |> sendInfoOutside
-                , delay model.defaultTransitionDuration TransitionEnd
                 ]
             )
 
@@ -223,7 +225,6 @@ update msg model =
             )
 
         FocusResult result ->
-            -- handle success or failure here
             case result of
                 Err (Dom.NotFound id) ->
                     ( model, Cmd.none )
@@ -232,7 +233,10 @@ update msg model =
                     ( model, Cmd.none )
 
         ChangeEditSiteId siteId ->
-            toggleState { model | siteToEditId = siteId } "panel" "editSite" TransitionStart TransitionEnd model.defaultTransitionDuration
+            ({ model 
+                | siteToEditId = siteId 
+                , panelsOpen = openModal model.panelsOpen
+            }, Cmd.none)
 
         AddNewSite ->
             let
@@ -323,6 +327,9 @@ update msg model =
         UpdateSearch searchTerm ->
             ( { model | searchTerm = searchTerm }, Cmd.none )
 
+        CloseAllPanels ->
+            ( { model | panelsOpen = (True,[]) }, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -377,3 +384,13 @@ createNewSite sites =
 getDataToSaveInDb : Model -> ( List Category, List Site, List Article )
 getDataToSaveInDb model =
     ( model.categories, model.sites, model.articles |> List.filter (\article -> article.starred) )
+
+
+closeModal : PanelsOpen -> PanelsOpen
+closeModal panelsOpen = 
+    closePanel "modal" panelsOpen
+
+
+openModal : PanelsOpen -> PanelsOpen
+openModal panelsOpen = 
+    openPanel "modal" panelsOpen

@@ -8,7 +8,7 @@ import Html.Styled.Attributes exposing (class, for, id, type_)
 import Html.Styled.Events exposing (onCheck, onClick)
 import Models exposing (Msg(..), Selected)
 import PartialViews.Icons exposing (starIcon)
-import TransitionManager exposing (TransitionState(..))
+
 
 
 inputHeight : Rem
@@ -260,19 +260,8 @@ tabContentOuter selected =
         ]
 
 
-deleteActionsPanel : TransitionState -> List (Attribute msg) -> List (Html msg) -> Html msg
-deleteActionsPanel transitionState =
-    let
-        transitionStyles =
-            if transitionState == Hidden then
-                [ display none ]
-            else if transitionState == Open then
-                [ displayFlex
-                , transforms [ translateX (pct 100) ]
-                ]
-            else
-                [ displayFlex ]
-    in
+deleteActionsPanel : List (Attribute msg) -> List (Html msg) -> Html msg
+deleteActionsPanel =
     styled div
         ([ position absolute
          , top (px 1)
@@ -281,7 +270,6 @@ deleteActionsPanel transitionState =
          , transition "transform 0.5s"
          , zIndex (int 1)
          ]
-            ++ transitionStyles
         )
 
 
@@ -305,35 +293,23 @@ layerStyle =
     batch
         [ position fixed
         , zIndex (int 10)
-        , transition "transform 0.5s"
         , backgroundColor theme.colorBackground
         , standardPadding
         , border3 (px 2) solid theme.colorHairline
+        , display block
+        , visibility hidden
         ]
 
 
-layerTop : TransitionState -> List (Attribute msg) -> List (Html msg) -> Html msg
-layerTop transitionState =
-    let
-        transitionStyle =
-            if transitionState == Hidden then
-                [ display none ]
-            else if transitionState == Open then
-                [ displayFlex
-                , transforms [ translateY zero ]
-                ]
-            else
-                [ displayFlex ]
-    in
+layerTop : List (Attribute msg) -> List (Html msg) -> Html msg
+layerTop =
     styled div
-        ([ layerStyle
+        [ layerStyle
          , top zero
          , left zero
          , width (pct 100)
          , transforms [ translateY (pct -100) ]
          ]
-            ++ transitionStyle
-        )
 
 
 inputRow : List (Attribute msg) -> List (Html msg) -> Html msg

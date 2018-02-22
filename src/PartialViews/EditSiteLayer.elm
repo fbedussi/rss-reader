@@ -8,7 +8,6 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop)
-import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
 
 
 editSiteLayer : Model -> Html Msg
@@ -22,7 +21,7 @@ editSiteLayer model =
                 Nothing ->
                     Just createEmptySite
     in
-    layerTop (toTransitionManagerId "panel" "editSite" |> getTransitionState model.transitionStore)
+    layerTop
         [ class "editSiteLayer" ]
         [ case site of
             Just site ->

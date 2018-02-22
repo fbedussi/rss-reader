@@ -2,7 +2,6 @@ module PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButton
 
 import Css exposing (Style, backgroundColor, em, marginLeft, padding2)
 import Html.Styled exposing (Attribute, Html, button, span, styled, text)
-import Html.Styled.Attributes exposing (class, disabled)
 import Models exposing (Msg(..))
 import PartialViews.UiKit exposing (btn, btnNoStyle, noStyle, theme, visuallyHiddenStyle)
 

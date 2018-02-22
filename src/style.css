@@ -8,6 +8,43 @@
     }
 }
 
+@keyframes slideDown {
+    0% {
+        visibility: visible;
+        transform: translateY(-100%);
+    }
+    
+    100% {
+        visibility: visible;
+        transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    0% {
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    99% {
+        visibility: visible;
+        transform: translateY(-100%);
+    }
+
+    100% {
+        visibility: hidden;
+    }
+  }
+
+
+.slideUp {
+    animation: slideUp 0.3s forwards;
+}
+
+.slideDown {
+    animation: slideDown 0.3s forwards;
+}
+
 body {
     overflow-x: hidden;
 }

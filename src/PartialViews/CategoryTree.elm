@@ -7,7 +7,7 @@ import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span,
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, Selected, SelectedCategoryId, SelectedSiteId, Site, Msg(..))
-import PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
+import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
@@ -38,8 +38,8 @@ renderCategory model category =
         [ class "tab"
         , id domId
         ]
-        [ deleteActions model.transitionStore category (extractId sitesInCategory)
-        , sidebarRow selected
+        [ --deleteActions model.panelsState category (extractId sitesInCategory)
+        sidebarRow selected
             [ class "tabTitle" ]
             (case model.categoryToEditId of
                 Just categoryToEditId ->

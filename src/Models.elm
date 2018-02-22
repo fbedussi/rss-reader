@@ -3,12 +3,10 @@ module Models exposing (..)
 import Dom exposing (Error)
 import Json.Encode
 import Keyboard exposing (KeyCode)
-import TransitionManager
-
+import PanelsManager exposing (PanelsOpen, initialPanelsOpen)
 
 type alias UserUid =
     String
-
 
 type alias LoginData =
     { email : Email
@@ -88,7 +86,6 @@ type alias GenericOutsideData =
 
 
 type alias Model =
-    TransitionManager.WithTransitionStore
         { errorMsgs : List String
         , categories : List Category
         , sites : List Site
@@ -102,6 +99,8 @@ type alias Model =
         , keyboardNavigation : Bool
         , fetchingRss : Bool
         , modal : Modal
+        , panelsOpen : PanelsOpen
+        , defaultTransitionDuration : Int
         }
 
 
@@ -117,10 +116,10 @@ init =
       , siteToEditId = Nothing
       , importData = ""
       , searchTerm = ""
-      , transitionStore = TransitionManager.empty
       , keyboardNavigation = False
       , fetchingRss = False
       , modal = {open = False, text = "", action = NoOp}
+      , panelsOpen = initialPanelsOpen
       , defaultTransitionDuration = 500
       }
     , Cmd.none
@@ -144,8 +143,6 @@ type Msg
     | ToggleSelectedCategory Id
     | SelectSite Id
     | ToggleDeleteActions Id
-    | TransitionEnd
-    | TransitionStart
     | ToggleImportLayer
     | StoreImportData String
     | ExecuteImport

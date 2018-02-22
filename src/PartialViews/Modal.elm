@@ -6,21 +6,9 @@ import Html.Styled.Events exposing (onClick)
 import Models exposing (Modal, Msg(..))
 import PartialViews.UiKit exposing (btn, secondaryBtn, transition, theme, standardPadding)
 import Css exposing (display, block, none, int, opacity, width, maxWidth, em, pct, zIndex, position, absolute, top, left, transforms, translate2, backgroundColor, displayFlex, justifyContent, spaceBetween, margin2, zero, auto, marginBottom)
-import TransitionManager exposing (TransitionState(..))
 
-modal : Modal -> TransitionState -> Html Msg
-modal data transitionState =
-    let
-        transitionStyles =
-            Css.batch <| if transitionState == Hidden then
-                [ display none ]
-            else if transitionState == Open then
-                [ display block
-                , opacity (int 1) ]
-            else
-                [ display block
-                ,opacity (int 0) ]
-    in
+modal : Modal -> Html Msg
+modal data  =
     styled div
         [
         transition "opacity 0.5s"
@@ -33,7 +21,6 @@ modal data transitionState =
         , transforms [translate2 (pct -50) (pct -50)]
         , backgroundColor theme.colorBackground
         , standardPadding
-        , transitionStyles
         ]
         [class "modal"]
         [ styled div

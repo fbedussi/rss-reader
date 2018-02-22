@@ -1,21 +1,16 @@
-module PartialViews.DeleteActions exposing (deleteActions, getDeleteActionsTransitionId)
+module PartialViews.DeleteActions exposing (deleteActions)
 
 import Html.Styled exposing (Html, styled, text)
 import Html.Styled.Attributes exposing (class, disabled)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Category, Id, Msg(..))
 import PartialViews.UiKit exposing (alertBtn, btn, deleteActionsPanel, standardPadding)
-import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
 import Css exposing (height, rem)
 
-getDeleteActionsTransitionId : a -> TransitionManager.Id
-getDeleteActionsTransitionId categoryId =
-    toTransitionManagerId "cat" (toString categoryId)
 
-
-deleteActions : TransitionStore -> Category -> List Id -> Html Msg
-deleteActions transitionStore category sitesInCategoryIds =
-    deleteActionsPanel (getDeleteActionsTransitionId category.id |> getTransitionState transitionStore)
+deleteActions :Category -> List Id -> Html Msg
+deleteActions category sitesInCategoryIds =
+    deleteActionsPanel
         [ class "delete-actions" ]
         [ styled btn
             [ height (Css.rem 3)

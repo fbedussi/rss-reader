@@ -4,16 +4,15 @@ import Html.Styled exposing (Html, button, div, p, text, textarea)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..))
-import TransitionManager exposing (TransitionStore, getTransitionState, toTransitionManagerId)
 import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
 
-
-importLayer : TransitionStore -> Html Msg
-importLayer transitionStore =
-    layerTop (toTransitionManagerId "panel" "import" |> getTransitionState transitionStore)
-        [ class "editSiteLayer" ]
+importLayer : Bool -> Bool -> Html Msg
+importLayer isInit isOpen =
+    layerTop
+        [ class ("editSiteLayer" ++ (if isInit && isOpen then " slideDown" else if isInit then " slideUp" else "" ))
+        ]
         [ div
-            [ class "layer-inner" ]
+            [ class "layer-inner"]
             [ div
                 [ class "importForm" ]
                 [ p
