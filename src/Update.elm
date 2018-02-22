@@ -8,7 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOuts
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import PanelsManager exposing (PanelsOpen, closeAllPanels, openPanel, closePanel, isPanelOpen)
+import PanelsManager exposing (PanelsState, closeAllPanels, openPanel, closePanel, getPanelState)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -56,12 +56,14 @@ update msg model =
 
         ToggleImportLayer ->
             let
-                updatedPanelsOpen = 
-                    if Tuple.second <| isPanelOpen "import" model.panelsOpen
-                    then closePanel "import" model.panelsOpen
-                    else openPanel "import" model.panelsOpen
+                panelState = getPanelState "import" model.panelsState
+                isOpen = Tuple.first panelState 
+                updatedPanelsState = 
+                    (if isOpen
+                    then closePanel "import" model.panelsState
+                    else openPanel "import" model.panelsState)
             in
-            ({model | panelsOpen = updatedPanelsOpen }, Cmd.none)
+            ({model | panelsState = updatedPanelsState }, Cmd.none)
 
 
         StoreImportData importData ->
@@ -84,7 +86,7 @@ update msg model =
             in
             ({model 
                 | modal = modalData
-                , panelsOpen = openModal model.panelsOpen
+                , panelsState = openModal model.panelsState
             }, Cmd.none)
         
         DeleteCategories categoryToDeleteIds ->
@@ -94,7 +96,7 @@ update msg model =
             in
             ( { model
                 | categories = updatedCategories
-                , panelsOpen = closeModal model.panelsOpen
+                , panelsState = closeModal model.panelsState
               }
             , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside )
 
@@ -108,7 +110,7 @@ update msg model =
             in
             ({model 
                 | modal = modalData
-                , panelsOpen = openModal model.panelsOpen
+                , panelsState = openModal model.panelsState
             }, Cmd.none)
     
         DeleteSites sitesToDeleteId ->
@@ -122,7 +124,7 @@ update msg model =
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
-                , panelsOpen = closeModal model.panelsOpen
+                , panelsState = closeModal model.panelsState
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
@@ -140,7 +142,7 @@ update msg model =
             in
             ({model
                 | modal = modalData
-                , panelsOpen = openModal model.panelsOpen
+                , panelsState = openModal model.panelsState
             }, Cmd.none)
 
         DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
@@ -158,7 +160,7 @@ update msg model =
                 | categories = updatedCategories
                 , sites = updatedSites
                 , articles = updatedArticles
-                , panelsOpen = closeModal model.panelsOpen
+                , panelsState = closeModal model.panelsState
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
@@ -222,11 +224,11 @@ update msg model =
 
         OpenEditSitePanel siteId ->
             ({ model | siteToEditId = siteId 
-                , panelsOpen = openPanel "editSite" model.panelsOpen
+                , panelsState = openPanel "editSite" model.panelsState
             }, Cmd.none)
 
         CloseEditSitePanel ->
-            ({ model | panelsOpen = closePanel "editSite" model.panelsOpen
+            ({ model | panelsState = closePanel "editSite" model.panelsState
             }, Cmd.none)
 
         AddNewSite ->
@@ -319,7 +321,7 @@ update msg model =
             ( { model | searchTerm = searchTerm }, Cmd.none )
 
         CloseAllPanels ->
-            ( { model | panelsOpen = closeAllPanels }, Cmd.none )
+            ( { model | panelsState = closeAllPanels model.panelsState }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -377,11 +379,11 @@ getDataToSaveInDb model =
     ( model.categories, model.sites, model.articles |> List.filter (\article -> article.starred) )
 
 
-closeModal : PanelsOpen -> PanelsOpen
-closeModal panelsOpen = 
-    closePanel "modal" panelsOpen
+closeModal : PanelsState -> PanelsState
+closeModal panelsState = 
+    closePanel "modal" panelsState
 
 
-openModal : PanelsOpen -> PanelsOpen
-openModal panelsOpen = 
-    openPanel "modal" panelsOpen
+openModal : PanelsState -> PanelsState
+openModal panelsState = 
+    openPanel "modal" panelsState

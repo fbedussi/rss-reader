@@ -1,43 +1,75 @@
-module PanelsManager exposing (PanelsOpen, closeAllPanels, closePanel, isPanelOpen, openPanel, initialPanelsOpen)
+module PanelsManager exposing (PanelsState, initialPanelsState, closeAllPanels, closePanel, getPanelState, openPanel)
 
 
-type PanelsOpen
-    = PanelsOpen PanelsInited (List PanelId)
+type PanelsState
+    = PanelsState (List PanelState)
 
+type alias PanelState =
+    (PanelId, PanelOpen, PanelClosed)
 
-type alias PanelsInited =
+type alias PanelOpen =
+    Bool
+
+type alias PanelClosed =
     Bool
 
 
 type alias PanelId =
     String
 
-initialPanelsOpen : PanelsOpen
-initialPanelsOpen = 
-    PanelsOpen False []
+initialPanelsState : PanelsState 
+initialPanelsState =
+    PanelsState []
+    
+
+getPanelState : PanelId -> PanelsState -> (PanelOpen, PanelClosed)
+getPanelState panelId panelsState =
+    case panelsState of
+        PanelsState states ->
+            let
+                panelState = states |> List.filter (\state -> let (id, open, closed) = state in panelId == id) |> List.head
+            in
+            case panelState of
+                Just (id, open, closed) ->
+                    (open, closed)
+                
+                Nothing ->
+                    (False, False)
 
 
-isPanelOpen : PanelId -> PanelsOpen -> (Bool, Bool)
-isPanelOpen panelId panelsOpen =
-    case panelsOpen of
-        PanelsOpen panelsInited panels ->
-            (panelsInited, panels |> List.member panelId)
+closePanel : PanelId -> PanelsState -> PanelsState
+closePanel panelId panelsState =
+    case panelsState of
+        PanelsState states ->
+            states
+                |> List.map (\state -> 
+                    let 
+                        (id, open, closed) = state 
+                    in 
+                    if 
+                        panelId == id
+                    then 
+                        (panelId, False, True)
+                    else
+                        (id, open, closed)
+                    )
+                |> PanelsState
 
 
-closePanel : PanelId -> PanelsOpen -> PanelsOpen
-closePanel panelId panelsOpen =
-    case panelsOpen of
-        PanelsOpen panelsInited panels ->
-            PanelsOpen True (panels |> List.filter (\panel -> panel /= panelId))
+openPanel : PanelId -> PanelsState -> PanelsState
+openPanel panelId panelsState =
+    case panelsState of
+        PanelsState states ->
+            states 
+                |> List.filter (\state -> let (id, open, closed) = state in panelId /= id)
+                |> List.append [ (panelId, True, False) ]
+                |> PanelsState
 
 
-openPanel : PanelId -> PanelsOpen -> PanelsOpen
-openPanel panelId panelsOpen =
-    case panelsOpen of
-        PanelsOpen panelsInited panels ->
-            PanelsOpen True (panels |> List.append [ panelId ])
-
-
-closeAllPanels : PanelsOpen
-closeAllPanels =
-    PanelsOpen True []
+closeAllPanels : PanelsState -> PanelsState
+closeAllPanels panelsState =
+    case panelsState of
+        PanelsState states ->
+            states
+                |> List.map (\state -> let (id, open, closed) = state in (id, False, True))
+                |> PanelsState

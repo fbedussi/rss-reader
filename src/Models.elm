@@ -3,7 +3,7 @@ module Models exposing (..)
 import Dom exposing (Error)
 import Json.Encode
 import Keyboard exposing (KeyCode)
-import PanelsManager exposing (PanelsOpen, initialPanelsOpen)
+import PanelsManager exposing (PanelsState, initialPanelsState)
 
 type alias UserUid =
     String
@@ -99,7 +99,7 @@ type alias Model =
         , keyboardNavigation : Bool
         , fetchingRss : Bool
         , modal : Modal
-        , panelsOpen : PanelsOpen
+        , panelsState : PanelsState
         , defaultTransitionDuration : Int
         }
 
@@ -119,7 +119,7 @@ init =
       , keyboardNavigation = False
       , fetchingRss = False
       , modal = {open = False, text = "", action = NoOp}
-      , panelsOpen = initialPanelsOpen
+      , panelsState = initialPanelsState
       , defaultTransitionDuration = 500
       }
     , Cmd.none

@@ -11,9 +11,9 @@ import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop)
 
 
 editSiteLayer : (Bool, Bool) -> Maybe Site -> List Category -> Html Msg
-editSiteLayer (isInit, isOpen) site categories =
+editSiteLayer (isOpen, isClosed) site categories =
     layerTop
-        [ class ("editSiteLayer" ++ (if isInit && isOpen then " slideDown" else if isInit then " slideUp" else "" )) ]
+        [ class ("editSiteLayer" ++ (if isOpen then " slideDown" else if isClosed then " slideUp" else "" )) ]
         [ case site of
             Just site ->
                 renderEditSiteForm site categories

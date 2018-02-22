@@ -15,7 +15,7 @@ import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (overlay)
 import PartialViews.Modal exposing (modal)
-import PanelsManager exposing (isPanelOpen)
+import PanelsManager exposing (getPanelState)
 import Helpers exposing (getSiteToEdit)
 
 
@@ -68,6 +68,6 @@ view model =
             ]
         --, overlay (isSomethingOpen model.transitionStore "panel")
         --, modal model.modal <| getTransitionState model.transitionStore "panelmodal"
-        , editSiteLayer (isPanelOpen "editSite" model.panelsOpen) (getSiteToEdit model.siteToEditId model.sites) model.categories
-        , importLayer (isPanelOpen "import" model.panelsOpen)
+        , editSiteLayer (getPanelState "editSite" model.panelsState) (getSiteToEdit model.siteToEditId model.sites) model.categories
+        , importLayer (getPanelState "import" model.panelsState)
         ]
