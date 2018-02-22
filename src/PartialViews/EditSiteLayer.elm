@@ -10,35 +10,19 @@ import PartialViews.Icons exposing (deleteIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop)
 
 
-editSiteLayer : Model -> Html Msg
-editSiteLayer model =
-    let
-        site =
-            case model.siteToEditId of
-                Just id ->
-                    getSiteToEdit id model.sites
-
-                Nothing ->
-                    Just createEmptySite
-    in
+editSiteLayer : (Bool, Bool) -> Maybe Site -> List Category -> Html Msg
+editSiteLayer (isInit, isOpen) site categories =
     layerTop
-        [ class "editSiteLayer" ]
+        [ class ("editSiteLayer" ++ (if isInit && isOpen then " slideDown" else if isInit then " slideUp" else "" )) ]
         [ case site of
             Just site ->
-                renderEditSiteForm site model.categories
+                renderEditSiteForm site categories
 
             Nothing ->
                 div
                     [ class "error" ]
                     [ text "Error: no site found" ]
         ]
-
-
-getSiteToEdit : Int -> List Site -> Maybe Site
-getSiteToEdit siteToEditId sites =
-    sites
-        |> List.filter (\site -> site.id == siteToEditId)
-        |> List.head
 
 
 renderEditSiteForm : Site -> List Category -> Html Msg
@@ -99,7 +83,7 @@ renderEditSiteForm site categories =
             ]
             []
             [ btn
-                [ onClick (ChangeEditSiteId Nothing) ]
+                [ onClick (CloseEditSitePanel) ]
                 [ text "close" ]
             , iconButton (deleteIcon []) ( "delete", True ) [ onClick (DeleteSites [ site.id ]) ]
             ]

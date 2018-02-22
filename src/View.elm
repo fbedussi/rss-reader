@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Css exposing (borderBox, boxSizing, displayFlex, fontFamily, listStyleType, margin, none, outline, padding, sansSerif, zero)
 import Css.Foreign exposing (everything, global, selector)
-import Html.Styled exposing (Attribute, Html, div, p, styled, text)
+import Html.Styled exposing (Attribute, Html, div, styled)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (keyCode, on, onClick)
 import Json.Decode as Json
@@ -16,6 +16,8 @@ import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (overlay)
 import PartialViews.Modal exposing (modal)
 import PanelsManager exposing (isPanelOpen)
+import Helpers exposing (getSiteToEdit)
+
 
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
@@ -66,6 +68,6 @@ view model =
             ]
         --, overlay (isSomethingOpen model.transitionStore "panel")
         --, modal model.modal <| getTransitionState model.transitionStore "panelmodal"
-        --, editSiteLayer model
+        , editSiteLayer (isPanelOpen "editSite" model.panelsOpen) (getSiteToEdit model.siteToEditId model.sites) model.categories
         , importLayer (isPanelOpen "import" model.panelsOpen)
         ]

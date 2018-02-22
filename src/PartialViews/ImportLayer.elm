@@ -6,10 +6,10 @@ import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..))
 import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
 
-importLayer : Bool -> Bool -> Html Msg
-importLayer isInit isOpen =
+importLayer : (Bool, Bool) -> Html Msg
+importLayer (isInit, isOpen) =
     layerTop
-        [ class ("editSiteLayer" ++ (if isInit && isOpen then " slideDown" else if isInit then " slideUp" else "" ))
+        [ class ("importLayer" ++ (if isInit && isOpen then " slideDown" else if isInit then " slideUp" else "" ))
         ]
         [ div
             [ class "layer-inner"]

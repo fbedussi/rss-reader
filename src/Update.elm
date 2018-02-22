@@ -57,9 +57,9 @@ update msg model =
         ToggleImportLayer ->
             let
                 updatedPanelsOpen = 
-                    if isPanelOpen "import" model.panelsOpen
-                    then closePanel "import"
-                    else openPanel "import"
+                    if Tuple.second <| isPanelOpen "import" model.panelsOpen
+                    then closePanel "import" model.panelsOpen
+                    else openPanel "import" model.panelsOpen
             in
             ({model | panelsOpen = updatedPanelsOpen }, Cmd.none)
 
@@ -118,22 +118,10 @@ update msg model =
 
                 ( updatedArticles, articleToDeleteInDbIds ) =
                     deleteSitesArticles model.articles sitesToDeleteId
-
-                updatedSiteToEditId =
-                    case model.siteToEditId of
-                        Just id ->
-                            if List.member id sitesToDeleteId then
-                                Nothing
-                            else
-                                Just id
-
-                        Nothing ->
-                            Nothing
             in
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
-                , siteToEditId = updatedSiteToEditId
                 , panelsOpen = closeModal model.panelsOpen
               }
             , Cmd.batch
@@ -232,10 +220,13 @@ update msg model =
                 Ok () ->
                     ( model, Cmd.none )
 
-        ChangeEditSiteId siteId ->
-            ({ model 
-                | siteToEditId = siteId 
-                , panelsOpen = openModal model.panelsOpen
+        OpenEditSitePanel siteId ->
+            ({ model | siteToEditId = siteId 
+                , panelsOpen = openPanel "editSite" model.panelsOpen
+            }, Cmd.none)
+
+        CloseEditSitePanel ->
+            ({ model | panelsOpen = closePanel "editSite" model.panelsOpen
             }, Cmd.none)
 
         AddNewSite ->
@@ -245,7 +236,7 @@ update msg model =
             in
             ( { model
                 | sites = List.append model.sites [ newSite ]
-                , siteToEditId = Just newSite.id
+                , siteToEditId = newSite.id
               }
             , AddSiteInDb newSite |> sendInfoOutside
             )
@@ -328,7 +319,7 @@ update msg model =
             ( { model | searchTerm = searchTerm }, Cmd.none )
 
         CloseAllPanels ->
-            ( { model | panelsOpen = (True,[]) }, Cmd.none )
+            ( { model | panelsOpen = closeAllPanels }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )

@@ -93,7 +93,7 @@ type alias Model =
         , selectedCategoryId : SelectedCategoryId
         , selectedSiteId : SelectedSiteId
         , categoryToEditId : Maybe Id
-        , siteToEditId : Maybe Id
+        , siteToEditId : Id
         , importData : String
         , searchTerm : String
         , keyboardNavigation : Bool
@@ -113,7 +113,7 @@ init =
       , selectedCategoryId = Nothing
       , selectedSiteId = Nothing
       , categoryToEditId = Nothing
-      , siteToEditId = Nothing
+      , siteToEditId = -1
       , importData = ""
       , searchTerm = ""
       , keyboardNavigation = False
@@ -158,7 +158,8 @@ type Msg
     | AddNewCategory
     | AddNewSite
     | FocusResult (Result Error ())
-    | ChangeEditSiteId (Maybe Id)
+    | OpenEditSitePanel Id
+    | CloseEditSitePanel
     | UpdateSite Site
     | GetArticles (Result String (List Article))
     | DeleteArticles (List Id)

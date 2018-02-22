@@ -16,11 +16,12 @@ initialPanelsOpen : PanelsOpen
 initialPanelsOpen = 
     PanelsOpen False []
 
-isPanelOpen : PanelId -> PanelsOpen -> Bool
+
+isPanelOpen : PanelId -> PanelsOpen -> (Bool, Bool)
 isPanelOpen panelId panelsOpen =
     case panelsOpen of
         PanelsOpen panelsInited panels ->
-            panels |> List.member panelId
+            (panelsInited, panels |> List.member panelId)
 
 
 closePanel : PanelId -> PanelsOpen -> PanelsOpen

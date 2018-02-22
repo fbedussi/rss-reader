@@ -126,3 +126,8 @@ getArticleSite sites article =
 
         Nothing ->
             createEmptySite
+
+
+getSiteToEdit : Id -> List Site -> Maybe Site
+getSiteToEdit siteToEditId sites = 
+    sites |> List.filter (\site -> site.id == siteToEditId) |> List.head
