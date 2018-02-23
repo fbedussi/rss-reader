@@ -166,6 +166,7 @@ type Msg
     | Outside InfoForElm
     | LogErr String
     | RefreshFeeds
+    | RequestRemoveErrorMsg String
     | RemoveErrorMsg String
     | UpdateSearch String
     | CloseAllPanels

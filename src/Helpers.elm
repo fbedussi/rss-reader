@@ -1,7 +1,9 @@
 module Helpers exposing (..)
 
 import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
-
+import Process
+import Task
+import Time exposing (Time)
 
 getSitesInCategory : Int -> List Site -> List Site
 getSitesInCategory categoryId sites =
@@ -131,3 +133,10 @@ getArticleSite sites article =
 getSiteToEdit : Id -> List Site -> Maybe Site
 getSiteToEdit siteToEditId sites = 
     sites |> List.filter (\site -> site.id == siteToEditId) |> List.head
+
+
+delay : Time -> msg -> Cmd msg
+delay time msg =
+    Process.sleep time
+        |> Task.andThen (always <| Task.succeed msg)
+        |> Task.perform identity

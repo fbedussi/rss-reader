@@ -11,6 +11,7 @@ import Models exposing (Msg(..), Selected)
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (starIcon)
 
+
 inputHeight : Rem
 inputHeight =
     Css.rem 2
@@ -435,8 +436,8 @@ getModalAnimationClass panelState =
     getPanelClass "is-hidden" "popInCentered" "popOutCentered" panelState
 
 
-errorMessage :  List (Attribute msg) -> List (Html msg) -> Html msg
-errorMessage  =
+errorMessage : List (Attribute msg) -> List (Html msg) -> Html msg
+errorMessage =
     styled div
         [ displayFlex
         , justifyContent spaceBetween
@@ -445,9 +446,10 @@ errorMessage  =
         , standardPadding
         , border3 (px 2) solid theme.white
         , maxHeight (Css.em 10)
-        , transition "max-height 0.3s"
+        , position relative
+        --, transition "transform 1.5s 0.5s"
+        , transforms [translateX (pct -100)]
         ]
-        
 
 
 closeBtn : msg -> Html msg

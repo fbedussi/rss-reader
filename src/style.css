@@ -178,3 +178,12 @@ body {
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
+
+
+.transitionToRight {
+    transform: translateX(0) !important;
+}
+
+.transitionToLeft {
+    transform: translateX(-100%) !important;
+}

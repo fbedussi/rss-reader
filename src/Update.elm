@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (getNextId, mergeArticles)
+import Helpers exposing (getNextId, mergeArticles, delay)
 import Import exposing (executeImport)
 import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOutside(..), Modal)
 import Murmur3 exposing (hashString)
@@ -291,7 +291,13 @@ update msg model =
                     ( { updatedModel | articles = mergeArticles rssArticles model.articles }, Cmd.none )
 
                 Err err ->
-                    ( { updatedModel | errorMsgs = model.errorMsgs ++ [ err ] }, Cmd.none )
+                    let
+                        updatedPanelsState =
+                            openPanel (hashString 1234 err |> toString ) model.panelsState
+                    in
+                    ( { updatedModel | panelsState = updatedPanelsState 
+                        , errorMsgs = model.errorMsgs ++ [ err ]
+                    }, Cmd.none )        
 
         SaveArticle articleToSave ->
             let
@@ -315,6 +321,13 @@ update msg model =
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
+
+        RequestRemoveErrorMsg msgToRemove ->
+            let
+                updatedPanelsState =
+                    closePanel (hashString 1234 msgToRemove |> toString ) model.panelsState
+            in
+            ( { model | panelsState = updatedPanelsState }, delay 1500 (RemoveErrorMsg msgToRemove) )
 
         RemoveErrorMsg msgToRemove ->
             let

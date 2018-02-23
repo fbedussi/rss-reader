@@ -45,7 +45,7 @@ view model =
         , onKeyDown VerifyKeyboardNavigation
         ]
         [ siteHeader model.searchTerm
-        , errorContainer model.errorMsgs
+        , errorContainer model.panelsState model.errorMsgs
         , styled div
             [ displayFlex ]
             []
