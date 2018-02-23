@@ -1,15 +1,15 @@
 module PartialViews.UiKit exposing (..)
 
+import Char
 import Css exposing (..)
 import Css.Foreign exposing (descendants, selector)
-import Html.Attributes.Aria exposing (ariaLabel)
+import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, for, id, type_)
+import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_)
 import Html.Styled.Events exposing (onCheck, onClick)
 import Models exposing (Msg(..), Selected)
+import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (starIcon)
-
-
 
 inputHeight : Rem
 inputHeight =
@@ -263,14 +263,13 @@ tabContentOuter selected =
 deleteActionsPanel : List (Attribute msg) -> List (Html msg) -> Html msg
 deleteActionsPanel =
     styled div
-        ([ position absolute
-         , top (px 1)
-         , right (px 1)
-         , backgroundColor theme.colorBackground
-         , transition "transform 0.5s"
-         , zIndex (int 1)
-         ]
-        )
+        [ position absolute
+        , top (px 1)
+        , right (px 1)
+        , backgroundColor theme.colorBackground
+        , transition "transform 0.5s"
+        , zIndex (int 1)
+        ]
 
 
 badge : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -296,8 +295,6 @@ layerStyle =
         , backgroundColor theme.colorBackground
         , standardPadding
         , border3 (px 2) solid theme.colorHairline
-        , display block
-        , visibility hidden
         ]
 
 
@@ -305,11 +302,11 @@ layerTop : List (Attribute msg) -> List (Html msg) -> Html msg
 layerTop =
     styled div
         [ layerStyle
-         , top zero
-         , left zero
-         , width (pct 100)
-         , transforms [ translateY (pct -100) ]
-         ]
+        , top zero
+        , left zero
+        , width (pct 100)
+        , transforms [ translateY (pct -100) ]
+        ]
 
 
 inputRow : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -345,7 +342,7 @@ overlay active =
                     ]
     in
     styled div
-        [ position absolute
+        [ position fixed
         , width (vw 100)
         , height (vh 100)
         , top zero
@@ -427,4 +424,40 @@ articleTitle =
             [ selector "a"
                 [ color theme.colorPrimary ]
             ]
+        ]
+
+
+getAnimationClassTopLayers panelState =
+    getPanelClass "is-hidden" "slideDown" "slideUp" panelState
+
+
+getModalAnimationClass panelState =
+    getPanelClass "is-hidden" "popInCentered" "popOutCentered" panelState
+
+
+errorMessage :  List (Attribute msg) -> List (Html msg) -> Html msg
+errorMessage  =
+    styled div
+        [ displayFlex
+        , justifyContent spaceBetween
+        , backgroundColor theme.colorAlert
+        , color theme.white
+        , standardPadding
+        , border3 (px 2) solid theme.white
+        , maxHeight (Css.em 10)
+        , transition "max-height 0.3s"
+        ]
+        
+
+
+closeBtn : msg -> Html msg
+closeBtn clickHandler =
+    btnNoStyle
+        [ class "closeButton"
+        , onClick clickHandler
+        , ariaLabel "close" |> Html.Styled.Attributes.fromUnstyled
+        ]
+        [ span
+            [ ariaHidden True |> Html.Styled.Attributes.fromUnstyled ]
+            [ String.fromChar (Char.fromCode 215) |> text ]
         ]

@@ -8,10 +8,10 @@ import PartialViews.UiKit exposing (alertBtn, btn, deleteActionsPanel, standardP
 import Css exposing (height, rem)
 
 
-deleteActions :Category -> List Id -> Html Msg
-deleteActions category sitesInCategoryIds =
+deleteActions : String -> Category -> List Id -> Html Msg
+deleteActions animationClass category sitesInCategoryIds =
     deleteActionsPanel
-        [ class "delete-actions" ]
+        [ class <| "delete-actions" ++ animationClass ]
         [ styled btn
             [ height (Css.rem 3)
             ]

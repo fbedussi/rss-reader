@@ -6,10 +6,10 @@ import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..))
 import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
 
-importLayer : (Bool, Bool) -> Html Msg
-importLayer (isOpen, isClosed) =
+importLayer : String -> Html Msg
+importLayer animationClass =
     layerTop
-        [ class ("importLayer" ++ (if isOpen then " slideDown" else if isClosed then " slideUp" else "" ))
+        [ class <| "importLayer" ++ animationClass
         ]
         [ div
             [ class "layer-inner"]

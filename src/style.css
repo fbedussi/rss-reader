@@ -1,3 +1,28 @@
+:root {
+    --defaultTransitionDuration: 0.3s
+}
+
+/*Reset*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.mouseNavigation *:focus {
+    outline: none;
+}
+
+body {
+    overflow-x: hidden;
+    font-family: sans-serif;
+}
+
+/*Animations*/
 @keyframes spin {
     0% {
         transform: rotate(0);
@@ -13,40 +38,139 @@
         visibility: visible;
         transform: translateY(-100%);
     }
-    
+
     100% {
         visibility: visible;
         transform: translateY(0);
     }
-  }
-  
-  @keyframes slideUp {
+}
+
+@keyframes slideUp {
     0% {
         visibility: visible;
         transform: translateY(0);
     }
-    
-    99% {
-        visibility: visible;
+
+    100% {
+        visibility: hidden;
         transform: translateY(-100%);
+    }
+}
+
+@keyframes slideRight {
+    0% {
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    100% {
+        visibility: visible;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes slideLeft {
+    0% {
+        visibility: visible;
+        transform: translateX(100%);
     }
 
     100% {
         visibility: hidden;
+        transform: translateX(0);
     }
-  }
+}
 
+@keyframes popIn {
+    0% {
+        visibility: visible;
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        visibility: visible;
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes popOut {
+    0% {
+        visibility: visible;
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        visibility: hidden;
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes popInCentered {
+    0% {
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes popOutCentered {
+    0% {
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        visibility: hidden;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}
+
+.is-hidden {
+    display: none;
+}
 
 .slideUp {
-    animation: slideUp 0.3s forwards;
+    animation: slideUp var(--defaultTransitionDuration) forwards;
 }
 
 .slideDown {
-    animation: slideDown 0.3s forwards;
+    animation: slideDown var(--defaultTransitionDuration) forwards;
 }
 
-body {
-    overflow-x: hidden;
+.slideRight {
+    animation: slideRight var(--defaultTransitionDuration) forwards;
+}
+
+.slideLeft {
+    animation: slideLeft var(--defaultTransitionDuration) forwards;
+}
+
+.popIn {
+    animation: popIn var(--defaultTransitionDuration) forwards;
+}
+
+.popOut {
+    animation: popOut var(--defaultTransitionDuration) forwards;
+}
+
+.popInCentered {
+    animation: popInCentered var(--defaultTransitionDuration) forwards;
+}
+
+.popOutCentered {
+    animation: popOutCentered var(--defaultTransitionDuration) forwards;
 }
 
 .fetchingRss .refreshButton svg {

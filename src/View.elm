@@ -1,22 +1,21 @@
 module View exposing (view)
 
-import Css exposing (borderBox, boxSizing, displayFlex, fontFamily, listStyleType, margin, none, outline, padding, sansSerif, zero)
-import Css.Foreign exposing (everything, global, selector)
+import Css exposing (displayFlex)
+import Helpers exposing (getSiteToEdit)
 import Html.Styled exposing (Attribute, Html, div, styled)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (keyCode, on, onClick)
 import Json.Decode as Json
 import Models exposing (Model, Msg(..))
+import PanelsManager exposing (getPanelState, isSomePanelOpen)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
 import PartialViews.ErrorContainer exposing (errorContainer)
 import PartialViews.Header exposing (siteHeader)
 import PartialViews.ImportLayer exposing (importLayer)
 import PartialViews.MainContent exposing (mainContent)
-import PartialViews.Sidebar exposing (sidebar)
-import PartialViews.UiKit exposing (overlay)
 import PartialViews.Modal exposing (modal)
-import PanelsManager exposing (getPanelState)
-import Helpers exposing (getSiteToEdit)
+import PartialViews.Sidebar exposing (sidebar)
+import PartialViews.UiKit exposing (getAnimationClassTopLayers, getModalAnimationClass, overlay)
 
 
 onKeyDown : (Int -> msg) -> Attribute msg
@@ -40,25 +39,12 @@ view model =
                         ""
                    )
     in
-    styled div
-        [ fontFamily sansSerif
-        ]
+    div
         [ class bodyClass
         , onClick SetMouseNavigation
         , onKeyDown VerifyKeyboardNavigation
         ]
-        [ global
-            [ everything
-                [ margin zero
-                , padding zero
-                , boxSizing borderBox
-                ]
-            , selector "ul"
-                [ listStyleType none ]
-            , selector ".mouseNavigation *:focus"
-                [ outline none ]
-            ]
-        , siteHeader model.searchTerm
+        [ siteHeader model.searchTerm
         , errorContainer model.errorMsgs
         , styled div
             [ displayFlex ]
@@ -66,8 +52,8 @@ view model =
             [ sidebar model
             , mainContent model
             ]
-        --, overlay (isSomethingOpen model.transitionStore "panel")
-        --, modal model.modal <| getTransitionState model.transitionStore "panelmodal"
-        , editSiteLayer (getPanelState "editSite" model.panelsState) (getSiteToEdit model.siteToEditId model.sites) model.categories
-        , importLayer (getPanelState "import" model.panelsState)
+        , overlay (isSomePanelOpen "panel" model.panelsState)
+        , modal (getPanelState "panelModal" model.panelsState |> getModalAnimationClass) model.modal
+        , editSiteLayer (getPanelState "panelEditSite" model.panelsState |> getAnimationClassTopLayers) (getSiteToEdit model.siteToEditId model.sites) model.categories
+        , importLayer (getPanelState "panelImport" model.panelsState |> getAnimationClassTopLayers)
         ]

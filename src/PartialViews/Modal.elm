@@ -7,12 +7,10 @@ import Models exposing (Modal, Msg(..))
 import PartialViews.UiKit exposing (btn, secondaryBtn, transition, theme, standardPadding)
 import Css exposing (display, block, none, int, opacity, width, maxWidth, em, pct, zIndex, position, absolute, top, left, transforms, translate2, backgroundColor, displayFlex, justifyContent, spaceBetween, margin2, zero, auto, marginBottom)
 
-modal : Modal -> Html Msg
-modal data  =
+modal : String -> Modal -> Html Msg
+modal animationClass data  =
     styled div
-        [
-        transition "opacity 0.5s"
-        ,width (em 30)
+        [width (em 30)
          ,maxWidth (pct 90)
         ,zIndex (int 20)
         , position absolute
@@ -22,7 +20,7 @@ modal data  =
         , backgroundColor theme.colorBackground
         , standardPadding
         ]
-        [class "modal"]
+        [class <| "modal" ++ animationClass]
         [ styled div
             [marginBottom (em 1)]
             [class "modal-text"]

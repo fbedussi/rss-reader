@@ -1,6 +1,6 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (auto, displayFlex, flex, float, height, int, left, margin2, marginBottom, px, width, zero, overflow, hidden, maxHeight, maxWidth, pct, calc, minus)
+import Css exposing (auto, displayFlex, flex, float, height, int, left, margin2, marginBottom, px, width, zero, overflow, hidden, maxHeight, maxWidth, pct, calc, minus, rem)
 import Css.Foreign exposing (descendants, typeSelector)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
@@ -76,7 +76,7 @@ renderArticle sites articleToRender =
             , styled div
                 [ descendants
                     [ typeSelector "img"
-                        [ width (px 100)
+                        [ width (Css.rem 13)
                         , height auto
                         , float left
                         , margin2 zero (Css.rem 1)

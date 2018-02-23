@@ -11,7 +11,7 @@ import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
-
+import PanelsManager exposing (getPanelState, getPanelClass)
 
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
@@ -38,8 +38,8 @@ renderCategory model category =
         [ class "tab"
         , id domId
         ]
-        [ --deleteActions model.panelsState category (extractId sitesInCategory)
-        sidebarRow selected
+        [ deleteActions (getPanelState domId model.panelsState |> getPanelClass "is-hidden" "slideRight" "slideLeft" ) category (extractId sitesInCategory)
+        , sidebarRow selected
             [ class "tabTitle" ]
             (case model.categoryToEditId of
                 Just categoryToEditId ->

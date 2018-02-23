@@ -10,10 +10,10 @@ import PartialViews.Icons exposing (deleteIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop)
 
 
-editSiteLayer : (Bool, Bool) -> Maybe Site -> List Category -> Html Msg
-editSiteLayer (isOpen, isClosed) site categories =
+editSiteLayer : String -> Maybe Site -> List Category -> Html Msg
+editSiteLayer animationClass site categories =
     layerTop
-        [ class ("editSiteLayer" ++ (if isOpen then " slideDown" else if isClosed then " slideUp" else "" )) ]
+        [ class <| "editSiteLayer" ++ animationClass ]
         [ case site of
             Just site ->
                 renderEditSiteForm site categories

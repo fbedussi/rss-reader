@@ -73,8 +73,7 @@ type alias Selected =
 
 
 type alias Modal =
-    { open : Bool
-    , text : String
+    { text : String
     , action : Msg
     }
 
@@ -118,7 +117,7 @@ init =
       , searchTerm = ""
       , keyboardNavigation = False
       , fetchingRss = False
-      , modal = {open = False, text = "", action = NoOp}
+      , modal = {text = "", action = NoOp}
       , panelsState = initialPanelsState
       , defaultTransitionDuration = 500
       }

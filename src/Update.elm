@@ -8,7 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOuts
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import PanelsManager exposing (PanelsState, closeAllPanels, openPanel, closePanel, getPanelState)
+import PanelsManager exposing (PanelsState, isPanelOpen, closeAllPanels, openPanel, closePanel, getPanelState)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -51,17 +51,26 @@ update msg model =
             ( { model | selectedSiteId = Just siteId }, Cmd.none )
 
         ToggleDeleteActions categoryId ->
-            --toggleState ({ model | selectedCategoryId = Just categoryId }) "cat"  (toString categoryId) TransitionStart TransitionEnd model.defaultTransitionDuration
-            (model, Cmd.none)
+            let
+                panelId = "cat_" ++ toString categoryId
+                isOpen = getPanelState panelId model.panelsState |> isPanelOpen
+                
+                updatedPanelsState =
+                    closeAllPanels model.panelsState 
+                        |> if isOpen
+                        then closePanel panelId
+                        else openPanel panelId
+            in
+            ({model | panelsState = updatedPanelsState }, Cmd.none)
 
         ToggleImportLayer ->
             let
-                panelState = getPanelState "import" model.panelsState
-                isOpen = Tuple.first panelState 
+                isOpen = getPanelState "panelImport" model.panelsState |> isPanelOpen
+                
                 updatedPanelsState = 
                     (if isOpen
-                    then closePanel "import" model.panelsState
-                    else openPanel "import" model.panelsState)
+                    then closePanel "panelImport" model.panelsState
+                    else openPanel "panelImport" model.panelsState)
             in
             ({model | panelsState = updatedPanelsState }, Cmd.none)
 
@@ -79,7 +88,6 @@ update msg model =
         RequestDeleteCategories categoryToDeleteIds ->
             let
                 modalData = Modal
-                    True
                     "Are you sure you want to delete this category?"
                     (DeleteCategories categoryToDeleteIds)
                 
@@ -103,7 +111,6 @@ update msg model =
         RequestDeleteSites sitesToDeleteId ->
             let
                 modalData = Modal
-                    True
                     "Are you sure you want to delete this site?"
                     (DeleteSites sitesToDeleteId)
                 
@@ -135,7 +142,6 @@ update msg model =
         RequestDeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
             let
                 modalData = Modal
-                    True
                     "Are you sure you want to delete this category and all its sites?"
                     (DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId)
                 
@@ -224,11 +230,11 @@ update msg model =
 
         OpenEditSitePanel siteId ->
             ({ model | siteToEditId = siteId 
-                , panelsState = openPanel "editSite" model.panelsState
+                , panelsState = openPanel "panelEditSite" model.panelsState
             }, Cmd.none)
 
         CloseEditSitePanel ->
-            ({ model | panelsState = closePanel "editSite" model.panelsState
+            ({ model | panelsState = closePanel "panelEditSite" model.panelsState
             }, Cmd.none)
 
         AddNewSite ->
@@ -381,9 +387,9 @@ getDataToSaveInDb model =
 
 closeModal : PanelsState -> PanelsState
 closeModal panelsState = 
-    closePanel "modal" panelsState
+    closePanel "panelModal" panelsState
 
 
 openModal : PanelsState -> PanelsState
 openModal panelsState = 
-    openPanel "modal" panelsState
+    openPanel "panelModal" panelsState
