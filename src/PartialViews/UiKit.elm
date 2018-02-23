@@ -436,19 +436,27 @@ getModalAnimationClass panelState =
     getPanelClass "is-hidden" "popInCentered" "popOutCentered" panelState
 
 
-errorMessage : List (Attribute msg) -> List (Html msg) -> Html msg
-errorMessage =
+errorMessage : String -> String -> Html Msg
+errorMessage animationClass errorMsg =
     styled div
-        [ displayFlex
-        , justifyContent spaceBetween
-        , backgroundColor theme.colorAlert
+        [ backgroundColor theme.colorAlert
         , color theme.white
-        , standardPadding
-        , border3 (px 2) solid theme.white
-        , maxHeight (Css.em 10)
-        , position relative
-        --, transition "transform 1.5s 0.5s"
-        , transforms [translateX (pct -100)]
+        , maxHeight (Css.rem 4)
+        , overflow hidden
+        ]
+        [ class <| "errorMsg" ++ animationClass ]
+        [ styled div
+            [ displayFlex
+            , justifyContent spaceBetween
+            , border3 (px 2) solid theme.white
+            , standardPadding
+            ]
+            [ class "errorMsg-inner" ]
+            [ span
+                [ class "errorMsg-text" ]
+                [ text errorMsg ]
+            , closeBtn (RequestRemoveErrorMsg errorMsg)
+            ]
         ]
 
 
