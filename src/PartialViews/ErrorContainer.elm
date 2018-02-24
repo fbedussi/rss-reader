@@ -23,7 +23,7 @@ renderErrorMsg panelsState errorMsg =
             hashString 1234 errorMsg |> toString
 
         animationClass =
-            getPanelState panelId panelsState |> getPanelClass "" "" "collapse"
+            getPanelState panelId panelsState |> getPanelClass "expand" "" "collapse"
 
         log = Debug.log "animationClass" animationClass
     in

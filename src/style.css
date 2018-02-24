@@ -1,5 +1,6 @@
 :root {
-    --defaultTransitionDuration: 0.3s
+    --defaultTransitionDuration: 0.3s;
+    --collapseDuration: 1s;
 }
 
 /*Reset*/
@@ -139,21 +140,21 @@ body {
 
 @keyframes expand {  
     0% {
-      max-height: 0;
+        height: 0;
     }
     
     100% {
-      max-height: 4rem;
+      height: 2.5rem;
     }
 }
 
 @keyframes collapse {  
     0% {
-      max-height: 4rem;
+      height: 2.5rem;
     }
     
     100% {
-      max-height: 0;
+      height: 0;
       visibility: hidden;
     }
 }
@@ -196,11 +197,11 @@ body {
 }
 
 .expand {
-    animation: expand 1s forwards;
+    animation: expand var(--collapseDuration) forwards;
 }
 
 .collapse {
-    animation: collapse 1s forwards;
+    animation: collapse var(--collapseDuration) forwards;
 }
 
 .fetchingRss .refreshButton svg {

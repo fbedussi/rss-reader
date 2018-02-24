@@ -8,7 +8,7 @@ import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOuts
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Task
-import PanelsManager exposing (PanelsState, isPanelOpen, closeAllPanels, openPanel, closePanel, getPanelState)
+import PanelsManager exposing (PanelsState, isPanelOpen, closeAllPanels, openPanel, closePanel, getPanelState, initPanel)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -292,12 +292,16 @@ update msg model =
 
                 Err err ->
                     let
+                        errorMsgId = hashString 1234 err |> toString
                         updatedPanelsState =
-                            openPanel (hashString 1234 err |> toString ) model.panelsState
+                            initPanel errorMsgId model.panelsState
                     in
                     ( { updatedModel | panelsState = updatedPanelsState 
                         , errorMsgs = model.errorMsgs ++ [ err ]
-                    }, Cmd.none )        
+                    }, delay 1000 (OpenErrorMsg errorMsgId) )
+
+        OpenErrorMsg errorMsgId ->
+            ( { model | panelsState = openPanel errorMsgId model.panelsState }, Cmd.none )
 
         SaveArticle articleToSave ->
             let

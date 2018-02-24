@@ -164,6 +164,7 @@ type Msg
     | DeleteArticles (List Id)
     | SaveArticle Article
     | Outside InfoForElm
+    | OpenErrorMsg String   
     | LogErr String
     | RefreshFeeds
     | RequestRemoveErrorMsg String

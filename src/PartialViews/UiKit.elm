@@ -441,7 +441,7 @@ errorMessage animationClass errorMsg =
     styled div
         [ backgroundColor theme.colorAlert
         , color theme.white
-        , maxHeight (Css.rem 4)
+        , height (Css.rem 2.5)
         , overflow hidden
         ]
         [ class <| "errorMsg" ++ animationClass ]
