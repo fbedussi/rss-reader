@@ -278,6 +278,7 @@ deleteActionsPanel =
         [ position absolute
         , top (px 1)
         , right (px 1)
+        , displayFlex
         , backgroundColor theme.colorBackground
         , transition "transform 0.5s"
         , zIndex (int 1)

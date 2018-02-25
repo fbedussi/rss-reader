@@ -132,7 +132,7 @@ renderSiteEntry selectedSiteId site =
             []
             ([ sidebarSelectionBtn
                 [ class "siteInCategoryBtn"
-                , onClick <| SelectSite site.id
+                , onClick <| ToggleSelectSite site.id
                 ]
                 [ site.name |> text ]
              ]

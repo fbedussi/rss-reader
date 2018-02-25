@@ -50,13 +50,31 @@ update msg model =
             in
             ( { model
                 | selectedCategoryId = newSelectedCategoryId
+                , currentPage = 1
                 , selectedSiteId = Nothing
               }
             , Cmd.none
             )
 
-        SelectSite siteId ->
-            ( { model | selectedSiteId = Just siteId }, Cmd.none )
+        ToggleSelectSite siteId ->
+            let
+                newSelectedSiteId =
+                    case model.selectedSiteId of
+                        Nothing ->
+                            Just siteId
+
+                        Just id ->
+                            if id == siteId then
+                                Nothing
+                            else
+                                Just siteId
+            in
+            ( { model
+                | selectedSiteId = newSelectedSiteId
+                , currentPage = 1
+              }
+            , Cmd.none
+            )
 
         ToggleDeleteActions categoryId ->
             let
@@ -314,10 +332,19 @@ update msg model =
                     let
                         rssArticles =
                             feeds
-                                |> List.map (\article -> { article 
-                                    | id = hashString 12345 article.link 
-                                    , excerpt = article.excerpt |> String.left 1000
-                                    })
+                                |> List.map
+                                    (\article ->
+                                        { article
+                                            | id = hashString 12345 article.link
+                                            , excerpt =
+                                            article.excerpt
+                                                --String.dropLeft 1 article.excerpt
+                                                -- if String.length article.excerpt > 1000 then
+                                                --     String.left 1000 article.excerpt ++ "..."
+                                                -- else
+                                                --     article.excerpt
+                                        }
+                                    )
 
                         mergedArticles =
                             mergeArticles rssArticles model.articles
@@ -334,7 +361,7 @@ update msg model =
                     in
                     ( { updatedModel
                         | panelsState = updatedPanelsState
-                        , errorMsgs = model.errorMsgs ++ [ err ]
+                        , errorMsgs = List.filter (\msg -> msg /= err) model.errorMsgs ++ [ err ]
                       }
                     , delay 1000 (OpenErrorMsg errorMsgId)
                     )

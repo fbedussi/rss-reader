@@ -44,7 +44,7 @@ view model =
         , onClick SetMouseNavigation
         , onKeyDown VerifyKeyboardNavigation
         ]
-        [ siteHeader model.searchTerm
+        [ siteHeader
         , errorContainer model.panelsState model.errorMsgs
         , styled div
             [ displayFlex ]

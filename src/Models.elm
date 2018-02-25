@@ -149,7 +149,7 @@ type Msg
     = SetMouseNavigation
     | VerifyKeyboardNavigation KeyCode
     | ToggleSelectedCategory Id
-    | SelectSite Id
+    | ToggleSelectSite Id
     | ToggleDeleteActions Id
     | ToggleImportLayer
     | StoreImportData String

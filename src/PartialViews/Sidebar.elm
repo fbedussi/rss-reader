@@ -1,32 +1,52 @@
 module PartialViews.Sidebar exposing (..)
 
-import Html.Styled exposing (Html, a, article, aside, button, div, h2, input, li, main_, span, text, ul, styled, toUnstyled)
-import Html.Styled.Attributes exposing (attribute, class, disabled, href, src, value)
-import Html.Styled.Events exposing (onClick)
-import Models exposing (Article, Category, Model, SelectedCategoryId, SelectedSiteId, Site, Msg(..))
+import Css exposing (alignItems, border3, displayFlex, justifyContent, marginLeft, marginBottom, em, minWidth, padding, pct, px, rem, stretch, width, zero, flexDirection, column)
+import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
+import Html.Styled.Attributes exposing (attribute, class, disabled, for, href, id, placeholder, src, type_, value)
+import Html.Styled.Events exposing (onClick, onInput)
+import Models exposing (Article, Category, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
-import Html.Styled exposing (toUnstyled)
-import Css exposing (width, pct, padding, displayFlex, justifyContent, stretch, marginLeft, zero, minWidth, rem, px, border3)
-import PartialViews.UiKit exposing (theme, sidebarBoxStyle)
+import PartialViews.UiKit exposing (input, sidebarBoxStyle, theme, standardPadding)
+
 
 sidebar : Model -> Html Msg
 sidebar model =
     styled aside
-        [width (pct 25)
+        [ width (pct 25)
         , minWidth (Css.rem 25)
         ]
         [ class "sidebar" ]
         [ styled div
-            [padding theme.distanceXXS
+            [ padding theme.distanceXXS
             , displayFlex
             , justifyContent stretch
             ]
             [ class "sidebar-toolbar" ]
-            [ (iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ])
-            , (iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ])
+            [ iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]
+            , iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ]
+            ]
+        , styled div
+            [ displayFlex
+            , standardPadding
+            , alignItems stretch
+            , flexDirection column
+            ]
+            [ class "searchWrapper" ]
+            [ styled label
+                [marginBottom (em 0.5)]
+                [ for "searchInput" ]
+                [ text "Serch sites by name: " ]
+            , input
+                [ type_ "search"
+                , id "searchInput"
+                , placeholder "example.com"
+                , onInput UpdateSearch
+                , value model.searchTerm
+                ]
+                []
             ]
         , searchResult model.selectedSiteId model.sites model.searchTerm
         , styled ul
@@ -40,7 +60,7 @@ sidebar model =
                 []
             )
         , styled ul
-            [sidebarBoxStyle]
+            [ sidebarBoxStyle ]
             [ class "categories accordion"
             ]
             (if String.isEmpty model.searchTerm then

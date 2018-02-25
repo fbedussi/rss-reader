@@ -161,7 +161,7 @@ body {
   
 
 .is-hidden {
-    display: none;
+    display: none !important;
 }
 
 .slideUp {
@@ -208,4 +208,10 @@ body {
     animation: spin 1s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+}
+
+/*Global styles*/
+[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
 }

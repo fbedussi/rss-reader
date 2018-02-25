@@ -1,19 +1,20 @@
 module PartialViews.Header exposing (siteHeader)
 
 import Css exposing (..)
-import Html.Styled exposing (Html, button, div, li, span, text, ul, styled, header)
-import Html.Styled.Attributes exposing (class, placeholder, type_, value)
+import Html.Styled exposing (Html, span, text, styled, header)
+import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..))
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (importIcon, refreshIcon)
 import PartialViews.UiKit exposing (input, theme)
+import PartialViews.Icons exposing (rssIcon)
 
-siteHeader : String -> Html Msg
-siteHeader searchTerm =
+siteHeader : Html Msg
+siteHeader =
     styled header
         [ displayFlex
-        , justifyContent spaceBetween
+        , justifyContent flexStart
         , padding theme.distanceXXS
         , borderBottom3 theme.hairlineWidth solid theme.colorHairline
         , position sticky
@@ -22,7 +23,13 @@ siteHeader searchTerm =
         , zIndex (int 10)
         ]
         []
-        [ styled span
+        [ rssIcon [
+            width (em 2)
+            , height (em 2)
+            , marginRight (em 0.5)
+            , fill theme.colorAccent
+        ]
+        , styled span
             [ displayFlex
             , alignItems stretch
             ]
@@ -35,18 +42,5 @@ siteHeader searchTerm =
                 [ text "Minimal RSS reader" ]
             , iconButton (refreshIcon []) ( "refresh", False ) [ class "refreshButton", onClick RefreshFeeds ]
             , iconButton (importIcon []) ( "import", True ) [ class "warning", onClick ToggleImportLayer ]
-            ]
-        ,styled span
-            [ displayFlex
-            , alignItems stretch
-            ]
-            [ ]
-            [ input
-                    [ type_ "search"
-                    , placeholder "search site"
-                    , onInput UpdateSearch
-                    , value searchTerm
-                    ]
-                    []
             ]
         ]

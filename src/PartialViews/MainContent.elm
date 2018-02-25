@@ -1,7 +1,8 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (auto, block, calc, center, display, displayFlex, flex, float, height, hidden, int, left, margin2, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
-import Css.Foreign exposing (descendants, typeSelector)
+import Css exposing (auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
+import Css.Foreign exposing (descendants, selector, typeSelector)
+import Date exposing (day, fromTime, month, year)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
@@ -11,14 +12,18 @@ import Json.Encode
 import Models exposing (Article, Category, Model, Msg(..), Site)
 import PartialViews.UiKit exposing (article, articleTitle, btn, clear, standardPadding, starBtn, theme)
 
+
 mainContent : Model -> Html Msg
 mainContent model =
     let
-        lastPage =
-            List.length model.articles // model.articlesPerPage
-
-        articlesToDisplay = 
+        selectedArticles =
             getSelectedArticles model.selectedCategoryId model.selectedSiteId model.sites model.articles
+
+        lastPage =
+            List.length selectedArticles // model.articlesPerPage
+
+        articlesToDisplay =
+            selectedArticles
                 |> List.drop (model.articlesPerPage * (model.currentPage - 1))
                 |> List.take model.articlesPerPage
     in
@@ -35,37 +40,48 @@ mainContent model =
             )
         , styled div
             [ textAlign center
-            , if List.length articlesToDisplay > 0 then
-                    display block
-                else
-                    display none
+            , if List.length articlesToDisplay == model.articlesPerPage then
+                display block
+              else
+                display none
             ]
             [ class "pagerWrapper" ]
-            [ btn
-                [ class "firstPageButton"
-                , onClick <| ChangePage 1
+            ((if model.currentPage > 1 then
+                [ btn
+                    [ class "firstPageButton"
+                    , onClick <| ChangePage 1
+                    ]
+                    [ text "<<" ]
+                , btn
+                    [ class "prevPageButton"
+                    , onClick <| ChangePage <| max 1 <| model.currentPage - 1
+                    ]
+                    [ text "<" ]
                 ]
-                [ text "<<" ]
-            , btn
-                [ class "prevPageButton"
-                , onClick <| ChangePage <| max 1 <| model.currentPage - 1
-                ]
-                [ text "<" ]
-            , styled span
-                [ marginLeft (Css.em 0.5) ]
-                [ class "currentPage" ]
-                [ text <| toString model.currentPage ]
-            , btn
-                [ class "nextPageButton"
-                , onClick <| ChangePage <| min lastPage <| model.currentPage + 1
-                ]
-                [ text ">" ]
-            , btn
-                [ class "nextPageButton"
-                , onClick <| ChangePage lastPage
-                ]
-                [ text ">>" ]
-            ]
+              else
+                []
+             )
+                ++ [ styled span
+                        [ marginLeft (Css.em 0.5) ]
+                        [ class "currentPage" ]
+                        [ text <| toString model.currentPage ++ "/" ++ toString lastPage ]
+                   ]
+                ++ (if model.currentPage < lastPage then
+                        [ btn
+                            [ class "nextPageButton"
+                            , onClick <| ChangePage <| min lastPage <| model.currentPage + 1
+                            ]
+                            [ text ">" ]
+                        , btn
+                            [ class "nextPageButton"
+                            , onClick <| ChangePage lastPage
+                            ]
+                            [ text ">>" ]
+                        ]
+                    else
+                        []
+                   )
+            )
         ]
 
 
@@ -80,12 +96,16 @@ renderArticle articlePreviewHeight sites articleToRender =
 
         site =
             getArticleSite sites articleToRender
+
+        date =
+            fromTime articleToRender.date
     in
     li
         [ class "article" ]
         [ article
-            [ class "article" 
-            , id <| "srticle_" ++   toString articleToRender.id]
+            [ class "article"
+            , id <| "srticle_" ++ toString articleToRender.id
+            ]
             [ styled div
                 [ displayFlex
                 , marginBottom theme.distanceXXS
@@ -102,6 +122,9 @@ renderArticle articlePreviewHeight sites articleToRender =
                 , div
                     [ class "articleSiteAndTitle" ]
                     [ div
+                        [ class "articleDate" ]
+                        [ text <| ((toString <| day date) ++ " " ++ (toString <| month date) ++ " " ++ (toString <| year date)) ]
+                    , div
                         [ class "articleSite" ]
                         [ text site.name ]
                     , articleTitle
@@ -123,7 +146,8 @@ renderArticle articlePreviewHeight sites articleToRender =
                         [ width (Css.rem 13)
                         , height auto
                         , float left
-                        , margin2 zero (Css.rem 1)
+                        , margin3 zero (Css.em 1) (Css.em 1)
+                        , clear "both"
                         ]
                     ]
                 , maxHeight (Css.rem <| toFloat articlePreviewHeight)
