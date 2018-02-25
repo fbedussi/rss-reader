@@ -2,13 +2,14 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (getNextId, mergeArticles, delay)
+import Helpers exposing (delay, getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, Id, Model, Site, Msg(..), InfoForOutside(..), Modal)
+import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
+import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
 import Task
-import PanelsManager exposing (PanelsState, isPanelOpen, closeAllPanels, openPanel, closePanel, getPanelState, initPanel)
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -22,28 +23,35 @@ update msg model =
 
         SetMouseNavigation ->
             ( { model | keyboardNavigation = False }, Cmd.none )
-        
+
         VerifyKeyboardNavigation keyCode ->
-            ( { model | keyboardNavigation = if keyCode == 9 then True else False }, Cmd.none )
-        
+            ( { model
+                | keyboardNavigation =
+                    if keyCode == 9 then
+                        True
+                    else
+                        False
+              }
+            , Cmd.none
+            )
+
         ToggleSelectedCategory categoryId ->
             let
-                newSelectedCategoryId = 
+                newSelectedCategoryId =
                     case model.selectedCategoryId of
                         Nothing ->
                             Just categoryId
 
-                        Just id -> 
-                            if id == categoryId
-                            then
+                        Just id ->
+                            if id == categoryId then
                                 Nothing
-                            else 
+                            else
                                 Just categoryId
             in
-            ({ model
+            ( { model
                 | selectedCategoryId = newSelectedCategoryId
                 , selectedSiteId = Nothing
-            }                
+              }
             , Cmd.none
             )
 
@@ -52,28 +60,34 @@ update msg model =
 
         ToggleDeleteActions categoryId ->
             let
-                panelId = "cat_" ++ toString categoryId
-                isOpen = getPanelState panelId model.panelsState |> isPanelOpen
-                
+                panelId =
+                    "cat_" ++ toString categoryId
+
+                isOpen =
+                    getPanelState panelId model.panelsState |> isPanelOpen
+
                 updatedPanelsState =
-                    closeAllPanels model.panelsState 
-                        |> if isOpen
-                        then closePanel panelId
-                        else openPanel panelId
+                    closeAllPanels model.panelsState
+                        |> (if isOpen then
+                                closePanel panelId
+                            else
+                                openPanel panelId
+                           )
             in
-            ({model | panelsState = updatedPanelsState }, Cmd.none)
+            ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
         ToggleImportLayer ->
             let
-                isOpen = getPanelState "panelImport" model.panelsState |> isPanelOpen
-                
-                updatedPanelsState = 
-                    (if isOpen
-                    then closePanel "panelImport" model.panelsState
-                    else openPanel "panelImport" model.panelsState)
-            in
-            ({model | panelsState = updatedPanelsState }, Cmd.none)
+                isOpen =
+                    getPanelState "panelImport" model.panelsState |> isPanelOpen
 
+                updatedPanelsState =
+                    if isOpen then
+                        closePanel "panelImport" model.panelsState
+                    else
+                        openPanel "panelImport" model.panelsState
+            in
+            ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -87,16 +101,18 @@ update msg model =
 
         RequestDeleteCategories categoryToDeleteIds ->
             let
-                modalData = Modal
-                    "Are you sure you want to delete this category?"
-                    (DeleteCategories categoryToDeleteIds)
-                
+                modalData =
+                    Modal
+                        "Are you sure you want to delete this category?"
+                        (DeleteCategories categoryToDeleteIds)
             in
-            ({model 
+            ( { model
                 | modal = modalData
                 , panelsState = openModal model.panelsState
-            }, Cmd.none)
-        
+              }
+            , Cmd.none
+            )
+
         DeleteCategories categoryToDeleteIds ->
             let
                 updatedCategories =
@@ -106,20 +122,23 @@ update msg model =
                 | categories = updatedCategories
                 , panelsState = closeModal model.panelsState
               }
-            , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside )
+            , DeleteCategoriesInDb categoryToDeleteIds |> sendInfoOutside
+            )
 
         RequestDeleteSites sitesToDeleteId ->
             let
-                modalData = Modal
-                    "Are you sure you want to delete this site?"
-                    (DeleteSites sitesToDeleteId)
-                
+                modalData =
+                    Modal
+                        "Are you sure you want to delete this site?"
+                        (DeleteSites sitesToDeleteId)
             in
-            ({model 
+            ( { model
                 | modal = modalData
                 , panelsState = openModal model.panelsState
-            }, Cmd.none)
-    
+              }
+            , Cmd.none
+            )
+
         DeleteSites sitesToDeleteId ->
             let
                 updatedSites =
@@ -131,7 +150,7 @@ update msg model =
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
-                , panelsState = closeModal model.panelsState
+                , panelsState = (closePanel "panelEditSite" >> closeModal) model.panelsState
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
@@ -141,15 +160,17 @@ update msg model =
 
         RequestDeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
             let
-                modalData = Modal
-                    "Are you sure you want to delete this category and all its sites?"
-                    (DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId)
-                
+                modalData =
+                    Modal
+                        "Are you sure you want to delete this category and all its sites?"
+                        (DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId)
             in
-            ({model
+            ( { model
                 | modal = modalData
                 , panelsState = openModal model.panelsState
-            }, Cmd.none)
+              }
+            , Cmd.none
+            )
 
         DeleteCategoryAndSites categoryToDeleteIds sitesToDeleteId ->
             let
@@ -229,13 +250,19 @@ update msg model =
                     ( model, Cmd.none )
 
         OpenEditSitePanel siteId ->
-            ({ model | siteToEditId = siteId 
+            ( { model
+                | siteToEditId = siteId
                 , panelsState = openPanel "panelEditSite" model.panelsState
-            }, Cmd.none)
+              }
+            , Cmd.none
+            )
 
         CloseEditSitePanel ->
-            ({ model | panelsState = closePanel "panelEditSite" model.panelsState
-            }, Cmd.none)
+            ( { model
+                | panelsState = closePanel "panelEditSite" model.panelsState
+              }
+            , Cmd.none
+            )
 
         AddNewSite ->
             let
@@ -279,26 +306,38 @@ update msg model =
 
         GetArticles rssResult ->
             let
-                updatedModel = {model | fetchingRss = False}
+                updatedModel =
+                    { model | fetchingRss = False }
             in
             case rssResult of
                 Ok feeds ->
                     let
                         rssArticles =
                             feeds
-                                |> List.map (\article -> { article | id = hashString 12345 article.link })
+                                |> List.map (\article -> { article 
+                                    | id = hashString 12345 article.link 
+                                    , excerpt = article.excerpt |> String.left 1000
+                                    })
+
+                        mergedArticles =
+                            mergeArticles rssArticles model.articles
                     in
-                    ( { updatedModel | articles = mergeArticles rssArticles model.articles }, Cmd.none )
+                    ( { updatedModel | articles = List.sortWith dateDescending mergedArticles }, Cmd.none )
 
                 Err err ->
                     let
-                        errorMsgId = hashString 1234 err |> toString
+                        errorMsgId =
+                            hashString 1234 err |> toString
+
                         updatedPanelsState =
                             initPanel errorMsgId model.panelsState
                     in
-                    ( { updatedModel | panelsState = updatedPanelsState 
+                    ( { updatedModel
+                        | panelsState = updatedPanelsState
                         , errorMsgs = model.errorMsgs ++ [ err ]
-                    }, delay 1000 (OpenErrorMsg errorMsgId) )
+                      }
+                    , delay 1000 (OpenErrorMsg errorMsgId)
+                    )
 
         OpenErrorMsg errorMsgId ->
             ( { model | panelsState = openPanel errorMsgId model.panelsState }, Cmd.none )
@@ -321,7 +360,7 @@ update msg model =
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
         RefreshFeeds ->
-            ( {model | fetchingRss = True}, getFeeds model.sites |> Cmd.batch )
+            ( { model | fetchingRss = True }, getFeeds model.sites |> Cmd.batch )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
@@ -329,7 +368,7 @@ update msg model =
         RequestRemoveErrorMsg msgToRemove ->
             let
                 updatedPanelsState =
-                    closePanel (hashString 1234 msgToRemove |> toString ) model.panelsState
+                    closePanel (hashString 1234 msgToRemove |> toString) model.panelsState
             in
             ( { model | panelsState = updatedPanelsState }, delay 1500 (RemoveErrorMsg msgToRemove) )
 
@@ -345,6 +384,9 @@ update msg model =
 
         CloseAllPanels ->
             ( { model | panelsState = closeAllPanels model.panelsState }, Cmd.none )
+
+        ChangePage pageNumber ->
+            ( { model | currentPage = pageNumber }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -403,10 +445,23 @@ getDataToSaveInDb model =
 
 
 closeModal : PanelsState -> PanelsState
-closeModal panelsState = 
+closeModal panelsState =
     closePanel "panelModal" panelsState
 
 
 openModal : PanelsState -> PanelsState
-openModal panelsState = 
+openModal panelsState =
     openPanel "panelModal" panelsState
+
+
+dateDescending : Article -> Article -> Order
+dateDescending article1 article2 =
+    case compare article1.date article2.date of
+        LT ->
+            GT
+
+        EQ ->
+            EQ
+
+        GT ->
+            LT

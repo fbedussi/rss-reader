@@ -1,5 +1,7 @@
 module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser, feedDecoder)
 
+import Date
+import Time exposing (Time)
 import Json.Decode exposing (..)
 import Models exposing (..)
 
@@ -62,13 +64,29 @@ siteDecoder =
 
 articleDecoder : Decoder Article
 articleDecoder =
-    map6 Article
+    map7 Article
         (field "id" Json.Decode.int)
         (field "siteId" Json.Decode.int)
         (field "link" Json.Decode.string)
         (field "title" Json.Decode.string)
         (field "excerpt" Json.Decode.string)
         (field "starred" Json.Decode.bool)
+        (field "pubDate" dateDecoder)
+
+
+dateDecoder : Decoder Time
+dateDecoder =
+    let
+        convert : String -> Decoder Time
+        convert raw =
+            case Date.fromString raw of
+                Ok date ->
+                    date |> Date.toTime |> succeed
+
+                Err error ->
+                    fail error
+    in
+    string |> andThen convert
 
 
 decodeError : Value -> Result String String
@@ -83,10 +101,11 @@ feedDecoder siteId =
 
 feedArticleDecoder : Int -> Decoder Article
 feedArticleDecoder siteId =
-    map6 Article
+    map7 Article
         (succeed 0)
         (succeed siteId)
         (field "link" string)
         (field "title" string)
         (field "description" string)
         (succeed False)
+        (field "pubDate" dateDecoder)

@@ -1,13 +1,13 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
 import Css exposing (displayFlex, flex, int, justifyContent, spaceBetween)
-import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, select, span, styled, text, ul)
+import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, span, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
-import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite, Msg(..))
+import Models exposing (Article, Category, Id, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
-import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop)
+import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop, select, checkbox)
 
 
 editSiteLayer : String -> Maybe Site -> List Category -> Html Msg
@@ -43,25 +43,23 @@ renderEditSiteForm site categories =
         , inputRowText "Web link" "webLinkInput" site.webLink (\webLink -> UpdateSite { site | webLink = webLink })
         , inputRow
             []
-            [ input
-                [ class "checkbox"
-                , type_ "checkbox"
-                , id "starredCheckbox"
-                , onClick (UpdateSite { site | starred = not site.starred })
-                , checked site.starred
-                ]
+            [ styled span
+                [ flex (int 1) ]    
+                [ class "fakeCheckboxLabel"]
+                [text "Starred"]
+            , styled span
+                [flex (int 5)]
                 []
-            , label
-                [ class "checkboxLabel"
-                , for "starredCheckbox"
-                ]
-                [ text "Starred" ]
+                [checkbox "starredCheckbox" site.starred (onClick <| UpdateSite { site | starred = not site.starred })]
             ]
         , inputRow
             []
-            [ select
+            [ inputRowLabel "selectCategory" "Select a category"
+            , styled select
+                [ flex (int 5) ]
                 [ class "siteCategorySelect"
                 , onInput (\categoryId -> UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
+                , id "selectCategory"
                 ]
                 (option
                     [ selected
@@ -71,7 +69,7 @@ renderEditSiteForm site categories =
                             False
                         )
                     ]
-                    [ text "Select site category" ]
+                    [ text "Pick a catelgory" ]
                     :: (categories
                             |> List.map (renderCategoryOptions site.categoriesId)
                        )
@@ -83,9 +81,9 @@ renderEditSiteForm site categories =
             ]
             []
             [ btn
-                [ onClick (CloseEditSitePanel) ]
+                [ onClick CloseEditSitePanel ]
                 [ text "close" ]
-            , iconButton (deleteIcon []) ( "delete", True ) [ onClick (DeleteSites [ site.id ]) ]
+            , iconButton (deleteIcon []) ( "delete", True ) [ onClick (RequestDeleteSites [ site.id ]) ]
             ]
         ]
 
@@ -114,18 +112,23 @@ convertCategoryIdToInt string =
             []
 
 
+inputRowLabel : String -> String -> Html msg
+inputRowLabel inputId labelText =
+    styled label
+        [ flex (int 1) ]
+        [ class "inputLabel"
+        , for inputId
+        ]
+        [ text (labelText ++ ": ") ]
+
+
 inputRowText : String -> String -> String -> (String -> msg) -> Html msg
 inputRowText idText labelText val inputHandler =
     inputRow
         []
-        [ styled label
-            [ flex (int 1) ]
-            [ class "inputLabel"
-            , for idText
-            ]
-            [ text (labelText ++ ": ") ]
+        [ inputRowLabel idText labelText
         , styled input
-            [flex (int 5)]
+            [ flex (int 5) ]
             [ class "input"
             , id idText
             , value val

@@ -186,6 +186,17 @@ input =
         ]
 
 
+select : List (Attribute msg) -> List (Html msg) -> Html msg
+select =
+    styled Html.Styled.select
+        [ display inlineBlock
+        , height theme.inputHeight
+        , padding2 theme.distanceXXXS theme.distanceXS
+        , border3 theme.hairlineWidth solid theme.colorHairline
+        , backgroundColor theme.colorBackground
+        ]
+
+
 secondaryBtn : List (Attribute msg) -> List (Html msg) -> Html msg
 secondaryBtn =
     styled button
@@ -315,6 +326,8 @@ inputRow attributes children =
     styled div
         [ marginBottom (Css.rem 0.5)
         , displayFlex
+        , alignItems center
+        , height theme.inputHeight
         ]
         ([ class "inputRow" ] ++ attributes)
         children
@@ -402,18 +415,16 @@ article =
                 [ color theme.colorPrimary ]
             ]
         , clear "both"
-        , marginBottom theme.distanceM
         , overflow hidden
-        , maxHeight (Css.rem 10)
         , position relative
         , after
             [ pseudoContent
-            , position absolute
+            , display block
             , bottom zero
             , left zero
             , width (pct 100)
-            , height theme.distanceXXL
-            , backgroundImage <| linearGradient (stop2 theme.colorTransparent <| pct 0) (stop theme.colorBackground) []
+            , height theme.distanceXXXL
+            , backgroundImage <| linearGradient (stop2 theme.colorTransparent <| pct 0) (stop2 theme.colorBackground <| pct 60) []
             ]
         ]
 
@@ -470,4 +481,40 @@ closeBtn clickHandler =
         [ span
             [ ariaHidden True |> Html.Styled.Attributes.fromUnstyled ]
             [ String.fromChar (Char.fromCode 215) |> text ]
+        ]
+
+
+checkbox : String -> Bool -> Attribute msg -> Html msg
+checkbox checkboxId selected clickHandler =
+    span
+        [ class "checkboxContainer" ]
+        [ styled Html.Styled.input
+            [ display none ]
+            [ type_ "checkbox"
+            , Html.Styled.Attributes.checked selected
+            , id checkboxId
+            , clickHandler
+            ]
+            []
+        , styled label
+            [ display inlineBlock
+            , width theme.inputHeight
+            , height theme.inputHeight
+            , border3 theme.hairlineWidth solid theme.colorHairline
+            , position relative
+            , after
+                [ pseudoContent
+                , position absolute
+                , top (pct 15)
+                , left (pct 15)
+                , width (pct 70)
+                , height (pct 70)
+                , if selected then
+                    backgroundColor theme.colorPrimary
+                  else
+                    backgroundColor transparent
+                ]
+            ]
+            [ for checkboxId ]
+            []
         ]

@@ -4,6 +4,8 @@ import Dom exposing (Error)
 import Json.Encode
 import Keyboard exposing (KeyCode)
 import PanelsManager exposing (PanelsState, initialPanelsState)
+import Time exposing (Time)
+
 
 type alias UserUid =
     String
@@ -34,6 +36,7 @@ type alias Article =
     , title : String
     , excerpt : String
     , starred : Bool
+    , date: Time
     }
 
 
@@ -100,6 +103,9 @@ type alias Model =
         , modal : Modal
         , panelsState : PanelsState
         , defaultTransitionDuration : Int
+        , articlesPerPage: Int
+        , currentPage: Int
+        , articlePreviewHeight : Int
         }
 
 
@@ -120,6 +126,9 @@ init =
       , modal = {text = "", action = NoOp}
       , panelsState = initialPanelsState
       , defaultTransitionDuration = 500
+      , articlesPerPage = 10
+      , currentPage = 1
+      , articlePreviewHeight = 15
       }
     , Cmd.none
     )
@@ -171,6 +180,7 @@ type Msg
     | RemoveErrorMsg String
     | UpdateSearch String
     | CloseAllPanels
+    | ChangePage Int
     | NoOp
 
 
