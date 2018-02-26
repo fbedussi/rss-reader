@@ -4,7 +4,7 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (delay, getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site)
+import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panels(..))
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
@@ -168,7 +168,7 @@ update msg model =
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
-                , panelsState = (closePanel "panelEditSite" >> closeModal) model.panelsState
+                , panelsState = (closePanel (toString PanelEditSite) >> closeModal) model.panelsState
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
@@ -270,14 +270,14 @@ update msg model =
         OpenEditSitePanel siteId ->
             ( { model
                 | siteToEditId = siteId
-                , panelsState = openPanel "panelEditSite" model.panelsState
+                , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , Cmd.none
             )
 
         CloseEditSitePanel ->
             ( { model
-                | panelsState = closePanel "panelEditSite" model.panelsState
+                | panelsState = closePanel (toString PanelEditSite) model.panelsState
               }
             , Cmd.none
             )
@@ -414,6 +414,10 @@ update msg model =
 
         ChangePage pageNumber ->
             ( { model | currentPage = pageNumber }, Cmd.none )
+
+        ChangeNumberOfArticlesPerPage articlesPerPage ->
+            ( { model | articlesPerPage = articlesPerPage }, Cmd.none )
+        
 
         NoOp ->
             ( model, Cmd.none )

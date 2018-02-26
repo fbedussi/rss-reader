@@ -1,16 +1,13 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
-import Css.Foreign exposing (descendants, selector, typeSelector)
-import Date exposing (day, fromTime, month, year)
+import Css exposing (Style, auto, batch, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, justifyContent, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, spaceBetween, textAlign, width, zero, important, backgroundColor)
 import Helpers exposing (getArticleSite, getSelectedArticles)
-import Html.Attributes
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
 import Html.Styled.Events exposing (onClick)
-import Json.Encode
 import Models exposing (Article, Category, Model, Msg(..), Site)
-import PartialViews.UiKit exposing (article, articleTitle, btn, clear, standardPadding, starBtn, theme)
+import PartialViews.Article exposing (renderArticle)
+import PartialViews.UiKit exposing (btn, clear, standardPadding, starBtn, theme, selectableBtn)
 
 
 mainContent : Model -> Html Msg
@@ -38,125 +35,74 @@ mainContent model =
             (articlesToDisplay
                 |> List.map (renderArticle model.articlePreviewHeight model.sites)
             )
-        , styled div
-            [ textAlign center
-            , if List.length articlesToDisplay == model.articlesPerPage then
-                display block
-              else
-                display none
-            ]
+        , renderPagination articlesToDisplay model.articlesPerPage model.currentPage lastPage
+        ]
+
+
+renderPagination : List Article -> Int -> Int -> Int -> Html Msg
+renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
+    styled div
+        [ textAlign center
+        , displayFlex
+        , justifyContent spaceBetween
+        , showIf <| List.length articlesToDisplay == articlesPerPage
+        ]
+        [ class "pagerToolbar" ]
+        [ span
             [ class "pagerWrapper" ]
-            ((if model.currentPage > 1 then
-                [ btn
-                    [ class "firstPageButton"
-                    , onClick <| ChangePage 1
-                    ]
-                    [ text "<<" ]
-                , btn
-                    [ class "prevPageButton"
-                    , onClick <| ChangePage <| max 1 <| model.currentPage - 1
-                    ]
-                    [ text "<" ]
+            [ styled btn
+                [ showIf <| currentPage > 1 ]
+                [ class "firstPageButton"
+                , onClick <| ChangePage 1
                 ]
-              else
-                []
-             )
-                ++ [ styled span
-                        [ marginLeft (Css.em 0.5) ]
-                        [ class "currentPage" ]
-                        [ text <| toString model.currentPage ++ "/" ++ toString lastPage ]
-                   ]
-                ++ (if model.currentPage < lastPage then
-                        [ btn
-                            [ class "nextPageButton"
-                            , onClick <| ChangePage <| min lastPage <| model.currentPage + 1
-                            ]
-                            [ text ">" ]
-                        , btn
-                            [ class "nextPageButton"
-                            , onClick <| ChangePage lastPage
-                            ]
-                            [ text ">>" ]
-                        ]
-                    else
-                        []
-                   )
+                [ text "<<" ]
+            , styled btn
+                [ showIf <| currentPage > 1 ]
+                [ class "prevPageButton"
+                , onClick <| ChangePage <| max 1 <| currentPage - 1
+                ]
+                [ text "<" ]
+            , styled span
+                [ marginLeft (Css.em 0.5) ]
+                [ class "currentPage" ]
+                [ text <| toString currentPage ++ "/" ++ toString lastPage ]
+            , styled btn
+                [ showIf <| currentPage < lastPage ]
+                [ class "nextPageButton"
+                , onClick <| ChangePage <| min lastPage <| currentPage + 1
+                ]
+                [ text ">" ]
+            , styled btn
+                [ showIf <| currentPage < lastPage ]
+                [ class "nextPageButton"
+                , onClick <| ChangePage lastPage
+                ]
+                [ text ">>" ]
+            ]
+        , span
+            [ class "changeNumberOfArticlesPerPageButtonsWrapper" ]
+            ([ span
+                [ class "articlesPerPageLabel" ]
+                [ text "articles per page " ]
+             ]
+                ++ List.map (renderChangeNumberOfArticlesPerPageButton articlesPerPage) [ 10, 25, 50 ]
             )
         ]
 
 
-renderArticle : Int -> List Site -> Article -> Html Msg
-renderArticle articlePreviewHeight sites articleToRender =
-    let
-        starredLabel =
-            if articleToRender.starred then
-                "starred"
-            else
-                ""
+showIf : Bool -> Style
+showIf condition =
+    if condition then
+        batch []
+    else
+        display none |> important
 
-        site =
-            getArticleSite sites articleToRender
 
-        date =
-            fromTime articleToRender.date
-    in
-    li
-        [ class "article" ]
-        [ article
-            [ class "article"
-            , id <| "srticle_" ++ toString articleToRender.id
-            ]
-            [ styled div
-                [ displayFlex
-                , marginBottom theme.distanceXXS
-                ]
-                [ class "starAndSiteAndTitle" ]
-                [ starBtn ("starred_" ++ toString articleToRender.id)
-                    articleToRender.starred
-                    (\checked ->
-                        if checked then
-                            SaveArticle articleToRender
-                        else
-                            DeleteArticles [ articleToRender.id ]
-                    )
-                , div
-                    [ class "articleSiteAndTitle" ]
-                    [ div
-                        [ class "articleDate" ]
-                        [ text <| ((toString <| day date) ++ " " ++ (toString <| month date) ++ " " ++ (toString <| year date)) ]
-                    , div
-                        [ class "articleSite" ]
-                        [ text site.name ]
-                    , articleTitle
-                        [ class "article-title" ]
-                        [ a
-                            [ class "article-link"
-                            , href articleToRender.link
-                            , Json.Encode.string articleToRender.title
-                                |> Html.Attributes.property "innerHTML"
-                                |> fromUnstyled
-                            ]
-                            []
-                        ]
-                    ]
-                ]
-            , styled div
-                [ descendants
-                    [ typeSelector "img"
-                        [ width (Css.rem 13)
-                        , height auto
-                        , float left
-                        , margin3 zero (Css.em 1) (Css.em 1)
-                        , clear "both"
-                        ]
-                    ]
-                , maxHeight (Css.rem <| toFloat articlePreviewHeight)
-                ]
-                [ class "article-excerpt"
-                , Json.Encode.string articleToRender.excerpt
-                    |> Html.Attributes.property "innerHTML"
-                    |> fromUnstyled
-                ]
-                []
-            ]
+renderChangeNumberOfArticlesPerPageButton : Int -> Int -> Html Msg
+renderChangeNumberOfArticlesPerPageButton currentArticlesPerPage newArticlesPerPage =
+    selectableBtn (currentArticlesPerPage == newArticlesPerPage)
+        [ class "changeNumberOfArticlesPerPageButton"
+        , onClick <| ChangeNumberOfArticlesPerPage newArticlesPerPage
         ]
+        [ text <| toString newArticlesPerPage ]
+    

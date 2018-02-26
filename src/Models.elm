@@ -86,6 +86,11 @@ type alias GenericOutsideData =
     , data : Json.Encode.Value
     }
 
+type Panels 
+    = PanelEditSite
+    | PanelImport
+    | PanelModal
+    | PanelMenu
 
 type alias Model =
         { errorMsgs : List String
@@ -181,6 +186,7 @@ type Msg
     | UpdateSearch String
     | CloseAllPanels
     | ChangePage Int
+    | ChangeNumberOfArticlesPerPage Int
     | NoOp
 
 

@@ -6,7 +6,7 @@ import Html.Styled exposing (Attribute, Html, div, styled)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (keyCode, on, onClick)
 import Json.Decode as Json
-import Models exposing (Model, Msg(..))
+import Models exposing (Model, Msg(..), Panels(..))
 import PanelsManager exposing (getPanelState, isSomePanelOpen)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
 import PartialViews.ErrorContainer exposing (errorContainer)
@@ -54,6 +54,6 @@ view model =
             ]
         , overlay (isSomePanelOpen "panel" model.panelsState)
         , modal (getPanelState "panelModal" model.panelsState |> getModalAnimationClass) model.modal
-        , editSiteLayer (getPanelState "panelEditSite" model.panelsState |> getAnimationClassTopLayers) (getSiteToEdit model.siteToEditId model.sites) model.categories
+        , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) (getSiteToEdit model.siteToEditId model.sites) model.categories
         , importLayer (getPanelState "panelImport" model.panelsState |> getAnimationClassTopLayers)
         ]

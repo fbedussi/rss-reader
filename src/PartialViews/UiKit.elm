@@ -27,7 +27,7 @@ theme =
     , colorHairline = hex "e4e4e4"
     , colorBackground = hex "ffffff"
     , colorTransparent = rgba 0 0 0 0
-    , colorAlert = hex "673C4F"
+    , colorAlert = hex "ff0000"
     , white = hex "ffffff"
     , black = hex "000000"
     , inputHeight = inputHeight
@@ -115,13 +115,13 @@ visuallyHiddenStyle =
         ]
 
 
-btnStyle : Style
-btnStyle =
+btnStyle : Bool -> Style
+btnStyle selected =
     batch
         [ display inlineBlock
         , minHeight theme.buttonHeight
         , padding2 theme.distanceXXXS theme.distanceXS
-        , backgroundColor theme.colorPrimary
+        , if selected then backgroundColor theme.colorPrimaryLight else backgroundColor theme.colorPrimary
         , color theme.white
         , appearance "none"
         , border3 (px 2) solid transparent
@@ -160,13 +160,20 @@ sidebarBoxStyle =
 
 btn : List (Attribute msg) -> List (Html msg) -> Html msg
 btn =
-    styled button [ btnStyle ]
+    styled button [ btnStyle False ]
+
+selectableBtn : Bool -> List (Attribute msg) -> List (Html msg) -> Html msg
+selectableBtn selected =
+    styled button 
+        [ btnStyle selected ]
+
+
 
 
 alertBtn : List (Attribute msg) -> List (Html msg) -> Html msg
 alertBtn =
     styled button
-        [ btnStyle
+        [ btnStyle False
         , borderColor theme.colorAlert
         , backgroundColor theme.colorAlert
         , hover
@@ -200,7 +207,7 @@ select =
 secondaryBtn : List (Attribute msg) -> List (Html msg) -> Html msg
 secondaryBtn =
     styled button
-        [ btnStyle
+        [ btnStyle False
         , backgroundColor transparent
         , borderColor theme.colorPrimary
         , color theme.colorPrimary
@@ -437,6 +444,7 @@ articleTitle =
             [ selector "a"
                 [ color theme.colorPrimary ]
             ]
+        , marginBottom (Css.em 0.5)
         ]
 
 
