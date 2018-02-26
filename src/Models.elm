@@ -17,6 +17,11 @@ type alias LoginData =
     }
 
 
+type alias AppData = {
+    lastRefreshTime : Time    
+    , articlesPerPage : Int
+}
+
 type alias Email =
     String
 
@@ -60,6 +65,7 @@ type alias Data =
     { categories : List Category
     , sites : List Site
     , articles : List Article
+    , appData : AppData
     }
 
 
@@ -108,9 +114,9 @@ type alias Model =
         , modal : Modal
         , panelsState : PanelsState
         , defaultTransitionDuration : Int
-        , articlesPerPage: Int
         , currentPage: Int
         , articlePreviewHeight : Int
+        , appData : AppData
         }
 
 
@@ -131,10 +137,10 @@ init =
       , modal = {text = "", action = NoOp}
       , panelsState = initialPanelsState
       , defaultTransitionDuration = 500
-      , articlesPerPage = 10
       , currentPage = 1
       , articlePreviewHeight = 15
-      }
+      , appData = {lastRefreshTime = 0,  articlesPerPage = 15}
+    }
     , Cmd.none
     )
 
@@ -187,6 +193,7 @@ type Msg
     | CloseAllPanels
     | ChangePage Int
     | ChangeNumberOfArticlesPerPage Int
+    | RegisterTime Time
     | NoOp
 
 
@@ -202,10 +209,11 @@ type InfoForOutside
     | UpdateSiteInDb Site
     | AddArticleInDb Article
     | DeleteArticlesInDb (List Id)
+    | SaveAppData AppData
     | SaveAllData ( List Category, List Site, List Article )
 
 
 type InfoForElm
     = UserLoggedIn UserUid
     | DbOpened
-    | NewData (List Category) (List Site) (List Article)
+    | NewData (List Category) (List Site) (List Article) AppData

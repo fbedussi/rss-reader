@@ -4,12 +4,12 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (delay, getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panels(..))
+import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panels(..), AppData)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
 import Task
-
+import Time
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -387,7 +387,15 @@ update msg model =
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
         RefreshFeeds ->
-            ( { model | fetchingRss = True }, getFeeds model.sites |> Cmd.batch )
+            ( { model | fetchingRss = True }, Task.perform RegisterTime Time.now :: getFeeds model.sites |> Cmd.batch )
+
+        RegisterTime time ->
+            let
+                updatedAppData = AppData
+                    time
+                    model.appData.articlesPerPage
+            in
+            ({model | appData = updatedAppData}, SaveAppData updatedAppData |> sendInfoOutside)
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
@@ -416,7 +424,12 @@ update msg model =
             ( { model | currentPage = pageNumber }, Cmd.none )
 
         ChangeNumberOfArticlesPerPage articlesPerPage ->
-            ( { model | articlesPerPage = articlesPerPage }, Cmd.none )
+            let
+                updatedAppData = AppData
+                    model.appData.lastRefreshTime
+                    articlesPerPage
+            in
+            ( { model | appData = updatedAppData }, SaveAppData updatedAppData |> sendInfoOutside )
         
 
         NoOp ->

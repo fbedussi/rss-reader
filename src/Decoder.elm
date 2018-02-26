@@ -23,10 +23,11 @@ decodeData value =
 
 dataDecoder : Decoder Data
 dataDecoder =
-    map3 Data
+    map4 Data
         (field "categories" categoriesDecoder)
         (field "sites" sitesDecoder)
         (field "articles" articlesDecoder)
+        (field "appData" appDataDecoder)
 
 
 categoriesDecoder : Decoder (List Category)
@@ -73,6 +74,13 @@ articleDecoder =
         (field "starred" Json.Decode.bool)
         (field "pubDate" dateDecoder)
 
+
+appDataDecoder : Decoder AppData
+appDataDecoder =
+    map2 AppData
+        (field "lastRefreshTime" Json.Decode.float)
+        (field "articlesPerPage" Json.Decode.int)
+        
 
 dateDecoder : Decoder Time
 dateDecoder =

@@ -132,7 +132,8 @@ app.ports.infoForOutside.subscribe(function (cmd) {
             const readRequests = [
                 dbInterface.readAll({storeName: 'categories'}),
                 dbInterface.readAll({storeName: 'sites'}),
-                dbInterface.readAll({storeName: 'articles'})
+                dbInterface.readAll({storeName: 'articles'}),
+                dbInterface.readAll({storeName: 'appData'})
             ]
 
             Promise.all(readRequests)
@@ -141,6 +142,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
                         categories: convertObjToArray(result[0]),
                         sites: convertObjToArray(result[1]).map((site) => Object.assign({categoriesId: []}, site)), //if the array is empty firebase strip it
                         articles: convertObjToArray(result[2]),
+                        appData: result[3][0],
                     };
                     app.ports.infoForElm.send({
                         tag: 'allData',
@@ -190,6 +192,10 @@ app.ports.infoForOutside.subscribe(function (cmd) {
 
         case 'saveAllData':
             Object.keys(payload).forEach((key) => saveStore(key, payload[key]));
+            break;
+
+        case 'saveAppData':
+            saveStore('appData', payload)
             break;
 
         default:

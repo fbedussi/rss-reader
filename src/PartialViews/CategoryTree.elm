@@ -6,12 +6,14 @@ import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSit
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Models exposing (Article, Category, Id, Model, Selected, SelectedCategoryId, SelectedSiteId, Site, Msg(..))
+import Models exposing (Article, Category, Id, Model, Msg(..), Selected, SelectedCategoryId, SelectedSiteId, Site)
+import PanelsManager exposing (getPanelClass, getPanelState)
 import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
-import PanelsManager exposing (getPanelState, getPanelClass)
+import Time exposing (Time)
+
 
 renderCategory : Model -> Category -> Html Msg
 renderCategory model category =
@@ -31,14 +33,14 @@ renderCategory model category =
         sitesInCategory =
             getSitesInCategory category.id model.sites
 
-        articlesInCategory =
-            countArticlesInCategory sitesInCategory model.articles
+        newArticlesInCategory =
+            countNewArticlesInCategory sitesInCategory model.articles model.appData.lastRefreshTime
     in
     categoryWrapper
         [ class "tab"
         , id domId
         ]
-        [ deleteActions (getPanelState domId model.panelsState |> getPanelClass "is-hidden" "slideRight" "slideLeft" ) category (extractId sitesInCategory)
+        [ deleteActions (getPanelState domId model.panelsState |> getPanelClass "is-hidden" "slideRight" "slideLeft") category (extractId sitesInCategory)
         , sidebarRow selected
             [ class "tabTitle" ]
             (case model.categoryToEditId of
@@ -46,10 +48,10 @@ renderCategory model category =
                     if categoryToEditId == category.id then
                         renderEditCategory category
                     else
-                        renderCaregoryName category selected articlesInCategory
+                        renderCaregoryName category selected newArticlesInCategory
 
                 Nothing ->
-                    renderCaregoryName category selected articlesInCategory
+                    renderCaregoryName category selected newArticlesInCategory
             )
         , tabContentOuter selected
             [ class "tabContentOuter" ]
@@ -64,7 +66,7 @@ renderCategory model category =
 
 
 renderCaregoryName : Category -> Selected -> Int -> List (Html Msg)
-renderCaregoryName category selected articlesInCategory =
+renderCaregoryName category selected newArticlesInCategory =
     [ sidebarSelectionBtn
         [ class "categoryBtn"
         , onClick <| ToggleSelectedCategory category.id
@@ -78,7 +80,7 @@ renderCaregoryName category selected articlesInCategory =
             ]
         , badge
             [ class "category-numberOfArticles" ]
-            [ articlesInCategory
+            [ newArticlesInCategory
                 |> toString
                 |> text
             ]
@@ -151,10 +153,12 @@ renderSiteEntry selectedSiteId site =
         ]
 
 
-countArticlesInCategory : List Site -> List Article -> Int
-countArticlesInCategory sitesInCategory articles =
+countNewArticlesInCategory : List Site -> List Article -> Time -> Int
+countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
     let
         articlesInCategory =
-            List.filter (isArticleInSites sitesInCategory) articles
+            articles
+                |> List.filter (\article -> article.date > lastRefreshTime)
+                |> List.filter (isArticleInSites sitesInCategory)
     in
     List.length articlesInCategory

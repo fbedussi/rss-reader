@@ -17,12 +17,12 @@ mainContent model =
             getSelectedArticles model.selectedCategoryId model.selectedSiteId model.sites model.articles
 
         lastPage =
-            List.length selectedArticles // model.articlesPerPage
+            List.length selectedArticles // model.appData.articlesPerPage
 
         articlesToDisplay =
             selectedArticles
-                |> List.drop (model.articlesPerPage * (model.currentPage - 1))
-                |> List.take model.articlesPerPage
+                |> List.drop (model.appData.articlesPerPage * (model.currentPage - 1))
+                |> List.take model.appData.articlesPerPage
     in
     styled main_
         [ width (pct 75)
@@ -35,7 +35,7 @@ mainContent model =
             (articlesToDisplay
                 |> List.map (renderArticle model.articlePreviewHeight model.sites)
             )
-        , renderPagination articlesToDisplay model.articlesPerPage model.currentPage lastPage
+        , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
         ]
 
 
