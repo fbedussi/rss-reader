@@ -1,6 +1,6 @@
 module PartialViews.Article exposing (renderArticle)
 
-import Css exposing (auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
+import Css exposing (auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin4, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
 import Css.Foreign exposing (descendants, selector, typeSelector)
 import Date exposing (day, fromTime, month, year)
 import Helpers exposing (getArticleSite, getSelectedArticles)
@@ -72,7 +72,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                                 [ width (Css.rem 13)
                                 , height auto
                                 , float left
-                                , margin3 zero (Css.em 1) (Css.em 1)
+                                , margin4 zero (Css.em 1) (Css.em 1) zero
                                 , clear "both"
                                 ]
                             ]
