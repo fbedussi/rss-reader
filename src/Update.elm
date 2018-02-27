@@ -395,7 +395,7 @@ update msg model =
                     time
                     model.appData.articlesPerPage
             in
-            ({model | appData = updatedAppData}, SaveAppData updatedAppData |> sendInfoOutside)
+            (model, SaveAppData updatedAppData |> sendInfoOutside)
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
