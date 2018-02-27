@@ -1,7 +1,8 @@
 module PartialViews.Article exposing (renderArticle)
 
-import Css exposing (auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin4, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
+import Css exposing (position, absolute, static, auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin4, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
 import Css.Foreign exposing (descendants, selector, typeSelector)
+import Css.Media exposing (only, screen, withMedia)
 import Date exposing (day, fromTime, month, year)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
@@ -34,26 +35,41 @@ renderArticle articlePreviewHeight sites articleToRender =
             , id <| "srticle_" ++ toString articleToRender.id
             ]
             [ styled div
-                [ displayFlex
-                , marginBottom theme.distanceXXS
+                [ marginBottom theme.distanceXXS
+                , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                    [ displayFlex ]
                 ]
                 [ class "starAndArticle" ]
-                [ starBtn ("starred_" ++ toString articleToRender.id)
-                    articleToRender.starred
-                    (\checked ->
-                        if checked then
-                            SaveArticle articleToRender
-                        else
-                            DeleteArticles [ articleToRender.id ]
-                    )
+                [ styled span
+                    [ position absolute
+                    , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                        [ position static ]
+                    ]
+                    []
+                    [ starBtn ("starred_" ++ toString articleToRender.id)
+                        articleToRender.starred
+                        (\checked ->
+                            if checked then
+                                SaveArticle articleToRender
+                            else
+                                DeleteArticles [ articleToRender.id ]
+                        )
+                    ]
                 , div
                     [ class "article-content" ]
-                    [ div
-                        [ class "articleDate" ]
-                        [ text <| ((toString <| day date) ++ " " ++ (toString <| month date) ++ " " ++ (toString <| year date)) ]
-                    , div
-                        [ class "articleSite" ]
-                        [ text site.name ]
+                    [ styled div
+                        [marginLeft (Css.rem 2)
+                        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                            [ marginLeft zero ]
+                        ]
+                        [class "articleDateAndSite"]
+                        [div
+                            [ class "articleDate" ]
+                            [ text <| ((toString <| day date) ++ " " ++ (toString <| month date) ++ " " ++ (toString <| year date)) ]
+                        , div
+                            [ class "articleSite" ]
+                            [ text site.name ]
+                        ]
                     , articleTitle
                         [ class "article-title" ]
                         [ a

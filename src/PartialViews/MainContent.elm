@@ -1,13 +1,14 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (Style, auto, batch, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, justifyContent, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, spaceBetween, textAlign, width, zero, important, backgroundColor)
+import Css exposing (Style, auto, backgroundColor, batch, block, calc, center, display, displayFlex, flex, float, height, hidden, important, inline, int, justifyContent, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, spaceBetween, textAlign, width, zero)
+import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Article, Category, Model, Msg(..), Site)
 import PartialViews.Article exposing (renderArticle)
-import PartialViews.UiKit exposing (btn, clear, standardPadding, starBtn, theme, selectableBtn)
+import PartialViews.UiKit exposing (btn, clear, selectableBtn, standardPadding, starBtn, theme)
 
 
 mainContent : Model -> Html Msg
@@ -25,9 +26,11 @@ mainContent model =
                 |> List.take model.appData.articlesPerPage
     in
     styled main_
-        [ width (pct 75)
-        , maxWidth <| calc (pct 100) minus (Css.rem 25)
-        , standardPadding
+        [ standardPadding
+        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            [ width (pct 75)
+            , maxWidth <| calc (pct 100) minus (Css.rem 25)
+            ]
         ]
         [ class "mainContent" ]
         [ ul
@@ -105,4 +108,3 @@ renderChangeNumberOfArticlesPerPageButton currentArticlesPerPage newArticlesPerP
         , onClick <| ChangeNumberOfArticlesPerPage newArticlesPerPage
         ]
         [ text <| toString newArticlesPerPage ]
-    

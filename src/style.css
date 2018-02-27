@@ -10,6 +10,12 @@
     box-sizing: border-box;
 }
 
+.article-excerpt * {
+    margin: initial;
+    padding: initial;
+    box-sizing: initial;
+}
+
 ul {
     list-style-type: none;
 }
