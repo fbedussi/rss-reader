@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg4499"
+   version="1.1"
+   viewBox="0 0 189.60211 181.89622"
+   height="181.89622mm"
+   width="189.60211mm">
+  <defs
+     id="defs4493" />
+  <metadata
+     id="metadata4496">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-2.0396866,-1.4376043)"
+     id="layer1">
+    <flowRoot
+       transform="scale(0.26458333)"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot5044"
+       xml:space="preserve"><flowRegion
+         id="flowRegion5046"><rect
+           y="316.80539"
+           x="42.857143"
+           height="351.42856"
+           width="577.14288"
+           id="rect5048" /></flowRegion><flowPara
+         id="flowPara5050"></flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.45761324,-0.1269326,0.1269326,0.45761324,-87.805251,-72.04519)"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot5052"
+       xml:space="preserve"><flowRegion
+         id="flowRegion5054"><rect
+           y="336.80539"
+           x="94.285713"
+           height="300"
+           width="511.42856"
+           id="rect5056" /></flowRegion><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.66666794px;font-family:'Segoe Script';-inkscape-font-specification:'Segoe Script'"
+         id="flowPara5058">no articles yet...</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.66666794px;font-family:'Segoe Script';-inkscape-font-specification:'Segoe Script'"
+         id="flowPara5060">click refresh!</flowPara></flowRoot>    <path
+       id="path5062"
+       d="m 61.227533,130.12907 c -18.14286,83.91072 53.173057,47.5367 70.348067,-1.67959 15.35993,-44.015048 -12.14669,-60.335308 -44.553989,-2.94784 -29.996918,53.11912 23.572939,89.01252 66.058739,14.29094 38.39306,-67.523508 28.14444,-124.669197 28.14444,-124.669197"
+       style="fill:none;stroke:#000000;stroke-width:1.96500003;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       id="path5064"
+       d="m 171.92237,22.55397 c 6.09676,-10.711373 5.26495,-16.3070296 5.60317,-20.1339066 0,0 6.2746,2.450374 13.13396,15.1058126 0,0 -2.34159,-1.758405 -18.71305,2.752369"
+       style="fill:none;stroke:#000000;stroke-width:1.96500003;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>

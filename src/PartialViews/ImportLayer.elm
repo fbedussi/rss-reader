@@ -3,7 +3,7 @@ module PartialViews.ImportLayer exposing (importLayer)
 import Html.Styled exposing (Html, button, div, p, text, textarea)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick, onInput)
-import Models exposing (Msg(..))
+import Models exposing (Msg(..), Panel(..))
 import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
 
 importLayer : String -> Html Msg
@@ -32,7 +32,7 @@ importLayer animationClass =
                         [ text "import" ]
                     , secondaryBtn
                         [ class "button"
-                        , onClick ToggleImportLayer
+                        , onClick <| TogglePanel PanelImport
                         ]
                         [ text "close" ]
                     ]

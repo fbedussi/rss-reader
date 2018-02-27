@@ -1,13 +1,14 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (Style, auto, batch, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, justifyContent, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, spaceBetween, textAlign, width, zero, important, backgroundColor)
+import Css exposing (..)
+import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getArticleSite, getSelectedArticles)
-import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
-import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
+import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul, img)
+import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_, src, alt)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Article, Category, Model, Msg(..), Site)
 import PartialViews.Article exposing (renderArticle)
-import PartialViews.UiKit exposing (btn, clear, standardPadding, starBtn, theme, selectableBtn)
+import PartialViews.UiKit exposing (btn, clear, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
 
 
 mainContent : Model -> Html Msg
@@ -17,26 +18,47 @@ mainContent model =
             getSelectedArticles model.selectedCategoryId model.selectedSiteId model.sites model.articles
 
         lastPage =
-            List.length selectedArticles // model.articlesPerPage
+            List.length selectedArticles // model.appData.articlesPerPage
 
         articlesToDisplay =
             selectedArticles
-                |> List.drop (model.articlesPerPage * (model.currentPage - 1))
-                |> List.take model.articlesPerPage
+                |> List.drop (model.appData.articlesPerPage * (model.currentPage - 1))
+                |> List.take model.appData.articlesPerPage
     in
     styled main_
-        [ width (pct 75)
-        , maxWidth <| calc (pct 100) minus (Css.rem 25)
-        , standardPadding
+        [ standardPadding
+        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            [ width (pct 75)
+            , maxWidth <| calc (pct 100) minus (Css.rem 25)
+            ]
         ]
         [ class "mainContent" ]
-        [ ul
-            [ class "selectedArticles" ]
-            (articlesToDisplay
-                |> List.map (renderArticle model.articlePreviewHeight model.sites)
-            )
-        , renderPagination articlesToDisplay model.articlesPerPage model.currentPage lastPage
-        ]
+        (if List.length articlesToDisplay > 0 then 
+            [ ul
+                [ class "selectedArticles" ]
+                (articlesToDisplay
+                    |> List.map (renderArticle model.articlePreviewHeight model.sites)
+                )
+            , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
+            ]
+        else 
+            [ styled div 
+                [backgroundImage (url "/no_articles.svg")
+                , backgroundSize contain
+                , backgroundRepeat noRepeat
+                , width (pct 100)
+                , height (vh 80)
+                , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                    [backgroundImage (url "/no_articles_desktop.svg")]
+                ]
+                [] 
+                [styled span
+                    [visuallyHiddenStyle]
+                    []
+                    [text "no article yet, click the refresh button"]
+                ]
+            ]
+        )
 
 
 renderPagination : List Article -> Int -> Int -> Int -> Html Msg
@@ -105,4 +127,3 @@ renderChangeNumberOfArticlesPerPageButton currentArticlesPerPage newArticlesPerP
         , onClick <| ChangeNumberOfArticlesPerPage newArticlesPerPage
         ]
         [ text <| toString newArticlesPerPage ]
-    

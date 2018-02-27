@@ -38,9 +38,9 @@ renderEditSiteForm site categories =
                 [ class "input is-disabled" ]
                 [ toString site.id |> text ]
             ]
-        , inputRowText "Name" "siteNameInput" site.name (\name -> UpdateSite { site | name = name })
-        , inputRowText "Rss link" "rssLinkInput" site.rssLink (\rssLink -> UpdateSite { site | rssLink = rssLink })
-        , inputRowText "Web link" "webLinkInput" site.webLink (\webLink -> UpdateSite { site | webLink = webLink })
+        , inputRowText "siteNameInput" "Name" site.name (\name -> UpdateSite { site | name = name })
+        , inputRowText "rssLinkInput" "Rss link" site.rssLink (\rssLink -> UpdateSite { site | rssLink = rssLink })
+        , inputRowText "webLinkInput" "Web link" site.webLink (\webLink -> UpdateSite { site | webLink = webLink })
         , inputRow
             []
             [ styled span
@@ -119,7 +119,7 @@ inputRowLabel inputId labelText =
         [ class "inputLabel"
         , for inputId
         ]
-        [ text (labelText ++ ": ") ]
+        [ text (labelText ++ " ") ]
 
 
 inputRowText : String -> String -> String -> (String -> msg) -> Html msg

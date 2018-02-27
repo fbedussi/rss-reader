@@ -10,10 +10,17 @@ import Time exposing (Time)
 type alias UserUid =
     String
 
+
 type alias LoginData =
     { email : Email
     , password : Password
     , authenticated : Bool
+    }
+
+
+type alias AppData =
+    { lastRefreshTime : Time
+    , articlesPerPage : Int
     }
 
 
@@ -36,7 +43,7 @@ type alias Article =
     , title : String
     , excerpt : String
     , starred : Bool
-    , date: Time
+    , date : Time
     }
 
 
@@ -60,6 +67,7 @@ type alias Data =
     { categories : List Category
     , sites : List Site
     , articles : List Article
+    , appData : AppData
     }
 
 
@@ -86,32 +94,34 @@ type alias GenericOutsideData =
     , data : Json.Encode.Value
     }
 
-type Panels 
+
+type Panel
     = PanelEditSite
     | PanelImport
     | PanelModal
     | PanelMenu
 
+
 type alias Model =
-        { errorMsgs : List String
-        , categories : List Category
-        , sites : List Site
-        , articles : List Article
-        , selectedCategoryId : SelectedCategoryId
-        , selectedSiteId : SelectedSiteId
-        , categoryToEditId : Maybe Id
-        , siteToEditId : Id
-        , importData : String
-        , searchTerm : String
-        , keyboardNavigation : Bool
-        , fetchingRss : Bool
-        , modal : Modal
-        , panelsState : PanelsState
-        , defaultTransitionDuration : Int
-        , articlesPerPage: Int
-        , currentPage: Int
-        , articlePreviewHeight : Int
-        }
+    { errorMsgs : List String
+    , categories : List Category
+    , sites : List Site
+    , articles : List Article
+    , selectedCategoryId : SelectedCategoryId
+    , selectedSiteId : SelectedSiteId
+    , categoryToEditId : Maybe Id
+    , siteToEditId : Id
+    , importData : String
+    , searchTerm : String
+    , keyboardNavigation : Bool
+    , fetchingRss : Bool
+    , modal : Modal
+    , panelsState : PanelsState
+    , defaultTransitionDuration : Int
+    , currentPage : Int
+    , articlePreviewHeight : Int
+    , appData : AppData
+    }
 
 
 init : ( Model, Cmd Msg )
@@ -128,12 +138,12 @@ init =
       , searchTerm = ""
       , keyboardNavigation = False
       , fetchingRss = False
-      , modal = {text = "", action = NoOp}
+      , modal = { text = "", action = NoOp }
       , panelsState = initialPanelsState
       , defaultTransitionDuration = 500
-      , articlesPerPage = 10
       , currentPage = 1
       , articlePreviewHeight = 15
+      , appData = { lastRefreshTime = 0, articlesPerPage = 15 }
       }
     , Cmd.none
     )
@@ -156,7 +166,6 @@ type Msg
     | ToggleSelectedCategory Id
     | ToggleSelectSite Id
     | ToggleDeleteActions Id
-    | ToggleImportLayer
     | StoreImportData String
     | ExecuteImport
     | RequestDeleteCategories (List Id)
@@ -178,15 +187,17 @@ type Msg
     | DeleteArticles (List Id)
     | SaveArticle Article
     | Outside InfoForElm
-    | OpenErrorMsg String   
+    | OpenErrorMsg String
     | LogErr String
     | RefreshFeeds
+    | TogglePanel Panel
     | RequestRemoveErrorMsg String
     | RemoveErrorMsg String
     | UpdateSearch String
     | CloseAllPanels
     | ChangePage Int
     | ChangeNumberOfArticlesPerPage Int
+    | RegisterTime Time
     | NoOp
 
 
@@ -202,10 +213,11 @@ type InfoForOutside
     | UpdateSiteInDb Site
     | AddArticleInDb Article
     | DeleteArticlesInDb (List Id)
+    | SaveAppData AppData
     | SaveAllData ( List Category, List Site, List Article )
 
 
 type InfoForElm
     = UserLoggedIn UserUid
     | DbOpened
-    | NewData (List Category) (List Site) (List Article)
+    | NewData (List Category) (List Site) (List Article) AppData

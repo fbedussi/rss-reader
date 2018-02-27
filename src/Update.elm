@@ -4,12 +4,12 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (delay, getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panels(..))
+import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panel(..), AppData)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
 import Task
-
+import Time
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -94,16 +94,16 @@ update msg model =
             in
             ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
-        ToggleImportLayer ->
+        TogglePanel panel ->
             let
                 isOpen =
-                    getPanelState "panelImport" model.panelsState |> isPanelOpen
+                    getPanelState (toString panel) model.panelsState |> isPanelOpen
 
                 updatedPanelsState =
                     if isOpen then
-                        closePanel "panelImport" model.panelsState
+                        closePanel (toString panel) model.panelsState
                     else
-                        openPanel "panelImport" model.panelsState
+                        openPanel (toString panel) model.panelsState
             in
             ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
@@ -290,6 +290,7 @@ update msg model =
             ( { model
                 | sites = List.append model.sites [ newSite ]
                 , siteToEditId = newSite.id
+                , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , AddSiteInDb newSite |> sendInfoOutside
             )
@@ -387,7 +388,15 @@ update msg model =
             ( { model | articles = updatedArticles }, AddArticleInDb udatedArticleToSave |> sendInfoOutside )
 
         RefreshFeeds ->
-            ( { model | fetchingRss = True }, getFeeds model.sites |> Cmd.batch )
+            ( { model | fetchingRss = True }, Task.perform RegisterTime Time.now :: getFeeds model.sites |> Cmd.batch )
+
+        RegisterTime time ->
+            let
+                updatedAppData = AppData
+                    time
+                    model.appData.articlesPerPage
+            in
+            (model, SaveAppData updatedAppData |> sendInfoOutside)
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
@@ -416,7 +425,12 @@ update msg model =
             ( { model | currentPage = pageNumber }, Cmd.none )
 
         ChangeNumberOfArticlesPerPage articlesPerPage ->
-            ( { model | articlesPerPage = articlesPerPage }, Cmd.none )
+            let
+                updatedAppData = AppData
+                    model.appData.lastRefreshTime
+                    articlesPerPage
+            in
+            ( { model | appData = updatedAppData }, SaveAppData updatedAppData |> sendInfoOutside )
         
 
         NoOp ->
@@ -477,12 +491,12 @@ getDataToSaveInDb model =
 
 closeModal : PanelsState -> PanelsState
 closeModal panelsState =
-    closePanel "panelModal" panelsState
+    closePanel (toString PanelModal) panelsState
 
 
 openModal : PanelsState -> PanelsState
 openModal panelsState =
-    openPanel "panelModal" panelsState
+    openPanel (toString PanelModal) panelsState
 
 
 dateDescending : Article -> Article -> Order

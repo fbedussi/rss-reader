@@ -55,6 +55,9 @@ sendInfoOutside info =
         DeleteArticlesInDb articleToDeleteIds ->
             infoForOutside { tag = "deleteArticles", data = encodeIdList articleToDeleteIds }
 
+        SaveAppData appData ->
+            infoForOutside { tag = "saveAppData", data = encodeAppData appData }
+
         SaveAllData ( categories, sites, articles ) ->
             let
                 allData =
@@ -91,7 +94,7 @@ getInfoFromOutside tagger onError =
                 "allData" ->
                     case decodeData outsideInfo.data of
                         Ok data ->
-                            tagger <| NewData data.categories data.sites data.articles
+                            tagger <| NewData data.categories data.sites data.articles data.appData
 
                         Err e ->
                             onError e
@@ -127,11 +130,12 @@ switchInfoForElm infoForElm model =
         DbOpened ->
             ( model, sendInfoOutside ReadAllData )
 
-        NewData categories sites savedArticles ->
+        NewData categories sites savedArticles appData ->
             ( { model
                 | categories = categories
                 , sites = sites
                 , articles = savedArticles
+                , appData = appData
               }
             , Cmd.none
             )
@@ -171,4 +175,11 @@ encodeArticle article =
         , ( "title", article.title |> string )
         , ( "excerpt", article.excerpt |> string )
         , ( "starred", article.starred |> bool )
+        ]
+
+encodeAppData : AppData -> Value
+encodeAppData appData = 
+    object
+        [("lastRefreshTime", appData.lastRefreshTime |> round |> int)
+        , ("articlesPerPage", appData.articlesPerPage |> int)
         ]

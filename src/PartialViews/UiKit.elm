@@ -11,13 +11,28 @@ import Models exposing (Msg(..), Selected)
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (starIcon)
 
+inputHeightInRem : Float
+inputHeightInRem =
+    2
+
+distancesInRem =
+    {xxxl = 4.25
+    , xxl = 3.75
+    , xl = 3.25
+    , l = 2.75
+    , m = 2.25
+    , s = 1.75
+    , xs = 1.25
+    , xxs = 0.75
+    , xxxs = 0.25
+    }
 
 inputHeight : Rem
 inputHeight =
-    Css.rem 2
+    Css.rem inputHeightInRem
 
 
-theme : { black : Color, buttonHeight : Rem, colorAccent : Color, colorAlert : Color, colorBackground : Color, colorHairline : Color, colorPrimaryLight : Color, colorSecondary : Color, colorSecondaryLight : Color, colorTransparent : Color, distanceL : Rem, distanceM : Rem, distanceS : Rem, distanceXL : Rem, distanceXS : Rem, distanceXXL : Rem, distanceXXS : Rem, distanceXXXL : Rem, distanceXXXS : Rem, fontSizeBase : Rem, fontSizeSubtitle : Rem, fontSizeTitle : Rem, hairlineWidth : Px, inputHeight : Rem, white : Color, colorPrimary : Color }
+
 theme =
     { colorPrimary = hex "4D79BC"
     , colorSecondary = hex "673C4F"
@@ -40,11 +55,21 @@ theme =
     , distanceM = Css.rem 2.25
     , distanceS = Css.rem 1.75
     , distanceXS = Css.rem 1.25
-    , distanceXXS = Css.rem 0.75
+    , distanceXXS = Css.rem distancesInRem.xxs
     , distanceXXXS = Css.rem 0.25
     , fontSizeBase = Css.rem 1
     , fontSizeSubtitle = Css.rem 1.25
-    , fontSizeTitle = Css.rem 1.5
+    , fontSizeTitle = Css.rem 1
+    , fontSizeTitleDesktop = Css.rem 1.5
+    , headerHeight = Css.rem (inputHeightInRem + (distancesInRem.xxs * 2))
+    , breakpoints = {
+        desktop = (Css.rem 62)
+    }
+    , zIndex = {
+        base = (int 1)
+        , overlay = (int 2)
+        , menu = (int 10)
+    }
     }
 
 
@@ -371,7 +396,7 @@ overlay active =
         , left zero
         , backgroundColor (rgba 0 0 0 0.5)
         , transition "opacity 0.5s"
-        , zIndex (int 2)
+        , zIndex theme.zIndex.overlay
         , activeStyle
         ]
         [ class "overlay"

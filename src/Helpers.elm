@@ -4,6 +4,9 @@ import Models exposing (Article, Category, Id, Model, SelectedCategoryId, Select
 import Process
 import Task
 import Time exposing (Time)
+import Html.Styled.Events exposing (keyCode, on)
+import Json.Decode as Json
+import Html.Styled exposing (Attribute)
 
 getSitesInCategory : Int -> List Site -> List Site
 getSitesInCategory categoryId sites =
@@ -140,3 +143,8 @@ delay time msg =
     Process.sleep time
         |> Task.andThen (always <| Task.succeed msg)
         |> Task.perform identity
+
+
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.map tagger keyCode)
