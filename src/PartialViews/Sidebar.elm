@@ -1,6 +1,6 @@
 module PartialViews.Sidebar exposing (..)
 
-import Css exposing (alignItems, border3, displayFlex, justifyContent, marginLeft, marginBottom, em, minWidth, padding, pct, px, rem, stretch, width, zero, flexDirection, column)
+import Css exposing (alignItems, border3, displayFlex, justifyContent, marginLeft, marginBottom, em, minWidth, padding, pct, px, rem, stretch, width, zero, flexDirection, column, position, sticky, top)
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, for, href, id, placeholder, src, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -60,7 +60,10 @@ sidebar model =
                 []
             )
         , styled ul
-            [ sidebarBoxStyle ]
+            [ sidebarBoxStyle 
+            , position sticky
+            , top theme.distanceXL
+            ]
             [ class "categories accordion"
             ]
             (if String.isEmpty model.searchTerm then
