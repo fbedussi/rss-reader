@@ -290,6 +290,7 @@ update msg model =
             ( { model
                 | sites = List.append model.sites [ newSite ]
                 , siteToEditId = newSite.id
+                , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , AddSiteInDb newSite |> sendInfoOutside
             )

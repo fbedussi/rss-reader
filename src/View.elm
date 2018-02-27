@@ -2,11 +2,10 @@ module View exposing (view)
 
 import Css exposing (displayFlex)
 import Css.Media exposing (only, screen, withMedia)
-import Helpers exposing (getSiteToEdit)
-import Html.Styled exposing (Attribute, Html, div, styled)
+import Helpers exposing (getSiteToEdit, onKeyDown)
+import Html.Styled exposing (Html, div, styled)
 import Html.Styled.Attributes exposing (class)
-import Html.Styled.Events exposing (keyCode, on, onClick)
-import Json.Decode as Json
+import Html.Styled.Events exposing (onClick)
 import Models exposing (Model, Msg(..), Panel(..))
 import PanelsManager exposing (getPanelState, isSomePanelOpen, isPanelOpen)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
@@ -17,11 +16,6 @@ import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Modal exposing (modal)
 import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (getAnimationClassTopLayers, getModalAnimationClass, overlay, theme)
-
-
-onKeyDown : (Int -> msg) -> Attribute msg
-onKeyDown tagger =
-    on "keydown" (Json.map tagger keyCode)
 
 
 view : Model -> Html Msg
@@ -57,12 +51,12 @@ view model =
             [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
                 [ displayFlex ]
             ]
-            []
+            [ class "mainWrapper"]
             [ sidebar model
             , mainContent model
             ]
         , overlay (isSomePanelOpen "Panel" model.panelsState)
-        , modal (getPanelState (toString PanelModal) model.panelsState |> getModalAnimationClass) model.modal
+        , modal model.modal <| getModalAnimationClass <| getPanelState (toString PanelModal) model.panelsState
         , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) (getSiteToEdit model.siteToEditId model.sites) model.categories
-        , importLayer (getPanelState (toString PanelImport) model.panelsState |> getAnimationClassTopLayers)
+        , importLayer <| getAnimationClassTopLayers <| getPanelState (toString PanelImport) model.panelsState
         ]

@@ -1,14 +1,14 @@
 module PartialViews.MainContent exposing (..)
 
-import Css exposing (Style, auto, backgroundColor, batch, block, calc, center, display, displayFlex, flex, float, height, hidden, important, inline, int, justifyContent, left, margin3, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, spaceBetween, textAlign, width, zero)
+import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getArticleSite, getSelectedArticles)
-import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
-import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_)
+import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul, img)
+import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_, src, alt)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Article, Category, Model, Msg(..), Site)
 import PartialViews.Article exposing (renderArticle)
-import PartialViews.UiKit exposing (btn, clear, selectableBtn, standardPadding, starBtn, theme)
+import PartialViews.UiKit exposing (btn, clear, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
 
 
 mainContent : Model -> Html Msg
@@ -33,13 +33,32 @@ mainContent model =
             ]
         ]
         [ class "mainContent" ]
-        [ ul
-            [ class "selectedArticles" ]
-            (articlesToDisplay
-                |> List.map (renderArticle model.articlePreviewHeight model.sites)
-            )
-        , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
-        ]
+        (if List.length articlesToDisplay > 0 then 
+            [ ul
+                [ class "selectedArticles" ]
+                (articlesToDisplay
+                    |> List.map (renderArticle model.articlePreviewHeight model.sites)
+                )
+            , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
+            ]
+        else 
+            [ styled div 
+                [backgroundImage (url "/no_articles.svg")
+                , backgroundSize contain
+                , backgroundRepeat noRepeat
+                , width (pct 100)
+                , height (vh 80)
+                , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                    [backgroundImage (url "/no_articles_desktop.svg")]
+                ]
+                [] 
+                [styled span
+                    [visuallyHiddenStyle]
+                    []
+                    [text "no article yet, click the refresh button"]
+                ]
+            ]
+        )
 
 
 renderPagination : List Article -> Int -> Int -> Int -> Html Msg

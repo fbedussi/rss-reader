@@ -1,6 +1,6 @@
 module PartialViews.Article exposing (renderArticle)
 
-import Css exposing (position, absolute, static, auto, block, calc, center, display, displayFlex, flex, float, height, hidden, inline, int, left, margin4, marginBottom, marginLeft, maxHeight, maxWidth, minus, none, overflow, pct, px, rem, textAlign, width, zero)
+import Css exposing (..)
 import Css.Foreign exposing (descendants, selector, typeSelector)
 import Css.Media exposing (only, screen, withMedia)
 import Date exposing (day, fromTime, month, year)
@@ -43,7 +43,9 @@ renderArticle articlePreviewHeight sites articleToRender =
                 [ styled span
                     [ position absolute
                     , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-                        [ position static ]
+                        [ position static
+                        , marginRight (Css.em 0.5)
+                         ]
                     ]
                     []
                     [ starBtn ("starred_" ++ toString articleToRender.id)
@@ -75,7 +77,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                         [ a
                             [ class "article-link"
                             , href articleToRender.link
-                            , target "_blank"
+                            , Html.Styled.Attributes.target "_blank"
                             , Json.Encode.string articleToRender.title
                                 |> Html.Attributes.property "innerHTML"
                                 |> fromUnstyled
