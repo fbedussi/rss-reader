@@ -8,7 +8,7 @@ import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (keyCode, on, onClick)
 import Json.Decode as Json
 import Models exposing (Model, Msg(..), Panel(..))
-import PanelsManager exposing (getPanelState, isSomePanelOpen)
+import PanelsManager exposing (getPanelState, isSomePanelOpen, isPanelOpen)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
 import PartialViews.ErrorContainer exposing (errorContainer)
 import PartialViews.Header exposing (siteHeader)
@@ -36,6 +36,12 @@ view model =
                    )
                 ++ (if model.fetchingRss then
                         " fetchingRss"
+                    else
+                        ""
+                   )
+
+                ++ (if getPanelState (toString PanelMenu) model.panelsState |> isPanelOpen then
+                        " menuOpen"
                     else
                         ""
                    )

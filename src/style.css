@@ -216,6 +216,31 @@ body {
     animation-timing-function: linear;
 }
 
+/*Menu Icon*/
+#bottom, 
+#central,
+#top,
+#centralBis {
+    transition: transform 0.3s;
+    transform-origin: center center;
+}
+
+.menuOpen #top {
+    transform: translateY(-200%);
+}
+
+.menuOpen #bottom {
+    transform: translateY(200%);
+}
+
+.menuOpen #central {
+    transform: rotate(45deg);
+}
+
+.menuOpen #centralBis {
+    transform: rotate(-45deg);
+}
+
 /*Global styles*/
 [disabled] {
     opacity: 0.5;
