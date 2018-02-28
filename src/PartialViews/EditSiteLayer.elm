@@ -1,18 +1,18 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
 import Css exposing (displayFlex, flex, int, justifyContent, spaceBetween)
-import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, span, styled, text, ul)
+import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, span, styled, text, ul, toUnstyled)
 import Html.Styled.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, Id, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop, select, checkbox)
+import Html
 
-
-editSiteLayer : String -> Maybe Site -> List Category -> Html Msg
+editSiteLayer : String -> Maybe Site -> List Category -> Html.Html Msg
 editSiteLayer animationClass site categories =
-    layerTop
+    toUnstyled <| layerTop
         [ class <| "editSiteLayer" ++ animationClass ]
         [ case site of
             Just site ->
