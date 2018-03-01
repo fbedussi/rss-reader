@@ -6,7 +6,7 @@ import Html
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, for, href, id, placeholder, src, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Html.Styled.Lazy exposing (lazy)
+import Html.Styled.Lazy exposing (lazy2)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
 import PanelsManager exposing (getPanelState, isPanelOpen)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
@@ -21,6 +21,13 @@ sidebar model =
     let
         isOpen =
             getPanelState (toString PanelMenu) model.panelsState |> isPanelOpen
+
+        sitesWithoutCategory =
+            model.sites
+                |> List.filter (\site -> List.isEmpty site.categoriesId)
+
+        searchInProgress =
+            not <| String.isEmpty model.searchTerm
     in
     styled aside
         [ position fixed
@@ -49,62 +56,73 @@ sidebar model =
             ]
         ]
         [ class "sidebar" ]
-        [ lazy renderSidebarInner model ]
+        [ renderSidebarToolbar
+        , renderSearchBox model.searchTerm
+        , searchResult model.selectedSiteId model.sites model.searchTerm
+        , renderSitesWithoutCategory searchInProgress model.selectedSiteId sitesWithoutCategory
+        , lazy2 renderCategories searchInProgress model
+        ]
 
 
-renderSidebarInner : Model -> Html.Html Msg
-renderSidebarInner model =
-    toUnstyled <|
-        div
-            [ class "sidebarInner" ]
-            [ styled div
-                [ padding theme.distanceXXS
-                , displayFlex
-                , justifyContent stretch
-                ]
-                [ class "sidebar-toolbar" ]
-                [ iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]
-                , iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ]
-                ]
-            , styled div
-                [ displayFlex
-                , standardPadding
-                , alignItems stretch
-                , flexDirection column
-                ]
-                [ class "searchWrapper" ]
-                [ styled label
-                    [ marginBottom (em 0.5) ]
-                    [ for "searchInput" ]
-                    [ text "Serch sites by name: " ]
-                , input
-                    [ type_ "search"
-                    , id "searchInput"
-                    , placeholder "example.com"
-                    , onInput UpdateSearch
-                    , value model.searchTerm
-                    ]
-                    []
-                ]
-            , searchResult model.selectedSiteId model.sites model.searchTerm
-            , styled ul
-                [ sidebarBoxStyle ]
-                [ class "sitesWithoutCategory" ]
-                (if String.isEmpty model.searchTerm then
-                    model.sites
-                        |> List.filter (\site -> List.isEmpty site.categoriesId)
-                        |> List.map (renderSiteEntry model.selectedSiteId)
-                 else
-                    []
-                )
-            , styled ul
-                [ sidebarBoxStyle ]
-                [ class "categories accordion"
-                ]
-                (if String.isEmpty model.searchTerm then
-                    model.categories
-                        |> List.map (renderCategory model)
-                 else
-                    []
-                )
+renderSidebarToolbar : Html Msg
+renderSidebarToolbar =
+    styled div
+        [ padding theme.distanceXXS
+        , displayFlex
+        , justifyContent stretch
+        ]
+        [ class "sidebar-toolbar" ]
+        [ iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]
+        , iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ]
+        ]
+
+
+renderSearchBox : String -> Html Msg
+renderSearchBox searchTerm =
+    styled div
+        [ displayFlex
+        , standardPadding
+        , alignItems stretch
+        , flexDirection column
+        ]
+        [ class "searchWrapper" ]
+        [ styled label
+            [ marginBottom (em 0.5) ]
+            [ for "searchInput" ]
+            [ text "Serch sites by name: " ]
+        , input
+            [ type_ "search"
+            , id "searchInput"
+            , placeholder "example.com"
+            , onInput UpdateSearch
+            , value searchTerm
             ]
+            []
+        ]
+
+
+renderSitesWithoutCategory : Bool -> SelectedSiteId -> List Site -> Html Msg
+renderSitesWithoutCategory searchInProgress selectedSiteId sitesWithoutCategory =
+    styled ul
+        [ sidebarBoxStyle ]
+        [ class "sitesWithoutCategory" ]
+        (if searchInProgress then
+            []
+         else
+            sitesWithoutCategory
+                |> List.map (renderSiteEntry selectedSiteId)
+        )
+
+
+renderCategories : Bool -> Model -> Html.Html Msg
+renderCategories searchInProgress model =
+    toUnstyled <| styled ul
+        [ sidebarBoxStyle ]
+        [ class "categories accordion"
+        ]
+        (if searchInProgress then
+            []
+         else
+            model.categories
+                |> List.map (renderCategory model)
+        )
