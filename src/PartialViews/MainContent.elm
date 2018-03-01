@@ -33,15 +33,9 @@ mainContent model =
             ]
         ]
         [ class "mainContent" ]
-        (if List.length articlesToDisplay > 0 then 
-            [ ul
-                [ class "selectedArticles" ]
-                (articlesToDisplay
-                    |> List.map (renderArticle model.articlePreviewHeight model.sites)
-                )
-            , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
-            ]
-        else 
+        (
+        if List.length model.articles == 0 
+        then
             [ styled div 
                 [backgroundImage (url "/no_articles.svg")
                 , backgroundSize contain
@@ -57,6 +51,20 @@ mainContent model =
                     []
                     [text "no article yet, click the refresh button"]
                 ]
+            ]
+        else if List.length articlesToDisplay > 0 
+        then 
+            [ ul
+                [ class "selectedArticles" ]
+                (articlesToDisplay
+                    |> List.map (renderArticle model.articlePreviewHeight model.sites)
+                )
+            , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
+            ]
+        else 
+            [div
+                [class "noArticleSelected"]
+                [text "No article selected, try to select another site o category"]
             ]
         )
 

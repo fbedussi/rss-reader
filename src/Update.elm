@@ -7,7 +7,7 @@ import Import exposing (executeImport)
 import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panel(..), AppData)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
-import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
+import PanelsManager exposing (PanelsState, closePanelsFuzzy, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
 import Task
 import Time
 
@@ -27,10 +27,7 @@ update msg model =
         VerifyKeyboardNavigation keyCode ->
             ( { model
                 | keyboardNavigation =
-                    if keyCode == 9 then
-                        True
-                    else
-                        False
+                    keyCode == 9
               }
             , Cmd.none
             )
@@ -85,7 +82,7 @@ update msg model =
                     getPanelState panelId model.panelsState |> isPanelOpen
 
                 updatedPanelsState =
-                    closeAllPanels model.panelsState
+                    closePanelsFuzzy "cat_" model.panelsState
                         |> (if isOpen then
                                 closePanel panelId
                             else
@@ -432,6 +429,8 @@ update msg model =
             in
             ( { model | appData = updatedAppData }, SaveAppData updatedAppData |> sendInfoOutside )
         
+        OnTouchStart touchEvent ->
+            ({ model | touchData = (touchEvent.clientX, touchEvent.clientY)}, Cmd.none)
 
         NoOp ->
             ( model, Cmd.none )

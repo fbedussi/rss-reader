@@ -5,6 +5,7 @@ import Json.Encode
 import Keyboard exposing (KeyCode)
 import PanelsManager exposing (PanelsState, initialPanelsState)
 import Time exposing (Time)
+import TouchEvents exposing (Touch)
 
 
 type alias UserUid =
@@ -121,6 +122,7 @@ type alias Model =
     , currentPage : Int
     , articlePreviewHeight : Int
     , appData : AppData
+    , touchData : (Float, Float)
     }
 
 
@@ -144,6 +146,7 @@ init =
       , currentPage = 1
       , articlePreviewHeight = 15
       , appData = { lastRefreshTime = 0, articlesPerPage = 15 }
+      , touchData = (0.0, 0.0)
       }
     , Cmd.none
     )
@@ -198,6 +201,7 @@ type Msg
     | ChangePage Int
     | ChangeNumberOfArticlesPerPage Int
     | RegisterTime Time
+    | OnTouchStart Touch
     | NoOp
 
 

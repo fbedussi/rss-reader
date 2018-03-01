@@ -4,24 +4,20 @@ import Css exposing (absolute, alignItems, auto, backgroundColor, border3, calc,
 import Css.Media exposing (only, screen, withMedia)
 import Html
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
-import Html.Styled.Attributes exposing (attribute, class, disabled, for, href, id, placeholder, src, type_, value)
+import Html.Styled.Attributes exposing (fromUnstyled, attribute, class, disabled, for, href, id, placeholder, src, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Html.Styled.Lazy exposing (lazy2)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
-import PanelsManager exposing (getPanelState, isPanelOpen)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
+import TouchEvents exposing (onTouchEvent, TouchEvent(..), getDirectionX, Direction(..))
 
-
-sidebar : Model -> Html Msg
+sidebar : Model -> Html.Html Msg
 sidebar model =
     let
-        isOpen =
-            getPanelState (toString PanelMenu) model.panelsState |> isPanelOpen
-
         sitesWithoutCategory =
             model.sites
                 |> List.filter (\site -> List.isEmpty site.categoriesId)
@@ -29,17 +25,13 @@ sidebar model =
         searchInProgress =
             not <| String.isEmpty model.searchTerm
     in
-    styled aside
+    toUnstyled <| styled aside
         [ position fixed
         , display inlineBlock
         , verticalAlign top
         , top <| calc theme.headerHeight plus theme.hairlineWidth
         , height <| calc (Css.vh 100) minus (calc theme.headerHeight plus theme.hairlineWidth)
         , left zero
-        , if isOpen then
-            transforms [ translateX zero ]
-          else
-            transforms [ translateX (pct -100) ]
         , transition "transform 0.3s"
         , overflow auto
         , width (pct 90)
@@ -55,7 +47,16 @@ sidebar model =
             , transforms []
             ]
         ]
-        [ class "sidebar" ]
+        [ class "sidebar" 
+        , fromUnstyled <| onTouchEvent TouchStart OnTouchStart
+        , fromUnstyled <| onTouchEvent TouchEnd (\touchEvent -> 
+            if (Tuple.first model.touchData) - touchEvent.clientX > 50
+            then
+                TogglePanel PanelMenu
+            else 
+                NoOp
+        )
+        ]
         [ renderSidebarToolbar
         , renderSearchBox model.searchTerm
         , searchResult model.selectedSiteId model.sites model.searchTerm
@@ -110,7 +111,7 @@ renderSitesWithoutCategory searchInProgress selectedSiteId sitesWithoutCategory 
             []
          else
             sitesWithoutCategory
-                |> List.map (renderSiteEntry selectedSiteId)
+                |> List.map (lazy2 renderSiteEntry selectedSiteId)
         )
 
 
@@ -124,5 +125,5 @@ renderCategories searchInProgress model =
             []
          else
             model.categories
-                |> List.map (renderCategory model)
+                |> List.map (lazy2 renderCategory model)
         )

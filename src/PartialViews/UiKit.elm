@@ -69,6 +69,8 @@ theme =
         base = (int 1)
         , overlay = (int 2)
         , menu = (int 10)
+        , deleteActions = (int 20)
+        , sidebarRow = (int 30)
     }
     }
 
@@ -269,17 +271,18 @@ categoryWrapper =
 
 sidebarRow : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
 sidebarRow selected =
-    let
-        selectedStyle =
-            if selected then
-                [ backgroundColor theme.colorPrimaryLight
-                , color theme.white
-                ]
-            else
-                [ customCss "padding-right" "calc(3.75rem + 2em)" ]
-    in
+    -- let
+    --     selectedStyle =
+    --         if selected then
+    --             [ backgroundColor theme.colorPrimaryLight
+    --             , color theme.white
+    --             , zIndex theme.zIndex.sidebarRow
+    --             ]
+    --         else
+    --             [ customCss "padding-right" "calc(3.75rem + 2em)" ]
+    -- in
     styled div
-        ([ displayFlex
+        [ displayFlex
          , standardPadding
          , justifyContent spaceBetween
          , position relative
@@ -288,8 +291,6 @@ sidebarRow selected =
          , zIndex (int 2)
          , transition "background-color 0.5s"
          ]
-            ++ selectedStyle
-        )
 
 
 tabContentOuter : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
@@ -313,7 +314,7 @@ deleteActionsPanel =
         , displayFlex
         , backgroundColor theme.colorBackground
         , transition "transform 0.5s"
-        , zIndex (int 1)
+        , zIndex theme.zIndex.deleteActions
         ]
 
 

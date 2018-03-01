@@ -16,7 +16,7 @@ import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Modal exposing (modal)
 import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (getAnimationClassTopLayers, getModalAnimationClass, overlay, theme)
-import Html.Styled.Lazy exposing (lazy3)
+import Html.Styled.Lazy exposing (lazy3, lazy)
 import Html
 
 view : Model -> Html Msg
@@ -53,11 +53,11 @@ view model =
                 [ displayFlex ]
             ]
             [ class "mainWrapper"]
-            [ sidebar model
+            [ lazy sidebar model
             , mainContent model
             ]
         , overlay (isSomePanelOpen "Panel" model.panelsState)
         , modal model.modal <| getModalAnimationClass <| getPanelState (toString PanelModal) model.panelsState
-        , lazy3 editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) (getSiteToEdit model.siteToEditId model.sites) model.categories
+        , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) (getSiteToEdit model.siteToEditId model.sites) model.categories
         , importLayer <| getAnimationClassTopLayers <| getPanelState (toString PanelImport) model.panelsState
         ]

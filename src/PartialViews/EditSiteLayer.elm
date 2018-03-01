@@ -8,11 +8,10 @@ import Models exposing (Article, Category, Id, Model, Msg(..), SelectedCategoryI
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop, select, checkbox)
-import Html
 
-editSiteLayer : String -> Maybe Site -> List Category -> Html.Html Msg
+editSiteLayer : String -> Maybe Site -> List Category -> Html Msg
 editSiteLayer animationClass site categories =
-    toUnstyled <| layerTop
+    layerTop
         [ class <| "editSiteLayer" ++ animationClass ]
         [ case site of
             Just site ->

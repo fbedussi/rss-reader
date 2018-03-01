@@ -1,4 +1,4 @@
-module PanelsManager exposing (PanelsState, closeAllPanels, closePanel, getPanelClass, getPanelState, initialPanelsState, isPanelClosed, isPanelOpen, isPanleInitial, isSomePanelOpen, openPanel, initPanel)
+module PanelsManager exposing (PanelsState, closePanelsFuzzy, closeAllPanels, closePanel, getPanelClass, getPanelState, initialPanelsState, isPanelClosed, isPanelOpen, isPanleInitial, isSomePanelOpen, openPanel, initPanel)
 
 
 type PanelsState
@@ -107,6 +107,25 @@ closeAllPanels panelsState =
                                 stateWrapper
                         in
                         ( id, Closed )
+                    )
+                |> PanelsState
+
+
+closePanelsFuzzy : PanelId -> PanelsState -> PanelsState
+closePanelsFuzzy panelId panelsState =
+    case panelsState of
+        PanelsState stateWrappers ->
+            stateWrappers
+                |> List.map
+                    (\stateWrapper ->
+                        let
+                            ( id, state ) =
+                                stateWrapper
+                        in
+                        if String.contains panelId id then
+                            ( id, Closed )
+                        else
+                            ( id, state )
                     )
                 |> PanelsState
 

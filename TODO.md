@@ -1,0 +1,3 @@
+- login/register
+- logo
+- save button on edit site layer

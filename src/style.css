@@ -24,9 +24,21 @@ ul {
     outline: none;
 }
 
+a {
+    text-decoration: none;
+    text-shadow: -1px -1px 0 #fff, 
+        1px -1px 0 #fff, 
+        -1px 1px 0 #fff, 
+        1px 1px 0 #fff;
+    background-image: linear-gradient(to right, currentColor 0%, currentColor 100%);
+    background-repeat: repeat-x;
+    background-position: bottom 0.05em center;
+    background-size: 100% 0.1em;
+}
+
 body {
     overflow-x: hidden;
-    font-family: sans-serif;
+    font-family: 'Lato', sans-serif;
 }
 
 /*Animations*/
@@ -61,6 +73,30 @@ body {
     100% {
         visibility: hidden;
         transform: translateY(-100%);
+    }
+}
+
+@keyframes slideDown2 {
+    0% {
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    100% {
+        visibility: visible;
+        transform: translateY(100%);
+    }
+}
+
+@keyframes slideUp2 {
+    0% {
+        visibility: visible;
+        transform: translateY(100%);
+    }
+
+    100% {
+        visibility: hidden;
+        transform: translateY(0);
     }
 }
 
@@ -178,12 +214,12 @@ body {
     animation: slideDown var(--defaultTransitionDuration) forwards;
 }
 
-.slideRight {
-    animation: slideRight var(--defaultTransitionDuration) forwards;
+.deletePanelOpen {
+    animation: slideDown2 var(--defaultTransitionDuration) forwards;
 }
 
-.slideLeft {
-    animation: slideLeft var(--defaultTransitionDuration) forwards;
+.deletePanelClosed {
+    animation: slideUp2 var(--defaultTransitionDuration) forwards;
 }
 
 .popIn {
@@ -241,8 +277,33 @@ body {
     transform: rotate(-45deg);
 }
 
+.sidebar {
+    transform: translateX(-100%);
+}
+
+.menuOpen .sidebar {
+    transform: translateX(0);    
+}
+
+.sidebarRow.is-selected {
+    background-color: #03CEA4;
+    color: white;
+    z-index: 30;
+}
+
 /*Global styles*/
 [disabled] {
     opacity: 0.5;
     pointer-events: none;
 }
+
+@media screen and (min-width: 1000px) {
+    .deletePanelOpen {
+        animation: slideRight var(--defaultTransitionDuration) forwards;
+    }
+
+    .deletePanelClosed {
+        animation: slideLeft var(--defaultTransitionDuration) forwards;
+    }
+}
+

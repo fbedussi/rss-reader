@@ -3,7 +3,7 @@ module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import Accordion exposing (closeTab, openTab)
 import Css exposing (auto, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
 import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
-import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, ul)
+import Html.Styled exposing (Html, toUnstyled, a, article, button, div, h2, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Article, Category, Id, Model, Msg(..), Selected, SelectedCategoryId, SelectedSiteId, Site)
@@ -13,9 +13,10 @@ import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButton
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
 import Time exposing (Time)
+import Html
+import Html.Styled.Lazy exposing (lazy2)
 
-
-renderCategory : Model -> Category -> Html Msg
+renderCategory : Model -> Category -> Html.Html Msg
 renderCategory model category =
     let
         domId =
@@ -36,22 +37,22 @@ renderCategory model category =
         newArticlesInCategory =
             countNewArticlesInCategory sitesInCategory model.articles model.appData.lastRefreshTime
     in
-    categoryWrapper
+    toUnstyled <| categoryWrapper
         [ class "tab"
         , id domId
         ]
-        [ deleteActions (getPanelState domId model.panelsState |> getPanelClass "is-hidden" "slideRight" "slideLeft") category (extractId sitesInCategory)
+        [ deleteActions (getPanelState domId model.panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
         , sidebarRow selected
-            [ class "tabTitle" ]
+            [ class <| "tabTitle sidebarRow" ++ if selected then " is-selected" else "" ]
             (case model.categoryToEditId of
                 Just categoryToEditId ->
                     if categoryToEditId == category.id then
                         renderEditCategory category
                     else
-                        renderCaregoryName category selected newArticlesInCategory
+                        renderCategoryName category selected newArticlesInCategory
 
                 Nothing ->
-                    renderCaregoryName category selected newArticlesInCategory
+                    renderCategoryName category selected newArticlesInCategory
             )
         , tabContentOuter selected
             [ class "tabContentOuter" ]
@@ -59,14 +60,14 @@ renderCategory model category =
                 []
                 [ class "category-sitesInCategory tabContentInner" ]
                 (sitesInCategory
-                    |> List.map (renderSiteEntry model.selectedSiteId)
+                    |> List.map (lazy2 renderSiteEntry model.selectedSiteId)
                 )
             ]
         ]
 
 
-renderCaregoryName : Category -> Selected -> Int -> List (Html Msg)
-renderCaregoryName category selected newArticlesInCategory =
+renderCategoryName : Category -> Selected -> Int -> List (Html Msg)
+renderCategoryName category selected newArticlesInCategory =
     [ sidebarSelectionBtn
         [ class "categoryBtn"
         , onClick <| ToggleSelectedCategory category.id
@@ -122,16 +123,16 @@ renderEditCategory category =
     ]
 
 
-renderSiteEntry : SelectedSiteId -> Site -> Html Msg
+renderSiteEntry : SelectedSiteId -> Site -> Html.Html Msg
 renderSiteEntry selectedSiteId site =
     let
         selected =
             isSelected selectedSiteId site.id
     in
-    li
+    toUnstyled <| li
         [ class "category-siteInCategory " ]
         [ sidebarRow selected
-            []
+            [class <| "sidebarRow" ++ (if selected then " is-selected" else "")]
             ([ sidebarSelectionBtn
                 [ class "siteInCategoryBtn"
                 , onClick <| ToggleSelectSite site.id
@@ -158,7 +159,6 @@ countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
     let
         articlesInCategory =
             articles
-                |> List.filter (\article -> article.date > lastRefreshTime)
-                |> List.filter (isArticleInSites sitesInCategory)
+                |> List.filter (\article -> (article.date > lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
     in
     List.length articlesInCategory

@@ -110,10 +110,7 @@ isSelected : Maybe Int -> Int -> Bool
 isSelected selectedId id =
     case selectedId of
         Just selId ->
-            if selId == id then
-                True
-            else
-                False
+            selId == id
 
         Nothing ->
             False
