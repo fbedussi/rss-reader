@@ -1,6 +1,6 @@
 module PartialViews.Sidebar exposing (..)
 
-import Css exposing (absolute, alignItems, auto, backgroundColor, border3, calc, column, display, displayFlex, em, fixed, flexDirection, height, initial, inlineBlock, justifyContent, left, marginBottom, marginLeft, minWidth, minus, overflow, padding, pct, plus, position, px, rem, static, sticky, stretch, top, transforms, translateX, verticalAlign, width, zIndex, zero)
+import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Html
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
@@ -70,10 +70,12 @@ renderSidebarToolbar =
     styled div
         [ padding theme.distanceXXS
         , displayFlex
-        , justifyContent stretch
         ]
         [ class "sidebar-toolbar" ]
-        [ iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]
+        [ styled span
+            [marginRight (Css.em 0.5)]
+            []
+            [iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]]
         , iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ]
         ]
 
@@ -90,7 +92,7 @@ renderSearchBox searchTerm =
         [ styled label
             [ marginBottom (em 0.5) ]
             [ for "searchInput" ]
-            [ text "Serch sites by name: " ]
+            [ text "Search sites by name: " ]
         , input
             [ type_ "search"
             , id "searchInput"

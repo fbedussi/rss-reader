@@ -11,12 +11,14 @@ import Models exposing (Msg(..), Selected)
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (starIcon)
 
+
 inputHeightInRem : Float
 inputHeightInRem =
     2
 
+
 distancesInRem =
-    {xxxl = 4.25
+    { xxxl = 4.25
     , xxl = 3.75
     , xl = 3.25
     , l = 2.75
@@ -27,10 +29,10 @@ distancesInRem =
     , xxxs = 0.25
     }
 
+
 inputHeight : Rem
 inputHeight =
     Css.rem inputHeightInRem
-
 
 
 theme =
@@ -62,16 +64,16 @@ theme =
     , fontSizeTitle = Css.rem 1
     , fontSizeTitleDesktop = Css.rem 1.5
     , headerHeight = Css.rem (inputHeightInRem + (distancesInRem.xxs * 2))
-    , breakpoints = {
-        desktop = (Css.rem 62)
-    }
-    , zIndex = {
-        base = (int 1)
-        , overlay = (int 2)
-        , menu = (int 10)
-        , deleteActions = (int 20)
-        , sidebarRow = (int 30)
-    }
+    , breakpoints =
+        { desktop = Css.rem 62
+        }
+    , zIndex =
+        { base = int 1
+        , overlay = int 2
+        , menu = int 10
+        , deleteActions = int 20
+        , sidebarRow = int 30
+        }
     }
 
 
@@ -148,11 +150,13 @@ btnStyle selected =
         [ display inlineBlock
         , minHeight theme.buttonHeight
         , padding2 theme.distanceXXXS theme.distanceXS
-        , if selected then backgroundColor theme.colorPrimaryLight else backgroundColor theme.colorPrimary
+        , if selected then
+            backgroundColor theme.colorPrimaryLight
+          else
+            backgroundColor theme.colorPrimary
         , color theme.white
         , appearance "none"
         , border3 (px 2) solid transparent
-        , marginLeft (Css.em 0.5)
         , transition "all 0.5s"
         , textTransform uppercase
         , fontWeight bold
@@ -189,12 +193,11 @@ btn : List (Attribute msg) -> List (Html msg) -> Html msg
 btn =
     styled button [ btnStyle False ]
 
+
 selectableBtn : Bool -> List (Attribute msg) -> List (Html msg) -> Html msg
 selectableBtn selected =
-    styled button 
+    styled button
         [ btnStyle selected ]
-
-
 
 
 alertBtn : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -206,6 +209,7 @@ alertBtn =
         , hover
             [ borderColor theme.colorAlert
             , backgroundColor transparent
+            , color theme.black
             ]
         ]
 
@@ -274,29 +278,30 @@ categoryWrapper =
 sidebarRow : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
 sidebarRow selected =
     let
-        selectedStyle = 
-            batch [
-                backgroundColor theme.colorPrimaryLight
-                , color theme.white
+        selectedStyle =
+            batch
+                [ backgroundColor theme.colorPrimaryLight
                 , zIndex theme.zIndex.sidebarRow
-            ]
+                ]
     in
     styled div
         [ displayFlex
-         , standardPadding
-         , justifyContent spaceBetween
-         , position relative
-         , alignItems center
-         , backgroundColor theme.colorBackground
-         , width (pct 100)
-         , zIndex (int 2)
-         , transition "background-color 0.5s"
-         , if selected then selectedStyle else customCss "padding-right" "calc(3.75rem + 2em)"
-         , hover [
-             selectedStyle
+        , standardPadding
+        , justifyContent spaceBetween
+        , position relative
+        , alignItems center
+        , backgroundColor theme.colorBackground
+        , width (pct 100)
+        , zIndex (int 2)
+        , transition "background-color 0.5s"
+        , if selected then
+            selectedStyle
+          else
+            customCss "padding-right" "calc(3.75rem + 2em)"
+        , hover
+            [ selectedStyle
             ]
-         ]
-        
+        ]
 
 
 tabContentOuter : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg

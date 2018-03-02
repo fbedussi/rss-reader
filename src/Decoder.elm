@@ -65,7 +65,7 @@ siteDecoder =
 
 articleDecoder : Decoder Article
 articleDecoder =
-    map7 Article
+    map8 Article
         (field "id" Json.Decode.int)
         (field "siteId" Json.Decode.int)
         (field "link" Json.Decode.string)
@@ -73,6 +73,7 @@ articleDecoder =
         (field "excerpt" Json.Decode.string)
         (field "starred" Json.Decode.bool)
         (field "pubDate" dateDecoder)
+        (succeed False)
 
 
 appDataDecoder : Decoder AppData
@@ -109,7 +110,7 @@ feedDecoder siteId =
 
 feedArticleDecoder : Int -> Decoder Article
 feedArticleDecoder siteId =
-    map7 Article
+    map8 Article
         (succeed 0)
         (succeed siteId)
         (field "link" string)
@@ -117,3 +118,4 @@ feedArticleDecoder siteId =
         (field "description" string)
         (succeed False)
         (field "pubDate" dateDecoder)
+        (succeed False)

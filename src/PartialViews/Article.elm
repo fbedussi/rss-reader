@@ -31,6 +31,8 @@ renderArticle articlePreviewHeight sites articleToRender =
 
         domId = 
             "article_" ++ toString articleToRender.id
+
+        
     in
     li
         [ class "article" ]
@@ -114,10 +116,14 @@ renderArticle articlePreviewHeight sites articleToRender =
                             ]
                             []
                         ]
-                    , btn
+                    , styled btn
+                        [marginTop theme.distanceXXS
+                        , visibility hidden
+                        , opacity zero
+                        , transition "opacity 0.3s"]
                         [ class "readMoreButton"
-                            , onClick <| OpenExcerpt domId]
-                        [text "read more"]
+                        , onClick <| ToggleExcerpt articleToRender.id domId <| not articleToRender.isOpen]
+                        [text <| if articleToRender.isOpen then "read less" else "read more"]
                     ]
                 ]
             ]

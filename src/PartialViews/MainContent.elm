@@ -57,7 +57,7 @@ mainContent model =
             [ ul
                 [ class "selectedArticles" ]
                 (articlesToDisplay
-                    |> List.map (renderArticle model.articlePreviewHeight model.sites)
+                    |> List.map (renderArticle model.articlePreviewHeightInEm model.sites)
                 )
             , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
             ]

@@ -3,7 +3,7 @@ import { Main } from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
 import authInterface from './auth/authFacade';
 import dbInterface from './db/dbFacade';
-import openExcerpt from './readMoreButton';
+import {toggleExcerpt, initReadMoreButtons} from './readMoreButton';
 
 window.authInterface = authInterface;
 window.dbInterface = dbInterface;
@@ -199,8 +199,12 @@ app.ports.infoForOutside.subscribe(function (cmd) {
             saveStore('appData', payload)
             break;
 
-        case 'openExcerpt':
-            openExcerpt(payload);
+        case 'toggleExcerpt':
+            toggleExcerpt(payload);
+            break;
+
+        case 'initReadMoreButtons':
+            initReadMoreButtons();
             break;
 
         default:

@@ -45,6 +45,7 @@ type alias Article =
     , excerpt : String
     , starred : Bool
     , date : Time
+    , isOpen : Bool
     }
 
 
@@ -120,7 +121,7 @@ type alias Model =
     , panelsState : PanelsState
     , defaultTransitionDuration : Int
     , currentPage : Int
-    , articlePreviewHeight : Float
+    , articlePreviewHeightInEm : Float
     , appData : AppData
     , touchData : (Float, Float)
     }
@@ -144,7 +145,7 @@ init =
       , panelsState = initialPanelsState
       , defaultTransitionDuration = 500
       , currentPage = 1
-      , articlePreviewHeight = 15
+      , articlePreviewHeightInEm = 15
       , appData = { lastRefreshTime = 0, articlesPerPage = 15 }
       , touchData = (0.0, 0.0)
       }
@@ -202,7 +203,7 @@ type Msg
     | ChangeNumberOfArticlesPerPage Int
     | RegisterTime Time
     | OnTouchStart Touch
-    | OpenExcerpt String
+    | ToggleExcerpt Id String Bool
     | NoOp
 
 
@@ -220,7 +221,8 @@ type InfoForOutside
     | DeleteArticlesInDb (List Id)
     | SaveAppData AppData
     | SaveAllData ( List Category, List Site, List Article )
-    | OpenExcerptViaJs String Float
+    | ToggleExcerptViaJs String Bool Float
+    | InitReadMoreButtons
 
 
 type InfoForElm

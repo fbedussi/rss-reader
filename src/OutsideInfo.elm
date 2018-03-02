@@ -69,15 +69,20 @@ sendInfoOutside info =
             in
             infoForOutside { tag = "saveAllData", data = allData }
 
-        OpenExcerptViaJs domId articlePreviewHeight ->
+        ToggleExcerptViaJs domId toOpen articlePreviewHeight ->
             let
                 excerptData =
                     object
                         [ ( "domId", domId |> string )
+                        , ( "toOpen", toOpen |> bool )
                         , ( "originalMaxHeight", articlePreviewHeight |> float )
                         ]
             in
-            infoForOutside { tag = "openExcerpt", data = excerptData }
+            infoForOutside { tag = "toggleExcerpt", data = excerptData }
+
+        InitReadMoreButtons ->
+            infoForOutside { tag = "initReadMoreButtons", data = null }
+                        
 
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg

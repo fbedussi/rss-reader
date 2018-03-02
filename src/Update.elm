@@ -4,12 +4,13 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (delay, getNextId, mergeArticles)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Site, Panel(..), AppData)
+import Models exposing (AppData, Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
-import PanelsManager exposing (PanelsState, closePanelsFuzzy, closeAllPanels, closePanel, getPanelState, initPanel, isPanelOpen, openPanel)
+import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
 import Task
 import Time
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -50,7 +51,7 @@ update msg model =
                 , currentPage = 1
                 , selectedSiteId = Nothing
               }
-            , Cmd.none
+            , InitReadMoreButtons |> sendInfoOutside
             )
 
         ToggleSelectSite siteId ->
@@ -70,7 +71,7 @@ update msg model =
                 | selectedSiteId = newSelectedSiteId
                 , currentPage = 1
               }
-            , Cmd.none
+            , InitReadMoreButtons |> sendInfoOutside
             )
 
         ToggleDeleteActions categoryId ->
@@ -335,19 +336,20 @@ update msg model =
                                         { article
                                             | id = hashString 12345 article.link
                                             , excerpt =
-                                            article.excerpt
-                                                --String.dropLeft 1 article.excerpt
-                                                -- if String.length article.excerpt > 1000 then
-                                                --     String.left 1000 article.excerpt ++ "..."
-                                                -- else
-                                                --     article.excerpt
+                                                article.excerpt
+
+                                            --String.dropLeft 1 article.excerpt
+                                            -- if String.length article.excerpt > 1000 then
+                                            --     String.left 1000 article.excerpt ++ "..."
+                                            -- else
+                                            --     article.excerpt
                                         }
                                     )
 
                         mergedArticles =
                             mergeArticles rssArticles model.articles
                     in
-                    ( { updatedModel | articles = List.sortWith dateDescending mergedArticles }, Cmd.none )
+                    ( { updatedModel | articles = List.sortWith dateDescending mergedArticles }, InitReadMoreButtons |> sendInfoOutside )
 
                 Err err ->
                     let
@@ -389,11 +391,12 @@ update msg model =
 
         RegisterTime time ->
             let
-                updatedAppData = AppData
-                    time
-                    model.appData.articlesPerPage
+                updatedAppData =
+                    AppData
+                        time
+                        model.appData.articlesPerPage
             in
-            (model, SaveAppData updatedAppData |> sendInfoOutside)
+            ( model, SaveAppData updatedAppData |> sendInfoOutside )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
@@ -419,21 +422,40 @@ update msg model =
             ( { model | panelsState = closeAllPanels model.panelsState }, Cmd.none )
 
         ChangePage pageNumber ->
-            ( { model | currentPage = pageNumber }, Cmd.none )
+            ( { model | currentPage = pageNumber }, InitReadMoreButtons |> sendInfoOutside )
 
         ChangeNumberOfArticlesPerPage articlesPerPage ->
             let
-                updatedAppData = AppData
-                    model.appData.lastRefreshTime
-                    articlesPerPage
+                updatedAppData =
+                    AppData
+                        model.appData.lastRefreshTime
+                        articlesPerPage
             in
-            ( { model | appData = updatedAppData }, SaveAppData updatedAppData |> sendInfoOutside )
-        
-        OnTouchStart touchEvent ->
-            ({ model | touchData = (touchEvent.clientX, touchEvent.clientY)}, Cmd.none)
+            ( { model
+                | appData = updatedAppData
+              }
+            , Cmd.batch
+                [ SaveAppData updatedAppData |> sendInfoOutside
+                , InitReadMoreButtons |> sendInfoOutside
+                ]
+            )
 
-        OpenExcerpt domId ->
-        (model, OpenExcerptViaJs domId model.articlePreviewHeight |> sendInfoOutside )
+        OnTouchStart touchEvent ->
+            ( { model | touchData = ( touchEvent.clientX, touchEvent.clientY ) }, Cmd.none )
+
+        ToggleExcerpt articleId domId toOpen ->
+            let
+                updatedArticles =
+                    model.articles
+                        |> List.map
+                            (\article ->
+                                if article.id == articleId then
+                                    { article | isOpen = toOpen }
+                                else
+                                    article
+                            )
+            in
+            ( { model | articles = updatedArticles }, ToggleExcerptViaJs domId toOpen model.articlePreviewHeightInEm |> sendInfoOutside )
 
         NoOp ->
             ( model, Cmd.none )
