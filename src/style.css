@@ -285,12 +285,6 @@ body {
     transform: translateX(0);    
 }
 
-.sidebarRow.is-selected {
-    background-color: #03CEA4;
-    color: white;
-    z-index: 30;
-}
-
 /*Global styles*/
 [disabled] {
     opacity: 0.5;

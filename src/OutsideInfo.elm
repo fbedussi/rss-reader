@@ -69,6 +69,16 @@ sendInfoOutside info =
             in
             infoForOutside { tag = "saveAllData", data = allData }
 
+        OpenExcerptViaJs domId articlePreviewHeight ->
+            let
+                excerptData =
+                    object
+                        [ ( "domId", domId |> string )
+                        , ( "originalMaxHeight", articlePreviewHeight |> float )
+                        ]
+            in
+            infoForOutside { tag = "openExcerpt", data = excerptData }
+
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
 getInfoFromOutside tagger onError =

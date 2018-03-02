@@ -1,3 +1,4 @@
 - login/register
 - logo
 - save button on edit site layer
+- "read more" button

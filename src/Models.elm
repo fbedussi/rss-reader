@@ -120,7 +120,7 @@ type alias Model =
     , panelsState : PanelsState
     , defaultTransitionDuration : Int
     , currentPage : Int
-    , articlePreviewHeight : Int
+    , articlePreviewHeight : Float
     , appData : AppData
     , touchData : (Float, Float)
     }
@@ -202,6 +202,7 @@ type Msg
     | ChangeNumberOfArticlesPerPage Int
     | RegisterTime Time
     | OnTouchStart Touch
+    | OpenExcerpt String
     | NoOp
 
 
@@ -219,6 +220,7 @@ type InfoForOutside
     | DeleteArticlesInDb (List Id)
     | SaveAppData AppData
     | SaveAllData ( List Category, List Site, List Article )
+    | OpenExcerptViaJs String Float
 
 
 type InfoForElm

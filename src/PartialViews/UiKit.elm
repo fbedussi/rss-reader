@@ -255,6 +255,8 @@ sidebarSelectionBtn =
     styled button
         [ btnNoStyleStyle
         , textAlign left
+        , display block
+        , flex (int 1)
         ]
 
 
@@ -271,16 +273,14 @@ categoryWrapper =
 
 sidebarRow : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
 sidebarRow selected =
-    -- let
-    --     selectedStyle =
-    --         if selected then
-    --             [ backgroundColor theme.colorPrimaryLight
-    --             , color theme.white
-    --             , zIndex theme.zIndex.sidebarRow
-    --             ]
-    --         else
-    --             [ customCss "padding-right" "calc(3.75rem + 2em)" ]
-    -- in
+    let
+        selectedStyle = 
+            batch [
+                backgroundColor theme.colorPrimaryLight
+                , color theme.white
+                , zIndex theme.zIndex.sidebarRow
+            ]
+    in
     styled div
         [ displayFlex
          , standardPadding
@@ -288,9 +288,15 @@ sidebarRow selected =
          , position relative
          , alignItems center
          , backgroundColor theme.colorBackground
+         , width (pct 100)
          , zIndex (int 2)
          , transition "background-color 0.5s"
+         , if selected then selectedStyle else customCss "padding-right" "calc(3.75rem + 2em)"
+         , hover [
+             selectedStyle
+            ]
          ]
+        
 
 
 tabContentOuter : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg

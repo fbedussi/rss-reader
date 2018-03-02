@@ -50,7 +50,7 @@ sidebar model =
         [ class "sidebar" 
         , fromUnstyled <| onTouchEvent TouchStart OnTouchStart
         , fromUnstyled <| onTouchEvent TouchEnd (\touchEvent -> 
-            if (Tuple.first model.touchData) - touchEvent.clientX > 50
+            if (Tuple.first model.touchData) - touchEvent.clientX > 100
             then
                 TogglePanel PanelMenu
             else 

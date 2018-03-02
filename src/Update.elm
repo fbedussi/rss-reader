@@ -432,6 +432,9 @@ update msg model =
         OnTouchStart touchEvent ->
             ({ model | touchData = (touchEvent.clientX, touchEvent.clientY)}, Cmd.none)
 
+        OpenExcerpt domId ->
+        (model, OpenExcerptViaJs domId model.articlePreviewHeight |> sendInfoOutside )
+
         NoOp ->
             ( model, Cmd.none )
 

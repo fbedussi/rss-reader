@@ -8,12 +8,13 @@ import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, target, type_)
+import Html.Styled.Events exposing (onClick)
 import Json.Encode
 import Models exposing (Article, Category, Model, Msg(..), Site)
-import PartialViews.UiKit exposing (article, articleTitle, clear, standardPadding, starBtn, theme)
+import PartialViews.UiKit exposing (article, articleTitle, clear, standardPadding, starBtn, theme, btn, transition)
 
 
-renderArticle : Int -> List Site -> Article -> Html Msg
+renderArticle : Float -> List Site -> Article -> Html Msg
 renderArticle articlePreviewHeight sites articleToRender =
     let
         starredLabel =
@@ -27,12 +28,15 @@ renderArticle articlePreviewHeight sites articleToRender =
 
         date =
             fromTime articleToRender.date
+
+        domId = 
+            "article_" ++ toString articleToRender.id
     in
     li
         [ class "article" ]
         [ article
             [ class "article"
-            , id <| "srticle_" ++ toString articleToRender.id
+            , id domId
             ]
             [ styled div
                 [ marginBottom theme.distanceXXS
@@ -57,7 +61,10 @@ renderArticle articlePreviewHeight sites articleToRender =
                                 DeleteArticles [ articleToRender.id ]
                         )
                     ]
-                , div
+                , styled div
+                    [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ]]
+                        [width <| calc (pct 100) minus (calc (Css.rem 2.05) plus (Css.em 0.5))]
+                    ]
                     [ class "article-content" ]
                     [ styled div
                         [marginLeft (Css.rem 2)
@@ -94,15 +101,23 @@ renderArticle articlePreviewHeight sites articleToRender =
                                 , clear "both"
                                 ]
                             ]
-
-                        --, maxHeight (Css.rem <| toFloat articlePreviewHeight)
+                        , maxHeight (Css.em  articlePreviewHeight)
+                        , transition "max-height 0.3s"
+                        , overflow hidden
                         ]
-                        [ class "article-excerpt"
-                        , Json.Encode.string articleToRender.excerpt
-                            |> Html.Attributes.property "innerHTML"
-                            |> fromUnstyled
+                        [ class "article-excerpt"]
+                        [div 
+                            [class "article-excerptInner"
+                            , Json.Encode.string articleToRender.excerpt
+                                |> Html.Attributes.property "innerHTML"
+                                |> fromUnstyled
+                            ]
+                            []
                         ]
-                        []
+                    , btn
+                        [ class "readMoreButton"
+                            , onClick <| OpenExcerpt domId]
+                        [text "read more"]
                     ]
                 ]
             ]
