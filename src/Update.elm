@@ -51,7 +51,7 @@ update msg model =
                 , currentPage = 1
                 , selectedSiteId = Nothing
               }
-            , InitReadMoreButtons |> sendInfoOutside
+            , Cmd.none
             )
 
         ToggleSelectSite siteId ->
@@ -71,7 +71,7 @@ update msg model =
                 | selectedSiteId = newSelectedSiteId
                 , currentPage = 1
               }
-            , InitReadMoreButtons |> sendInfoOutside
+            , Cmd.none
             )
 
         ToggleDeleteActions categoryId ->
@@ -337,12 +337,6 @@ update msg model =
                                             | id = hashString 12345 article.link
                                             , excerpt =
                                                 article.excerpt
-
-                                            --String.dropLeft 1 article.excerpt
-                                            -- if String.length article.excerpt > 1000 then
-                                            --     String.left 1000 article.excerpt ++ "..."
-                                            -- else
-                                            --     article.excerpt
                                         }
                                     )
 
@@ -422,7 +416,7 @@ update msg model =
             ( { model | panelsState = closeAllPanels model.panelsState }, Cmd.none )
 
         ChangePage pageNumber ->
-            ( { model | currentPage = pageNumber }, InitReadMoreButtons |> sendInfoOutside )
+            ( { model | currentPage = pageNumber }, Cmd.none )
 
         ChangeNumberOfArticlesPerPage articlesPerPage ->
             let
@@ -434,10 +428,8 @@ update msg model =
             ( { model
                 | appData = updatedAppData
               }
-            , Cmd.batch
-                [ SaveAppData updatedAppData |> sendInfoOutside
-                , InitReadMoreButtons |> sendInfoOutside
-                ]
+            , SaveAppData updatedAppData |> sendInfoOutside
+                
             )
 
         OnTouchStart touchEvent ->

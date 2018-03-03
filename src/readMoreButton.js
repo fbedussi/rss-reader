@@ -54,14 +54,17 @@ export function toggleExcerpt({domId, toOpen, originalMaxHeight}) {
 }
 
 export function initReadMoreButtons() {
-    setTimeout(function() {
+    requestAnimationFrame(function() {
         document.querySelectorAll('.article').forEach((article) => {
             const {articleExcerpt, articleExcerptInner} = getInnerElements(article);
-    
+            const readMoreButton = article.querySelector('.readMoreButton');
             if (articleExcerptInner.clientHeight > articleExcerpt.clientHeight) {
-                article.querySelector('.readMoreButton').style.visibility = 'visible';
-                article.querySelector('.readMoreButton').style.opacity = 1;
+                readMoreButton.tabIndex = 0;                
+                readMoreButton.style.opacity = 1;
+            } else {
+                readMoreButton.style.opacity = 0;
+                readMoreButton.tabIndex = -1;
             }
         });
-    }, 10);
+    });
 }

@@ -4,6 +4,7 @@ import registerServiceWorker from './registerServiceWorker';
 import authInterface from './auth/authFacade';
 import dbInterface from './db/dbFacade';
 import {toggleExcerpt, initReadMoreButtons} from './readMoreButton';
+import debounce from './debounce';
 
 window.authInterface = authInterface;
 window.dbInterface = dbInterface;
@@ -86,6 +87,16 @@ function updateContent(storeName, content) {
             })
         })
     ;
+}
+
+function watchForArticleChange(){
+    const mainContent = document.querySelector('.mainContent');
+    const config = { childList: true, subtree: true };
+    const observer = new MutationObserver(debounce(initReadMoreButtons, 50));
+
+    observer.observe(mainContent, config);
+
+    window.addEventListener('resize', debounce(initReadMoreButtons, 50));
 }
 
 app.ports.infoForOutside.subscribe(function (cmd) {
@@ -204,18 +215,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
             break;
 
         case 'initReadMoreButtons':
-            initReadMoreButtons();
-            break;
-
-        default:
-            dbInterface[cmd.tag](payload)
-                .then((result, error) => {
-                    app.ports.infoForElm.send(result)
-                })
-                .catch((error) => {
-                    app.ports.infoForElm.send(error)
-                })
-            ;
+            watchForArticleChange();
             break;
     }
 });
