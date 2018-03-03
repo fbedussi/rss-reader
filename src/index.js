@@ -5,6 +5,7 @@ import authInterface from './auth/authFacade';
 import dbInterface from './db/dbFacade';
 import {toggleExcerpt, initReadMoreButtons} from './readMoreButton';
 import debounce from './debounce';
+import initBackToTopButton from './backToTopButton';
 
 window.authInterface = authInterface;
 window.dbInterface = dbInterface;
@@ -12,6 +13,8 @@ window.dbInterface = dbInterface;
 var app = Main.embed(document.getElementById('root'));
 
 registerServiceWorker();
+
+initBackToTopButton();
 
 app.ports.infoForElm.send({
     tag: 'loginResult',
@@ -216,6 +219,10 @@ app.ports.infoForOutside.subscribe(function (cmd) {
 
         case 'initReadMoreButtons':
             watchForArticleChange();
+            break;
+
+        case 'scrollToTop':
+            document.scrollingElement.scrollTop = 0;
             break;
     }
 });

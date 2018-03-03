@@ -204,6 +204,7 @@ type Msg
     | RegisterTime Time
     | OnTouchStart Touch
     | ToggleExcerpt Id String Bool
+    | ScrollToTop
     | NoOp
 
 
@@ -223,6 +224,7 @@ type InfoForOutside
     | SaveAllData ( List Category, List Site, List Article )
     | ToggleExcerptViaJs String Bool Float
     | InitReadMoreButtons
+    | ScrollToTopViaJs
 
 
 type InfoForElm

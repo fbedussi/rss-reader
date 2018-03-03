@@ -82,6 +82,10 @@ sendInfoOutside info =
 
         InitReadMoreButtons ->
             infoForOutside { tag = "initReadMoreButtons", data = null }
+
+        ScrollToTopViaJs ->
+            infoForOutside { tag = "scrollToTop", data = null }
+            
                         
 
 

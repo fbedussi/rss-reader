@@ -449,6 +449,9 @@ update msg model =
             in
             ( { model | articles = updatedArticles }, ToggleExcerptViaJs domId toOpen model.articlePreviewHeightInEm |> sendInfoOutside )
 
+        ScrollToTop ->
+            ( model, ScrollToTopViaJs |> sendInfoOutside )
+
         NoOp ->
             ( model, Cmd.none )
 
