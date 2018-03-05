@@ -8,14 +8,15 @@ import Html.Styled.Events exposing (keyCode, on)
 import Json.Decode as Json
 import Html.Styled exposing (Attribute)
 
-getSitesInCategory : Int -> List Site -> List Site
-getSitesInCategory categoryId sites =
-    List.filter (isSiteInCategory categoryId) sites
+getSitesInCategories : List Id -> List Site -> List Site
+getSitesInCategories categoryIds sites =
+    List.filter (isSiteInCategories categoryIds) sites
 
 
-isSiteInCategory : Int -> Site -> Bool
-isSiteInCategory categoryId site =
-    List.any (\siteCategoryId -> siteCategoryId == categoryId) site.categoriesId
+isSiteInCategories : List Id -> Site -> Bool
+isSiteInCategories categoryIds site =
+    site.categoriesId
+        |> List.any (\siteCategoryId -> List.member siteCategoryId categoryIds) 
 
 
 isArticleInSites : List Site -> Article -> Bool
@@ -23,16 +24,19 @@ isArticleInSites sites article =
     List.any (\site -> site.id == article.siteId) sites
 
 
-getSelectedArticles : SelectedCategoryId -> List Site -> List Article -> List Article
-getSelectedArticles selectedCategoryId sites articles =
+getSelectedArticles : List Category -> List Site -> List Article -> List Article
+getSelectedArticles categories sites articles =
     let
-        sitesInSelectedCategory =
-            case selectedCategoryId of
-                Just categoryId ->
-                    getSitesInCategory categoryId sites
+        selectedCategories =
+            categories
+                |> List.filter (\category -> category.isSelected)
 
-                Nothing ->
-                    sites
+        sitesInSelectedCategory =
+            if List.isEmpty selectedCategories
+            then
+                sites
+            else
+                getSitesInCategories (extractId selectedCategories) sites
 
         selectedSiteIds = sites
                         |> List.filter (\site -> site.isSelected)

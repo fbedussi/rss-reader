@@ -5,7 +5,6 @@ import Html.Styled.Attributes exposing (class)
 import Models exposing (SelectedSiteId, Site, Msg)
 import PartialViews.CategoryTree exposing (renderSiteEntry)
 import PartialViews.UiKit exposing (sidebarBoxStyle)
-import Html
 
 searchResult : List Site -> String -> Html Msg
 searchResult sites searchTerm =

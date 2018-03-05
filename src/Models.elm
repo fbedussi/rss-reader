@@ -19,9 +19,9 @@ type alias LoginData =
     }
 
 
-type alias AppData =
-    { lastRefreshTime : Time
-    , articlesPerPage : Int
+type alias Options =
+    { articlesPerPage : Int
+    , articlePreviewHeightInEm : Float
     }
 
 
@@ -63,6 +63,8 @@ type alias Site =
 type alias Category =
     { id : Id
     , name : String
+    , isSelected : Bool
+    , isBeingEdited : Bool
     }
 
 
@@ -70,7 +72,8 @@ type alias Data =
     { categories : List Category
     , sites : List Site
     , articles : List Article
-    , appData : AppData
+    , options : Options
+    , lastRefreshedTime : Float
     }
 
 
@@ -110,8 +113,6 @@ type alias Model =
     , categories : List Category
     , sites : List Site
     , articles : List Article
-    , selectedCategoryId : SelectedCategoryId
-    , categoryToEditId : Maybe Id
     , siteToEditForm : Site
     , importData : String
     , searchTerm : String
@@ -119,10 +120,9 @@ type alias Model =
     , fetchingRss : Bool
     , modal : Modal
     , panelsState : PanelsState
-    , defaultTransitionDuration : Int
     , currentPage : Int
-    , articlePreviewHeightInEm : Float
-    , appData : AppData
+    , options : Options
+    , lastRefreshTime : Time
     , touchData : (Float, Float)
     }
 
@@ -133,20 +133,17 @@ init =
       , categories = []
       , sites = []
       , articles = []
-      , selectedCategoryId = Nothing
-      , categoryToEditId = Nothing
+      , siteToEditForm = createEmptySite
       , importData = ""
       , searchTerm = ""
       , keyboardNavigation = False
       , fetchingRss = False
       , modal = { text = "", action = NoOp }
       , panelsState = initialPanelsState
-      , defaultTransitionDuration = 500
       , currentPage = 1
-      , articlePreviewHeightInEm = 15
-      , appData = { lastRefreshTime = 0, articlesPerPage = 15 }
+      , options = {articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
+      , lastRefreshTime = 0
       , touchData = (0.0, 0.0)
-      , siteToEditForm = createEmptySite
       }
     , Cmd.none
     )
@@ -179,7 +176,7 @@ type Msg
     | RequestDeleteCategoryAndSites (List Id) (List Id)
     | DeleteCategoryAndSites (List Id) (List Id)
     | EditCategoryId Id
-    | UpdateCategoryName Id String
+    | UpdateCategoryName Category String
     | EndCategoryEditing
     | AddNewCategory
     | AddNewSite
@@ -221,7 +218,8 @@ type InfoForOutside
     | UpdateSiteInDb Site
     | AddArticleInDb Article
     | DeleteArticlesInDb (List Id)
-    | SaveAppData AppData
+    | SaveOptions Options
+    | SaveLastRefreshedTime Time
     | SaveAllData ( List Category, List Site, List Article )
     | ToggleExcerptViaJs String Bool Float
     | InitReadMoreButtons
@@ -231,4 +229,4 @@ type InfoForOutside
 type InfoForElm
     = UserLoggedIn UserUid
     | DbOpened
-    | NewData (List Category) (List Site) (List Article) AppData
+    | NewData (List Category) (List Site) (List Article) Options Time

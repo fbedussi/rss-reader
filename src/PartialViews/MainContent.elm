@@ -3,27 +3,27 @@ module PartialViews.MainContent exposing (..)
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getArticleSite, getSelectedArticles)
-import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul, img)
-import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, type_, src, alt)
+import Html.Styled exposing (Html, a, button, div, h2, img, input, label, li, main_, span, styled, text, ul)
+import Html.Styled.Attributes exposing (alt, checked, class, for, fromUnstyled, href, id, src, type_)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (Article, Category, Model, Msg(..), Site)
+import Models exposing (Article, Category, Model, Msg(..), Options, Site)
 import PartialViews.Article exposing (renderArticle)
 import PartialViews.UiKit exposing (btn, clear, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
 
 
-mainContent : Model -> Html Msg
-mainContent model =
+mainContent : List Category -> List Site -> List Article -> Options -> Int -> Html Msg
+mainContent categories sites articles options currentPage =
     let
         selectedArticles =
-            getSelectedArticles model.selectedCategoryId model.sites model.articles
+            getSelectedArticles categories sites articles
 
         lastPage =
-            List.length selectedArticles // model.appData.articlesPerPage
+            List.length selectedArticles // options.articlesPerPage
 
         articlesToDisplay =
             selectedArticles
-                |> List.drop (model.appData.articlesPerPage * (model.currentPage - 1))
-                |> List.take model.appData.articlesPerPage
+                |> List.drop (options.articlesPerPage * (currentPage - 1))
+                |> List.take options.articlesPerPage
     in
     styled main_
         [ standardPadding
@@ -33,38 +33,35 @@ mainContent model =
             ]
         ]
         [ class "mainContent" ]
-        (
-        if List.length model.articles == 0 
-        then
-            [ styled div 
-                [backgroundImage (url "/no_articles.svg")
+        (if List.length articles == 0 then
+            [ styled div
+                [ backgroundImage (url "/no_articles.svg")
                 , backgroundSize contain
                 , backgroundRepeat noRepeat
                 , width (pct 100)
                 , height (vh 80)
                 , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-                    [backgroundImage (url "/no_articles_desktop.svg")]
+                    [ backgroundImage (url "/no_articles_desktop.svg") ]
                 ]
-                [] 
-                [styled span
-                    [visuallyHiddenStyle]
+                []
+                [ styled span
+                    [ visuallyHiddenStyle ]
                     []
-                    [text "no article yet, click the refresh button"]
+                    [ text "no article yet, click the refresh button" ]
                 ]
             ]
-        else if List.length articlesToDisplay > 0 
-        then 
+         else if List.length articlesToDisplay > 0 then
             [ ul
                 [ class "selectedArticles" ]
                 (articlesToDisplay
-                    |> List.map (renderArticle model.articlePreviewHeightInEm model.sites)
+                    |> List.map (renderArticle options.articlePreviewHeightInEm sites)
                 )
-            , renderPagination articlesToDisplay model.appData.articlesPerPage model.currentPage lastPage
+            , renderPagination articlesToDisplay options.articlesPerPage currentPage lastPage
             ]
-        else 
-            [div
-                [class "noArticleSelected"]
-                [text "No article selected, try to select another site o category"]
+         else
+            [ div
+                [ class "noArticleSelected" ]
+                [ text "No article selected, try to select another site o category" ]
             ]
         )
 

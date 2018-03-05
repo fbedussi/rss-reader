@@ -15,7 +15,7 @@ import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
 import TouchEvents exposing (onTouchEvent, TouchEvent(..), getDirectionX, Direction(..))
 
-sidebar : Model -> Html.Html Msg
+sidebar : Model -> Html Msg
 sidebar model =
     let
         sitesWithoutCategory =
@@ -25,7 +25,7 @@ sidebar model =
         searchInProgress =
             not <| String.isEmpty model.searchTerm
     in
-    toUnstyled <| styled aside
+    styled aside
         [ position fixed
         , display inlineBlock
         , verticalAlign top
@@ -60,7 +60,7 @@ sidebar model =
         [ renderSidebarToolbar
         , renderSearchBox model.searchTerm
         , searchResult model.sites model.searchTerm
-        , renderSitesWithoutCategory searchInProgress sitesWithoutCategory
+        , lazy2 renderSitesWithoutCategory searchInProgress sitesWithoutCategory
         , lazy2 renderCategories searchInProgress model
         ]
 
@@ -104,9 +104,9 @@ renderSearchBox searchTerm =
         ]
 
 
-renderSitesWithoutCategory : Bool -> List Site -> Html Msg
+renderSitesWithoutCategory : Bool -> List Site -> Html.Html Msg
 renderSitesWithoutCategory searchInProgress sitesWithoutCategory =
-    styled ul
+    toUnstyled <| styled ul
         [ sidebarBoxStyle ]
         [ class "sitesWithoutCategory" ]
         (if searchInProgress then
@@ -127,5 +127,5 @@ renderCategories searchInProgress model =
             []
          else
             model.categories
-                |> List.map (lazy2 renderCategory model)
+                |> List.map (lazy2 renderCategory (model.sites, model.articles, model.lastRefreshTime, model.panelsState))
         )

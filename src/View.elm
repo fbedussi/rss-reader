@@ -53,8 +53,8 @@ view model =
                 [ displayFlex ]
             ]
             [ class "mainWrapper" ]
-            [ lazy sidebar model
-            , mainContent model
+            [ sidebar model
+            , mainContent model.categories model.sites model.articles model.options model.currentPage
             ]
         , PartialViews.UiKit.overlay (isSomePanelOpen "Panel" model.panelsState)
         , modal model.modal <| getModalAnimationClass <| getPanelState (toString PanelModal) model.panelsState

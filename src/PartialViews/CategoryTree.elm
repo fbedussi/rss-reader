@@ -2,28 +2,29 @@ module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
 import Css exposing (auto, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
-import Helpers exposing (extractId, getClass, getSitesInCategory, isArticleInSites, isSelected)
-import Html.Styled exposing (Html, toUnstyled, a, article, button, div, h2, li, main_, span, styled, text, ul)
+import Helpers exposing (extractId, getClass, getSitesInCategories  , isArticleInSites, isSelected)
+import Html
+import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Models exposing (Article, Category, Id, Model, Msg(..), Selected, SelectedCategoryId, SelectedSiteId, Site)
-import PanelsManager exposing (getPanelClass, getPanelState)
+import Html.Styled.Lazy exposing (lazy)
+import Models exposing (Article, Category, Id, Model, Msg(..), Selected, Site)
+import PanelsManager exposing (getPanelClass, getPanelState, PanelsState)
 import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
 import Time exposing (Time)
-import Html
-import Html.Styled.Lazy exposing (lazy)
 
-renderCategory : Model -> Category -> Html.Html Msg
-renderCategory model category =
+
+renderCategory : (List Site, List Article, Time, PanelsState) -> Category -> Html.Html Msg
+renderCategory (sites, articles, lastRefreshTime, panelsState) category =
     let
         domId =
             "cat_" ++ toString category.id
 
         selected =
-            isSelected model.selectedCategoryId category.id
+            category.isSelected
 
         triggerOpenTab =
             if selected then
@@ -32,42 +33,45 @@ renderCategory model category =
                 closeTab ("#" ++ domId)
 
         sitesInCategory =
-            getSitesInCategory category.id model.sites
+            getSitesInCategories [category.id] sites
 
         newArticlesInCategory =
-            countNewArticlesInCategory sitesInCategory model.articles model.appData.lastRefreshTime
+            countNewArticlesInCategory sitesInCategory articles lastRefreshTime
     in
-    toUnstyled <| categoryWrapper
-        [ class "tab"
-        , id domId
-        ]
-        [ deleteActions (getPanelState domId model.panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
-        , sidebarRow selected
-            [ class <| "tabTitle sidebarRow" ++ if selected then " is-selected" else "" ]
-            (case model.categoryToEditId of
-                Just categoryToEditId ->
-                    if categoryToEditId == category.id then
-                        renderEditCategory category
-                    else
-                        renderCategoryName category selected newArticlesInCategory
-
-                Nothing ->
-                    renderCategoryName category selected newArticlesInCategory
-            )
-        , tabContentOuter selected
-            [ class "tabContentOuter" ]
-            [ styled ul
-                []
-                [ class "category-sitesInCategory tabContentInner" ]
-                (sitesInCategory
-                    |> List.map (lazy renderSiteEntry)
-                )
+    toUnstyled <|
+        categoryWrapper
+            [ class "tab"
+            , id domId
             ]
-        ]
+            [ deleteActions (getPanelState domId panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
+            , sidebarRow selected
+                [ class <|
+                    "tabTitle sidebarRow"
+                        ++ (if selected then
+                                " is-selected"
+                            else
+                                ""
+                           )
+                ]
+                (if category.isBeingEdited then
+                    renderEditCategory category
+                 else
+                    renderCategoryName category newArticlesInCategory
+                )
+            , tabContentOuter selected
+                [ class "tabContentOuter" ]
+                [ styled ul
+                    []
+                    [ class "category-sitesInCategory tabContentInner" ]
+                    (sitesInCategory
+                        |> List.map (lazy renderSiteEntry)
+                    )
+                ]
+            ]
 
 
-renderCategoryName : Category -> Selected -> Int -> List (Html Msg)
-renderCategoryName category selected newArticlesInCategory =
+renderCategoryName : Category -> Int -> List (Html Msg)
+renderCategoryName category newArticlesInCategory =
     [ sidebarSelectionBtn
         [ class "categoryBtn"
         , onClick <| ToggleSelectedCategory category.id
@@ -77,7 +81,7 @@ renderCategoryName category selected newArticlesInCategory =
             , marginRight (em 0.5)
             ]
             [ class "icon folderIcon" ]
-            [ folderIcon [ Css.fill theme.colorPrimary ] selected
+            [ folderIcon [ Css.fill theme.colorPrimary ] category.isSelected
             ]
         , badge
             [ class "category-numberOfArticles" ]
@@ -91,7 +95,7 @@ renderCategoryName category selected newArticlesInCategory =
             [ text (" " ++ category.name) ]
         ]
     ]
-        ++ (if selected then
+        ++ (if category.isSelected then
                 [ span
                     [ class "category-action" ]
                     [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| EditCategoryId category.id ]
@@ -115,7 +119,7 @@ renderEditCategory category =
             [ class "editCategoryName-input"
             , id <| "editCategoryName-" ++ toString category.id
             , value category.name
-            , onInput <| UpdateCategoryName category.id
+            , onInput <| UpdateCategoryName category
             ]
             []
         , iconButton (checkIcon []) ( "ok", False ) [ onClick EndCategoryEditing ]
@@ -129,29 +133,37 @@ renderSiteEntry site =
         selected =
             site.isSelected
     in
-    toUnstyled <| li
-        [ class "category-siteInCategory " ]
-        [ sidebarRow selected
-            [class <| "sidebarRow" ++ (if selected then " is-selected" else "")]
-            ([ sidebarSelectionBtn
-                [ class "siteInCategoryBtn"
-                , onClick <| ToggleSelectSite site.id
+    toUnstyled <|
+        li
+            [ class "category-siteInCategory " ]
+            [ sidebarRow selected
+                [ class <|
+                    "sidebarRow"
+                        ++ (if selected then
+                                " is-selected"
+                            else
+                                ""
+                           )
                 ]
-                [ site.name |> text ]
-             ]
-                ++ (if selected then
-                        [ styled span
-                            [ flexShrink (int 0) ]
-                            [ class "siteInCategory-actions button-group" ]
-                            [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| OpenEditSitePanel site ]
-                            , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| RequestDeleteSites [ site.id ] ]
+                ([ sidebarSelectionBtn
+                    [ class "siteInCategoryBtn"
+                    , onClick <| ToggleSelectSite site.id
+                    ]
+                    [ site.name |> text ]
+                 ]
+                    ++ (if selected then
+                            [ styled span
+                                [ flexShrink (int 0) ]
+                                [ class "siteInCategory-actions button-group" ]
+                                [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| OpenEditSitePanel site ]
+                                , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| RequestDeleteSites [ site.id ] ]
+                                ]
                             ]
-                        ]
-                    else
-                        []
-                   )
-            )
-        ]
+                        else
+                            []
+                       )
+                )
+            ]
 
 
 countNewArticlesInCategory : List Site -> List Article -> Time -> Int

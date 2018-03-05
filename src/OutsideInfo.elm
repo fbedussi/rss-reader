@@ -3,7 +3,7 @@ port module OutsideInfo exposing (..)
 import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
 import Json.Encode exposing (..)
 import Models exposing (..)
-
+import Time exposing (Time)
 
 port infoForOutside : GenericOutsideData -> Cmd msg
 
@@ -55,8 +55,17 @@ sendInfoOutside info =
         DeleteArticlesInDb articleToDeleteIds ->
             infoForOutside { tag = "deleteArticles", data = encodeIdList articleToDeleteIds }
 
-        SaveAppData appData ->
-            infoForOutside { tag = "saveAppData", data = encodeAppData appData }
+        SaveOptions options ->
+            infoForOutside { tag = "saveOptions", data = encodeOptions options }
+
+        SaveLastRefreshedTime lastRefreshedTime ->
+            let
+                refreshedTimeData =
+                    object
+                        [ ( "lastRefreshedTime", lastRefreshedTime |> float ) ]
+            in
+            infoForOutside { tag = "saveLastRefreshedTime", data = refreshedTimeData }
+        
 
         SaveAllData ( categories, sites, articles ) ->
             let
@@ -113,7 +122,7 @@ getInfoFromOutside tagger onError =
                 "allData" ->
                     case decodeData outsideInfo.data of
                         Ok data ->
-                            tagger <| NewData data.categories data.sites data.articles data.appData
+                            tagger <| NewData data.categories data.sites data.articles data.options data.lastRefreshedTime
 
                         Err e ->
                             onError e
@@ -149,12 +158,13 @@ switchInfoForElm infoForElm model =
         DbOpened ->
             ( model, sendInfoOutside ReadAllData )
 
-        NewData categories sites savedArticles appData ->
+        NewData categories sites savedArticles options lastRefreshedTime ->
             ( { model
                 | categories = categories
                 , sites = sites
                 , articles = savedArticles
-                , appData = appData
+                , options = options
+                , lastRefreshTime = lastRefreshedTime
               }
             , Cmd.none
             )
@@ -196,9 +206,9 @@ encodeArticle article =
         , ( "starred", article.starred |> bool )
         ]
 
-encodeAppData : AppData -> Value
-encodeAppData appData = 
+encodeOptions : Options -> Value
+encodeOptions options = 
     object
-        [("lastRefreshTime", appData.lastRefreshTime |> round |> int)
-        , ("articlesPerPage", appData.articlesPerPage |> int)
+        [("articlesPerPage", options.articlesPerPage |> int)
+        , ("articlePreviewHeightInEm", options.articlePreviewHeightInEm |> float)
         ]

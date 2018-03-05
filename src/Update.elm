@@ -4,7 +4,7 @@ import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (delay, getNextId, mergeArticles, sendMsg)
 import Import exposing (executeImport)
-import Models exposing (AppData, Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite)
+import Models exposing (Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
@@ -34,34 +34,35 @@ update msg model =
             )
 
         ToggleSelectedCategory categoryId ->
-            let
-                newSelectedCategoryId =
-                    case model.selectedCategoryId of
-                        Nothing ->
-                            Just categoryId
-
-                        Just id ->
-                            if id == categoryId then
-                                Nothing
-                            else
-                                Just categoryId
-            in
             ( { model
-                | selectedCategoryId = newSelectedCategoryId
+                | categories =
+                    model.categories
+                        |> List.map
+                            (\category ->
+                                if category.id == categoryId then
+                                    { category | isSelected = True }
+                                else
+                                    { category | isSelected = False }
+                            )
                 , currentPage = 1
-                , sites = model.sites |> List.map (\site -> {site | isSelected = False})
+                , sites = model.sites |> List.map (\site -> { site | isSelected = False })
               }
             , Cmd.none
             )
 
         ToggleSelectSite siteId ->
             ( { model
-                | sites = model.sites |> List.map (\site -> 
-                    if site.id == siteId && site.isSelected 
-                    then {site | isSelected = False} 
-                    else if site.id == siteId 
-                    then {site | isSelected = True} 
-                    else site)
+                | sites =
+                    model.sites
+                        |> List.map
+                            (\site ->
+                                if site.id == siteId && site.isSelected then
+                                    { site | isSelected = False }
+                                else if site.id == siteId then
+                                    { site | isSelected = True }
+                                else
+                                    site
+                            )
                 , currentPage = 1
               }
             , Cmd.none
@@ -207,26 +208,48 @@ update msg model =
 
         EditCategoryId categoryToEditId ->
             ( { model
-                | categoryToEditId = Just categoryToEditId
-                , selectedCategoryId = Just categoryToEditId
+                | categories =
+                    model.categories
+                        |> List.map
+                            (\category ->
+                                if category.id == categoryToEditId then
+                                    { category
+                                        | isSelected = True
+                                        , isBeingEdited = True
+                                    }
+                                else
+                                    category
+                            )
               }
             , Cmd.none
             )
 
         EndCategoryEditing ->
-            ( { model | categoryToEditId = Nothing }, Cmd.none )
+            ( { model
+                | categories =
+                    model.categories
+                        |> List.map
+                            (\category ->
+                                if category.isBeingEdited then
+                                    { category
+                                        | isBeingEdited = False
+                                    }
+                                else
+                                    category
+                            )
+              }
+            , Cmd.none
+            )
 
-        UpdateCategoryName categoryId newName ->
+        UpdateCategoryName category newName ->
             let
                 updateCategory =
-                    Category
-                        categoryId
-                        newName
+                    { category | name = newName }
 
                 updatedCategories =
                     List.map
-                        (\category ->
-                            if category.id == categoryId then
+                        (\modelCategory ->
+                            if modelCategory.id == category.id then
                                 updateCategory
                             else
                                 category
@@ -242,7 +265,6 @@ update msg model =
             in
             ( { model
                 | categories = List.append model.categories [ newCategory ]
-                , categoryToEditId = Just newCategory.id
               }
             , Cmd.batch
                 [ Dom.focus ("editCategoryName-" ++ toString newCategory.id) |> Task.attempt FocusResult
@@ -272,7 +294,7 @@ update msg model =
               }
             , Cmd.none
             )
-        
+
         UpdateSite siteToUpdate ->
             ( { model | siteToEditForm = siteToUpdate }, Cmd.none )
 
@@ -280,15 +302,22 @@ update msg model =
             let
                 updatedSites =
                     model.sites
-                        |> List.map (\site -> if site.id == model.siteToEditForm.id then model.siteToEditForm else site)
+                        |> List.map
+                            (\site ->
+                                if site.id == model.siteToEditForm.id then
+                                    model.siteToEditForm
+                                else
+                                    site
+                            )
             in
-                
-            ( {model
+            ( { model
                 | sites = updatedSites
-            }, Cmd.batch [
-                UpdateSiteInDb model.siteToEditForm |> sendInfoOutside 
-                , sendMsg CloseEditSitePanel 
-            ])
+              }
+            , Cmd.batch
+                [ UpdateSiteInDb model.siteToEditForm |> sendInfoOutside
+                , sendMsg CloseEditSitePanel
+                ]
+            )
 
         AddNewSite ->
             let
@@ -303,9 +332,6 @@ update msg model =
             , AddSiteInDb newSite |> sendInfoOutside
             )
 
-       
-
-            
         DeleteArticles articleToDeleteIds ->
             let
                 updatedArticles =
@@ -383,13 +409,7 @@ update msg model =
             ( { model | fetchingRss = True }, Task.perform RegisterTime Time.now :: getFeeds model.sites |> Cmd.batch )
 
         RegisterTime time ->
-            let
-                updatedAppData =
-                    AppData
-                        time
-                        model.appData.articlesPerPage
-            in
-            ( model, SaveAppData updatedAppData |> sendInfoOutside )
+            ( model, SaveLastRefreshedTime time |> sendInfoOutside )
 
         Outside infoForElm ->
             switchInfoForElm infoForElm model
@@ -417,18 +437,18 @@ update msg model =
         ChangePage pageNumber ->
             ( { model | currentPage = pageNumber }, Cmd.none )
 
-        ChangeNumberOfArticlesPerPage articlesPerPage ->
+        ChangeNumberOfArticlesPerPage newArticlesPerPage ->
             let
-                updatedAppData =
-                    AppData
-                        model.appData.lastRefreshTime
-                        articlesPerPage
+                options =
+                    model.options
+
+                updatedOptions =
+                    { options | articlesPerPage = newArticlesPerPage }
             in
             ( { model
-                | appData = updatedAppData
+                | options = updatedOptions
               }
-            , SaveAppData updatedAppData |> sendInfoOutside
-                
+            , SaveOptions updatedOptions |> sendInfoOutside
             )
 
         OnTouchStart touchEvent ->
@@ -446,7 +466,7 @@ update msg model =
                                     article
                             )
             in
-            ( { model | articles = updatedArticles }, ToggleExcerptViaJs domId toOpen model.articlePreviewHeightInEm |> sendInfoOutside )
+            ( { model | articles = updatedArticles }, ToggleExcerptViaJs domId toOpen model.options.articlePreviewHeightInEm |> sendInfoOutside )
 
         ScrollToTop ->
             ( model, ScrollToTopViaJs |> sendInfoOutside )
@@ -485,6 +505,8 @@ createNewCategory categories =
     Category
         nextId
         "New Category"
+        True
+        True
 
 
 createNewSite : List Site -> Site

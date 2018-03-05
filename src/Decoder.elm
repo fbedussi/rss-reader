@@ -23,11 +23,12 @@ decodeData value =
 
 dataDecoder : Decoder Data
 dataDecoder =
-    map4 Data
+    map5 Data
         (field "categories" categoriesDecoder)
         (field "sites" sitesDecoder)
         (field "articles" articlesDecoder)
-        (field "appData" appDataDecoder)
+        (field "options" appOptionsDecoder)
+        (field "lastRefreshedTime" Json.Decode.float)
 
 
 categoriesDecoder : Decoder (List Category)
@@ -47,9 +48,11 @@ articlesDecoder =
 
 categoryDecoder : Decoder Category
 categoryDecoder =
-    map2 Category
+    map4 Category
         (field "id" Json.Decode.int)
         (field "name" Json.Decode.string)
+        (succeed False)
+        (succeed False)
 
 
 siteDecoder : Decoder Site
@@ -77,11 +80,11 @@ articleDecoder =
         (succeed False)
 
 
-appDataDecoder : Decoder AppData
-appDataDecoder =
-    map2 AppData
-        (field "lastRefreshTime" Json.Decode.float)
+appOptionsDecoder : Decoder Options
+appOptionsDecoder =
+    map2 Options
         (field "articlesPerPage" Json.Decode.int)
+        (field "articlePreviewHeightInEm" Json.Decode.float)
         
 
 dateDecoder : Decoder Time
