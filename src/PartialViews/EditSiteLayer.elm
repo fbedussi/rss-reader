@@ -1,27 +1,19 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
-import Css exposing (displayFlex, flex, int, justifyContent, spaceBetween)
+import Css exposing (marginLeft, displayFlex, flex, int, justifyContent, spaceBetween)
 import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, span, styled, text, ul, toUnstyled)
 import Html.Styled.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, Id, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
-import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop, select, checkbox)
+import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop, select, checkbox,secondaryBtn)
 
-editSiteLayer : String -> Maybe Site -> List Category -> Html Msg
+editSiteLayer : String -> Site -> List Category -> Html Msg
 editSiteLayer animationClass site categories =
     layerTop
         [ class <| "editSiteLayer" ++ animationClass ]
-        [ case site of
-            Just site ->
-                renderEditSiteForm site categories
-
-            Nothing ->
-                div
-                    [ class "error" ]
-                    [ text "Error: no site found" ]
-        ]
+        [ renderEditSiteForm site categories ]
 
 
 renderEditSiteForm : Site -> List Category -> Html Msg
@@ -79,9 +71,16 @@ renderEditSiteForm site categories =
             , justifyContent spaceBetween
             ]
             []
-            [ btn
-                [ onClick CloseEditSitePanel ]
-                [ text "close" ]
+            [ span
+                []
+                [btn
+                    [ onClick SaveSite ]
+                    [ text "save" ]
+                , styled secondaryBtn
+                    [marginLeft (Css.rem 0.5)]
+                    [ onClick CloseEditSitePanel ]
+                    [ text "close" ]
+                    ]
             , iconButton (deleteIcon []) ( "delete", True ) [ onClick (RequestDeleteSites [ site.id ]) ]
             ]
         ]

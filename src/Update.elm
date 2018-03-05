@@ -2,9 +2,9 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (delay, getNextId, mergeArticles)
+import Helpers exposing (delay, getNextId, mergeArticles, sendMsg)
 import Import exposing (executeImport)
-import Models exposing (AppData, Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site)
+import Models exposing (AppData, Article, Category, Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
@@ -265,9 +265,9 @@ update msg model =
                 Ok () ->
                     ( model, Cmd.none )
 
-        OpenEditSitePanel siteId ->
+        OpenEditSitePanel site ->
             ( { model
-                | siteToEditId = siteId
+                | siteToEdit = site
                 , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , Cmd.none
@@ -276,9 +276,27 @@ update msg model =
         CloseEditSitePanel ->
             ( { model
                 | panelsState = closePanel (toString PanelEditSite) model.panelsState
+                , siteToEdit = createEmptySite
               }
             , Cmd.none
             )
+        
+        UpdateSite siteToUpdate ->
+            ( { model | siteToEdit = siteToUpdate }, Cmd.none )
+
+        SaveSite ->
+            let
+                updatedSites =
+                    model.sites
+                        |> List.map (\site -> if site.id == model.siteToEdit.id then model.siteToEdit else site)
+            in
+                
+            ( {model
+                | sites = updatedSites
+            }, Cmd.batch [
+                UpdateSiteInDb model.siteToEdit |> sendInfoOutside 
+                , sendMsg CloseEditSitePanel 
+            ])
 
         AddNewSite ->
             let
@@ -287,26 +305,15 @@ update msg model =
             in
             ( { model
                 | sites = List.append model.sites [ newSite ]
-                , siteToEditId = newSite.id
+                , siteToEdit = newSite
                 , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , AddSiteInDb newSite |> sendInfoOutside
             )
 
-        UpdateSite siteToUpdate ->
-            let
-                updatedSites =
-                    List.map
-                        (\site ->
-                            if site.id == siteToUpdate.id then
-                                siteToUpdate
-                            else
-                                site
-                        )
-                        model.sites
-            in
-            ( { model | sites = updatedSites }, UpdateSiteInDb siteToUpdate |> sendInfoOutside )
+       
 
+            
         DeleteArticles articleToDeleteIds ->
             let
                 updatedArticles =

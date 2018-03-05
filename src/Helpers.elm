@@ -1,6 +1,6 @@
 module Helpers exposing (..)
 
-import Models exposing (Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Models exposing (Msg, Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import Process
 import Task
 import Time exposing (Time)
@@ -145,3 +145,8 @@ delay time msg =
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (Json.map tagger keyCode)
+
+
+sendMsg : Msg -> Cmd Msg
+sendMsg msg = 
+    Task.perform (\_ -> msg) (Task.succeed 0) 

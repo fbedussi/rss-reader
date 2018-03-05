@@ -112,7 +112,7 @@ type alias Model =
     , selectedCategoryId : SelectedCategoryId
     , selectedSiteId : SelectedSiteId
     , categoryToEditId : Maybe Id
-    , siteToEditId : Id
+    , siteToEdit : Site
     , importData : String
     , searchTerm : String
     , keyboardNavigation : Bool
@@ -136,7 +136,6 @@ init =
       , selectedCategoryId = Nothing
       , selectedSiteId = Nothing
       , categoryToEditId = Nothing
-      , siteToEditId = -1
       , importData = ""
       , searchTerm = ""
       , keyboardNavigation = False
@@ -148,6 +147,7 @@ init =
       , articlePreviewHeightInEm = 15
       , appData = { lastRefreshTime = 0, articlesPerPage = 15 }
       , touchData = (0.0, 0.0)
+      , siteToEdit = createEmptySite
       }
     , Cmd.none
     )
@@ -184,9 +184,10 @@ type Msg
     | AddNewCategory
     | AddNewSite
     | FocusResult (Result Error ())
-    | OpenEditSitePanel Id
+    | OpenEditSitePanel Site
     | CloseEditSitePanel
     | UpdateSite Site
+    | SaveSite
     | GetArticles (Result String (List Article))
     | DeleteArticles (List Id)
     | SaveArticle Article
