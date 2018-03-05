@@ -258,6 +258,7 @@ sidebarSelectionBtn : List (Attribute msg) -> List (Html msg) -> Html msg
 sidebarSelectionBtn =
     styled button
         [ btnNoStyleStyle
+        , standardPadding
         , textAlign left
         , display block
         , flex (int 1)
@@ -286,7 +287,6 @@ sidebarRow selected =
     in
     styled div
         [ displayFlex
-        , standardPadding
         , justifyContent spaceBetween
         , position relative
         , alignItems center
