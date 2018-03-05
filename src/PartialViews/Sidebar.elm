@@ -6,7 +6,7 @@ import Html
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (fromUnstyled, attribute, class, disabled, for, href, id, placeholder, src, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Html.Styled.Lazy exposing (lazy2)
+import Html.Styled.Lazy exposing (lazy, lazy2)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton)
@@ -59,8 +59,8 @@ sidebar model =
         ]
         [ renderSidebarToolbar
         , renderSearchBox model.searchTerm
-        , searchResult model.selectedSiteId model.sites model.searchTerm
-        , renderSitesWithoutCategory searchInProgress model.selectedSiteId sitesWithoutCategory
+        , searchResult model.sites model.searchTerm
+        , renderSitesWithoutCategory searchInProgress sitesWithoutCategory
         , lazy2 renderCategories searchInProgress model
         ]
 
@@ -104,8 +104,8 @@ renderSearchBox searchTerm =
         ]
 
 
-renderSitesWithoutCategory : Bool -> SelectedSiteId -> List Site -> Html Msg
-renderSitesWithoutCategory searchInProgress selectedSiteId sitesWithoutCategory =
+renderSitesWithoutCategory : Bool -> List Site -> Html Msg
+renderSitesWithoutCategory searchInProgress sitesWithoutCategory =
     styled ul
         [ sidebarBoxStyle ]
         [ class "sitesWithoutCategory" ]
@@ -113,7 +113,7 @@ renderSitesWithoutCategory searchInProgress selectedSiteId sitesWithoutCategory 
             []
          else
             sitesWithoutCategory
-                |> List.map (lazy2 renderSiteEntry selectedSiteId)
+                |> List.map (lazy renderSiteEntry)
         )
 
 

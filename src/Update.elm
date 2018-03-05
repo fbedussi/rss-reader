@@ -49,26 +49,19 @@ update msg model =
             ( { model
                 | selectedCategoryId = newSelectedCategoryId
                 , currentPage = 1
-                , selectedSiteId = Nothing
+                , sites = model.sites |> List.map (\site -> {site | isSelected = False})
               }
             , Cmd.none
             )
 
         ToggleSelectSite siteId ->
-            let
-                newSelectedSiteId =
-                    case model.selectedSiteId of
-                        Nothing ->
-                            Just siteId
-
-                        Just id ->
-                            if id == siteId then
-                                Nothing
-                            else
-                                Just siteId
-            in
             ( { model
-                | selectedSiteId = newSelectedSiteId
+                | sites = model.sites |> List.map (\site -> 
+                    if site.id == siteId && site.isSelected 
+                    then {site | isSelected = False} 
+                    else if site.id == siteId 
+                    then {site | isSelected = True} 
+                    else site)
                 , currentPage = 1
               }
             , Cmd.none
@@ -267,7 +260,7 @@ update msg model =
 
         OpenEditSitePanel site ->
             ( { model
-                | siteToEdit = site
+                | siteToEditForm = site
                 , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , Cmd.none
@@ -276,25 +269,24 @@ update msg model =
         CloseEditSitePanel ->
             ( { model
                 | panelsState = closePanel (toString PanelEditSite) model.panelsState
-                , siteToEdit = createEmptySite
               }
             , Cmd.none
             )
         
         UpdateSite siteToUpdate ->
-            ( { model | siteToEdit = siteToUpdate }, Cmd.none )
+            ( { model | siteToEditForm = siteToUpdate }, Cmd.none )
 
         SaveSite ->
             let
                 updatedSites =
                     model.sites
-                        |> List.map (\site -> if site.id == model.siteToEdit.id then model.siteToEdit else site)
+                        |> List.map (\site -> if site.id == model.siteToEditForm.id then model.siteToEditForm else site)
             in
                 
             ( {model
                 | sites = updatedSites
             }, Cmd.batch [
-                UpdateSiteInDb model.siteToEdit |> sendInfoOutside 
+                UpdateSiteInDb model.siteToEditForm |> sendInfoOutside 
                 , sendMsg CloseEditSitePanel 
             ])
 
@@ -305,7 +297,7 @@ update msg model =
             in
             ( { model
                 | sites = List.append model.sites [ newSite ]
-                , siteToEdit = newSite
+                , siteToEditForm = newSite
                 , panelsState = openPanel (toString PanelEditSite) model.panelsState
               }
             , AddSiteInDb newSite |> sendInfoOutside
@@ -507,6 +499,7 @@ createNewSite sites =
         "New Site"
         ""
         ""
+        False
         False
 
 

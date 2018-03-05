@@ -23,8 +23,8 @@ isArticleInSites sites article =
     List.any (\site -> site.id == article.siteId) sites
 
 
-getSelectedArticles : SelectedCategoryId -> SelectedSiteId -> List Site -> List Article -> List Article
-getSelectedArticles selectedCategoryId selectedSiteId sites articles =
+getSelectedArticles : SelectedCategoryId -> List Site -> List Article -> List Article
+getSelectedArticles selectedCategoryId sites articles =
     let
         sitesInSelectedCategory =
             case selectedCategoryId of
@@ -34,14 +34,17 @@ getSelectedArticles selectedCategoryId selectedSiteId sites articles =
                 Nothing ->
                     sites
 
+        selectedSiteIds = sites
+                        |> List.filter (\site -> site.isSelected)
+                        |> extractId
+        
         articlesSelected =
-            case selectedSiteId of
-                Just siteId ->
-                    getArticlesInSites [ siteId ] articles
-
-                Nothing ->
-                    articles
-                        |> getArticlesInSites (sitesInSelectedCategory |> extractId)
+            if List.isEmpty selectedSiteIds
+            then 
+                articles
+                    |> getArticlesInSites (sitesInSelectedCategory |> extractId)
+            else 
+                getArticlesInSites selectedSiteIds articles
     in
     articlesSelected
 

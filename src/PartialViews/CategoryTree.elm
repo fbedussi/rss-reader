@@ -14,7 +14,7 @@ import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
 import Time exposing (Time)
 import Html
-import Html.Styled.Lazy exposing (lazy2)
+import Html.Styled.Lazy exposing (lazy)
 
 renderCategory : Model -> Category -> Html.Html Msg
 renderCategory model category =
@@ -60,7 +60,7 @@ renderCategory model category =
                 []
                 [ class "category-sitesInCategory tabContentInner" ]
                 (sitesInCategory
-                    |> List.map (lazy2 renderSiteEntry model.selectedSiteId)
+                    |> List.map (lazy renderSiteEntry)
                 )
             ]
         ]
@@ -123,11 +123,11 @@ renderEditCategory category =
     ]
 
 
-renderSiteEntry : SelectedSiteId -> Site -> Html.Html Msg
-renderSiteEntry selectedSiteId site =
+renderSiteEntry : Site -> Html.Html Msg
+renderSiteEntry site =
     let
         selected =
-            isSelected selectedSiteId site.id
+            site.isSelected
     in
     toUnstyled <| li
         [ class "category-siteInCategory " ]

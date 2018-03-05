@@ -56,6 +56,7 @@ type alias Site =
     , rssLink : String
     , webLink : String
     , starred : Bool
+    , isSelected : Bool
     }
 
 
@@ -110,9 +111,8 @@ type alias Model =
     , sites : List Site
     , articles : List Article
     , selectedCategoryId : SelectedCategoryId
-    , selectedSiteId : SelectedSiteId
     , categoryToEditId : Maybe Id
-    , siteToEdit : Site
+    , siteToEditForm : Site
     , importData : String
     , searchTerm : String
     , keyboardNavigation : Bool
@@ -134,7 +134,6 @@ init =
       , sites = []
       , articles = []
       , selectedCategoryId = Nothing
-      , selectedSiteId = Nothing
       , categoryToEditId = Nothing
       , importData = ""
       , searchTerm = ""
@@ -147,7 +146,7 @@ init =
       , articlePreviewHeightInEm = 15
       , appData = { lastRefreshTime = 0, articlesPerPage = 15 }
       , touchData = (0.0, 0.0)
-      , siteToEdit = createEmptySite
+      , siteToEditForm = createEmptySite
       }
     , Cmd.none
     )
@@ -161,6 +160,7 @@ createEmptySite =
         ""
         ""
         ""
+        False
         False
 
 

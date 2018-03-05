@@ -15,7 +15,7 @@ mainContent : Model -> Html Msg
 mainContent model =
     let
         selectedArticles =
-            getSelectedArticles model.selectedCategoryId model.selectedSiteId model.sites model.articles
+            getSelectedArticles model.selectedCategoryId model.sites model.articles
 
         lastPage =
             List.length selectedArticles // model.appData.articlesPerPage

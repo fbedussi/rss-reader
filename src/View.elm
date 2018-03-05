@@ -58,7 +58,7 @@ view model =
             ]
         , PartialViews.UiKit.overlay (isSomePanelOpen "Panel" model.panelsState)
         , modal model.modal <| getModalAnimationClass <| getPanelState (toString PanelModal) model.panelsState
-        , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) (model.siteToEdit) model.categories
+        , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) model.siteToEditForm model.categories
         , importLayer <| getAnimationClassTopLayers <| getPanelState (toString PanelImport) model.panelsState
         , styled span
             [ position fixed
