@@ -2,14 +2,14 @@ module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
 import Css exposing (auto, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
-import Helpers exposing (extractId, getClass, getSitesInCategories  , isArticleInSites, isSelected)
+import Helpers exposing (extractId, getClass, getSitesInCategories, isArticleInSites, isSelected)
 import Html
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Html.Styled.Lazy exposing (lazy)
-import Models exposing (Article, Category, Id, Model, Msg(..), Selected, Site)
-import PanelsManager exposing (getPanelClass, getPanelState, PanelsState)
+import Models exposing (Article, Category, DeleteMsg(..), EditSiteMsg(..), EditCategoryMsg(..), Id, Model, Msg(..), Selected, Site)
+import PanelsManager exposing (PanelsState, getPanelClass, getPanelState)
 import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
@@ -17,8 +17,8 @@ import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, s
 import Time exposing (Time)
 
 
-renderCategory : (List Site, List Article, Time, PanelsState) -> Category -> Html.Html Msg
-renderCategory (sites, articles, lastRefreshTime, panelsState) category =
+renderCategory : ( List Site, List Article, Time, PanelsState ) -> Category -> Html.Html Msg
+renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
     let
         domId =
             "cat_" ++ toString category.id
@@ -33,7 +33,7 @@ renderCategory (sites, articles, lastRefreshTime, panelsState) category =
                 closeTab ("#" ++ domId)
 
         sitesInCategory =
-            getSitesInCategories [category.id] sites
+            getSitesInCategories [ category.id ] sites
 
         newArticlesInCategory =
             countNewArticlesInCategory sitesInCategory articles lastRefreshTime
@@ -98,7 +98,7 @@ renderCategoryName category newArticlesInCategory =
         ++ (if category.isSelected then
                 [ span
                     [ class "category-action" ]
-                    [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| EditCategoryId category.id ]
+                    [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| EditCategoryMsg <| EditCategory category.id ]
                     , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| ToggleDeleteActions category.id ]
                     ]
                 ]
@@ -119,10 +119,10 @@ renderEditCategory category =
             [ class "editCategoryName-input"
             , id <| "editCategoryName-" ++ toString category.id
             , value category.name
-            , onInput <| UpdateCategoryName category
+            , onInput <| EditCategoryMsg << UpdateCategoryName category
             ]
             []
-        , iconButton (checkIcon []) ( "ok", False ) [ onClick EndCategoryEditing ]
+        , iconButton (checkIcon []) ( "ok", False ) [ onClick <| EditCategoryMsg EndCategoryEditing ]
         ]
     ]
 
@@ -155,8 +155,8 @@ renderSiteEntry site =
                             [ styled span
                                 [ flexShrink (int 0) ]
                                 [ class "siteInCategory-actions button-group" ]
-                                [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| OpenEditSitePanel site ]
-                                , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| RequestDeleteSites [ site.id ] ]
+                                [ iconButtonNoStyle (editIcon [ fill theme.white ]) ( "edit", False ) [ onClick <| EditSiteMsg <| OpenEditSitePanel site ]
+                                , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| DeleteMsg <| RequestDeleteSites [ site.id ] ]
                                 ]
                             ]
                         else

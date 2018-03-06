@@ -1,12 +1,14 @@
 module Helpers exposing (..)
 
-import Models exposing (Msg, Article, Category, Id, Model, SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Html.Styled exposing (Attribute)
+import Html.Styled.Events exposing (keyCode, on)
+import Json.Decode as Json
+import Models exposing (Article, Category, Id, Model, Msg, Panel(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import PanelsManager exposing (PanelsState, closePanel, openPanel)
 import Process
 import Task
 import Time exposing (Time)
-import Html.Styled.Events exposing (keyCode, on)
-import Json.Decode as Json
-import Html.Styled exposing (Attribute)
+
 
 getSitesInCategories : List Id -> List Site -> List Site
 getSitesInCategories categoryIds sites =
@@ -16,7 +18,7 @@ getSitesInCategories categoryIds sites =
 isSiteInCategories : List Id -> Site -> Bool
 isSiteInCategories categoryIds site =
     site.categoriesId
-        |> List.any (\siteCategoryId -> List.member siteCategoryId categoryIds) 
+        |> List.any (\siteCategoryId -> List.member siteCategoryId categoryIds)
 
 
 isArticleInSites : List Site -> Article -> Bool
@@ -32,22 +34,21 @@ getSelectedArticles categories sites articles =
                 |> List.filter (\category -> category.isSelected)
 
         sitesInSelectedCategory =
-            if List.isEmpty selectedCategories
-            then
+            if List.isEmpty selectedCategories then
                 sites
             else
                 getSitesInCategories (extractId selectedCategories) sites
 
-        selectedSiteIds = sites
-                        |> List.filter (\site -> site.isSelected)
-                        |> extractId
-        
+        selectedSiteIds =
+            sites
+                |> List.filter (\site -> site.isSelected)
+                |> extractId
+
         articlesSelected =
-            if List.isEmpty selectedSiteIds
-            then 
+            if List.isEmpty selectedSiteIds then
                 articles
                     |> getArticlesInSites (sitesInSelectedCategory |> extractId)
-            else 
+            else
                 getArticlesInSites selectedSiteIds articles
     in
     articlesSelected
@@ -138,7 +139,7 @@ getArticleSite sites article =
 
 
 getSiteToEdit : Id -> List Site -> Maybe Site
-getSiteToEdit siteToEditId sites = 
+getSiteToEdit siteToEditId sites =
     sites |> List.filter (\site -> site.id == siteToEditId) |> List.head
 
 
@@ -155,5 +156,45 @@ onKeyDown tagger =
 
 
 sendMsg : Msg -> Cmd Msg
-sendMsg msg = 
-    Task.perform (\_ -> msg) (Task.succeed 0) 
+sendMsg msg =
+    Task.perform (\_ -> msg) (Task.succeed 0)
+
+
+closeModal : PanelsState -> PanelsState
+closeModal panelsState =
+    closePanel (toString PanelModal) panelsState
+
+
+openModal : PanelsState -> PanelsState
+openModal panelsState =
+    openPanel (toString PanelModal) panelsState
+
+
+getDataToSaveInDb : Model -> ( List Category, List Site, List Article )
+getDataToSaveInDb model =
+    ( model.categories, model.sites, model.articles |> List.filter (\article -> article.starred) )
+
+
+dateDescending : Article -> Article -> Order
+dateDescending article1 article2 =
+    case compare article1.date article2.date of
+        LT ->
+            GT
+
+        EQ ->
+            EQ
+
+        GT ->
+            LT
+
+
+toggleSelected : List { c | id : b, isSelected : a } -> b -> List { c | id : b, isSelected : Bool }
+toggleSelected items id =
+    items
+        |> List.map
+            (\item ->
+                if item.id == id then
+                    { item | isSelected = True }
+                else
+                    { item | isSelected = False }
+            )

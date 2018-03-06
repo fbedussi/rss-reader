@@ -1,3 +1,2 @@
 - login/register
 - logo
-- model rework

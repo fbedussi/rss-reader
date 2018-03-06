@@ -123,7 +123,7 @@ type alias Model =
     , currentPage : Int
     , options : Options
     , lastRefreshTime : Time
-    , touchData : (Float, Float)
+    , touchData : ( Float, Float )
     }
 
 
@@ -141,9 +141,9 @@ init =
       , modal = { text = "", action = NoOp }
       , panelsState = initialPanelsState
       , currentPage = 1
-      , options = {articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
+      , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
       , lastRefreshTime = 0
-      , touchData = (0.0, 0.0)
+      , touchData = ( 0.0, 0.0 )
       }
     , Cmd.none
     )
@@ -164,46 +164,61 @@ createEmptySite =
 type Msg
     = SetMouseNavigation
     | VerifyKeyboardNavigation KeyCode
-    | ToggleSelectedCategory Id
     | ToggleSelectSite Id
     | ToggleDeleteActions Id
-    | StoreImportData String
+    | ToggleExcerpt Id String Bool
     | ExecuteImport
-    | RequestDeleteCategories (List Id)
+    | StoreImportData String
+    | RefreshFeeds
+    | GetArticles (Result String (List Article))
+    | ToggleSelectedCategory Id
+    | AddNewCategory
+    | AddNewSite
+    | SaveArticle Article
+    | TogglePanel Panel
+    | CloseAllPanels
+    | UpdateSearch String
+    | ChangePage Int
+    | ChangeNumberOfArticlesPerPage Int
+    | RegisterTime Time
+    | OnTouchStart Touch
+    | ScrollToTop
+    | EditCategoryMsg EditCategoryMsg
+    | EditSiteMsg EditSiteMsg
+    | DeleteMsg DeleteMsg
+    | ErrorBoxMsg ErrorBoxMsg
+    | Outside InfoForElm
+    | NoOp
+
+
+type EditCategoryMsg
+    = EditCategory Id
+    | UpdateCategoryName Category String
+    | EndCategoryEditing
+
+
+type ErrorBoxMsg
+    = OpenErrorMsg String
+    | RequestRemoveErrorMsg String
+    | RemoveErrorMsg String
+    | LogErr String
+
+
+type DeleteMsg
+    = RequestDeleteCategories (List Id)
     | DeleteCategories (List Id)
     | RequestDeleteSites (List Id)
     | DeleteSites (List Id)
     | RequestDeleteCategoryAndSites (List Id) (List Id)
     | DeleteCategoryAndSites (List Id) (List Id)
-    | EditCategoryId Id
-    | UpdateCategoryName Category String
-    | EndCategoryEditing
-    | AddNewCategory
-    | AddNewSite
-    | FocusResult (Result Error ())
-    | OpenEditSitePanel Site
+    | DeleteArticles (List Id)
+
+
+type EditSiteMsg
+    = OpenEditSitePanel Site
     | CloseEditSitePanel
     | UpdateSite Site
     | SaveSite
-    | GetArticles (Result String (List Article))
-    | DeleteArticles (List Id)
-    | SaveArticle Article
-    | Outside InfoForElm
-    | OpenErrorMsg String
-    | LogErr String
-    | RefreshFeeds
-    | TogglePanel Panel
-    | RequestRemoveErrorMsg String
-    | RemoveErrorMsg String
-    | UpdateSearch String
-    | CloseAllPanels
-    | ChangePage Int
-    | ChangeNumberOfArticlesPerPage Int
-    | RegisterTime Time
-    | OnTouchStart Touch
-    | ToggleExcerpt Id String Bool
-    | ScrollToTop
-    | NoOp
 
 
 type InfoForOutside

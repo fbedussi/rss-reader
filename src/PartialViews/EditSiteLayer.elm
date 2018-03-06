@@ -1,13 +1,14 @@
 module PartialViews.EditSiteLayer exposing (editSiteLayer)
 
-import Css exposing (marginLeft, displayFlex, flex, int, justifyContent, spaceBetween)
-import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, span, styled, text, ul, toUnstyled)
+import Css exposing (displayFlex, flex, int, justifyContent, marginLeft, spaceBetween)
+import Html.Styled exposing (Html, a, article, aside, button, div, form, h2, label, li, main_, option, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, checked, class, disabled, for, href, id, selected, src, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
-import Models exposing (Article, Category, Id, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Models exposing (Article, Category, DeleteMsg(..), EditSiteMsg(..), Id, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
-import PartialViews.UiKit exposing (btn, input, inputRow, layerInner, layerTop, select, checkbox,secondaryBtn)
+import PartialViews.UiKit exposing (btn, checkbox, input, inputRow, layerInner, layerTop, secondaryBtn, select)
+
 
 editSiteLayer : String -> Site -> List Category -> Html Msg
 editSiteLayer animationClass site categories =
@@ -29,19 +30,19 @@ renderEditSiteForm site categories =
                 [ class "input is-disabled" ]
                 [ toString site.id |> text ]
             ]
-        , inputRowText "siteNameInput" "Name" site.name (\name -> UpdateSite { site | name = name })
-        , inputRowText "rssLinkInput" "Rss link" site.rssLink (\rssLink -> UpdateSite { site | rssLink = rssLink })
-        , inputRowText "webLinkInput" "Web link" site.webLink (\webLink -> UpdateSite { site | webLink = webLink })
+        , inputRowText "siteNameInput" "Name" site.name (\name -> EditSiteMsg <| UpdateSite { site | name = name })
+        , inputRowText "rssLinkInput" "Rss link" site.rssLink (\rssLink -> EditSiteMsg <| UpdateSite { site | rssLink = rssLink })
+        , inputRowText "webLinkInput" "Web link" site.webLink (\webLink -> EditSiteMsg <| UpdateSite { site | webLink = webLink })
         , inputRow
             []
             [ styled span
-                [ flex (int 1) ]    
-                [ class "fakeCheckboxLabel"]
-                [text "Starred"]
+                [ flex (int 1) ]
+                [ class "fakeCheckboxLabel" ]
+                [ text "Starred" ]
             , styled span
-                [flex (int 5)]
+                [ flex (int 5) ]
                 []
-                [checkbox "starredCheckbox" site.starred (onClick <| UpdateSite { site | starred = not site.starred })]
+                [ checkbox "starredCheckbox" site.starred (onClick <| EditSiteMsg <| UpdateSite { site | starred = not site.starred }) ]
             ]
         , inputRow
             []
@@ -49,7 +50,7 @@ renderEditSiteForm site categories =
             , styled select
                 [ flex (int 5) ]
                 [ class "siteCategorySelect"
-                , onInput (\categoryId -> UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
+                , onInput (\categoryId -> EditSiteMsg <| UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
                 , id "selectCategory"
                 ]
                 (option
@@ -73,15 +74,15 @@ renderEditSiteForm site categories =
             []
             [ span
                 []
-                [btn
-                    [ onClick SaveSite ]
+                [ btn
+                    [ onClick <| EditSiteMsg SaveSite ]
                     [ text "save" ]
                 , styled secondaryBtn
-                    [marginLeft (Css.rem 0.5)]
-                    [ onClick CloseEditSitePanel ]
+                    [ marginLeft (Css.rem 0.5) ]
+                    [ onClick <| EditSiteMsg CloseEditSitePanel ]
                     [ text "close" ]
-                    ]
-            , iconButton (deleteIcon []) ( "delete", True ) [ onClick (RequestDeleteSites [ site.id ]) ]
+                ]
+            , iconButton (deleteIcon []) ( "delete", True ) [ onClick <| DeleteMsg <| RequestDeleteSites [ site.id ] ]
             ]
         ]
 

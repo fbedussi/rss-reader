@@ -11,7 +11,7 @@ import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, 
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, target, type_)
 import Html.Styled.Events exposing (onClick)
 import Json.Encode
-import Models exposing (Article, Category, Model, Msg(..), Site)
+import Models exposing (Article, Category, Model, Msg(..), Site, DeleteMsg(..))
 import PartialViews.UiKit exposing (article, articleTitle, btn, clear, standardPadding, starBtn, theme, transition)
 
 
@@ -59,7 +59,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                             if checked then
                                 SaveArticle articleToRender
                             else
-                                DeleteArticles [ articleToRender.id ]
+                                DeleteArticles [ articleToRender.id ] |> DeleteMsg
                         )
                     ]
                 , styled div

@@ -7,7 +7,7 @@ import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_)
 import Html.Styled.Events exposing (onCheck, onClick)
-import Models exposing (Msg(..), Selected)
+import Models exposing (Msg(..), Selected, ErrorBoxMsg(..))
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (starIcon)
 
@@ -512,7 +512,7 @@ errorMessage animationClass errorMsg =
             [ span
                 [ class "errorMsg-text" ]
                 [ text errorMsg ]
-            , closeBtn (RequestRemoveErrorMsg errorMsg)
+            , closeBtn <| ErrorBoxMsg <| RequestRemoveErrorMsg errorMsg
             ]
         ]
 

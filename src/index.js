@@ -3,9 +3,9 @@ import { Main } from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
 import authInterface from './auth/authFacade';
 import dbInterface from './db/dbFacade';
-import {toggleExcerpt, initReadMoreButtons} from './readMoreButton';
-import debounce from './debounce';
-import initBackToTopButton from './backToTopButton';
+import {toggleExcerpt, initReadMoreButtons} from './js/readMoreButton';
+import debounce from './js/debounce';
+import initBackToTopButton from './js/backToTopButton';
 
 window.authInterface = authInterface;
 window.dbInterface = dbInterface;
