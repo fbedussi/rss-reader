@@ -337,11 +337,11 @@ badge =
         [ display inlineBlock
         , backgroundColor theme.colorAccent
         , color theme.white
-        , minWidth (Css.rem 1.5)
-        , height (Css.rem 1.5)
+        , minWidth (Css.rem 2)
+        , height (Css.rem 2)
         , borderRadius (pct 50)
         , textAlign center
-        , padding (Css.rem 0.25)
+        , padding (Css.rem 0.35)
         , verticalAlign middle
         ]
 

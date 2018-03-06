@@ -1,13 +1,14 @@
 module PartialViews.SearchResult exposing (searchResult)
 
-import Html.Styled exposing (Html, div, input, ul, text, styled, fromUnstyled)
+import Html.Styled exposing (Html, div, fromUnstyled, input, styled, text, ul)
 import Html.Styled.Attributes exposing (class)
-import Models exposing (SelectedSiteId, Site, Msg)
+import Models exposing (Article, Msg, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderSiteEntry)
 import PartialViews.UiKit exposing (sidebarBoxStyle)
+import Time exposing (Time)
 
-searchResult : List Site -> String -> Html Msg
-searchResult sites searchTerm =
+searchResult : List Site -> List Article -> Time -> String -> Html Msg
+searchResult sites articles lastRefreshTime searchTerm =
     let
         selectedSites =
             sites |> List.filter (\site -> not (String.isEmpty searchTerm) && String.contains (String.toLower searchTerm) (String.toLower site.name))
@@ -16,11 +17,16 @@ searchResult sites searchTerm =
             String.length searchTerm > 0
     in
     styled ul
-        (if searchInProgress then [sidebarBoxStyle] else [])
+        (if searchInProgress then
+            [ sidebarBoxStyle ]
+         else
+            []
+        )
         [ class "searchResult" ]
-        (if List.length selectedSites > 0
-        then selectedSites |> List.map (renderSiteEntry >> fromUnstyled)
-        else if searchInProgress
-        then [ text "no sites found"]
-        else []
-        ) 
+        (if List.length selectedSites > 0 then
+            selectedSites |> List.map (renderSiteEntry articles lastRefreshTime >> fromUnstyled)
+         else if searchInProgress then
+            [ text "no sites found" ]
+         else
+            []
+        )

@@ -4,16 +4,18 @@ import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Html
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
-import Html.Styled.Attributes exposing (fromUnstyled, attribute, class, disabled, for, href, id, placeholder, src, type_, value)
+import Html.Styled.Attributes exposing (attribute, class, disabled, for, fromUnstyled, href, id, placeholder, src, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Html.Styled.Lazy exposing (lazy, lazy2)
+import Html.Styled.Lazy exposing (lazy, lazy2, lazy3)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
-import PartialViews.Icons exposing (plusIcon, cogIcon)
+import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
-import TouchEvents exposing (onTouchEvent, TouchEvent(..), getDirectionX, Direction(..))
+import Time exposing (Time)
+import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
+
 
 sidebar : Model -> Html Msg
 sidebar model =
@@ -47,20 +49,21 @@ sidebar model =
             , transforms []
             ]
         ]
-        [ class "sidebar" 
+        [ class "sidebar"
         , fromUnstyled <| onTouchEvent TouchStart OnTouchStart
-        , fromUnstyled <| onTouchEvent TouchEnd (\touchEvent -> 
-            if (Tuple.first model.touchData) - touchEvent.clientX > 100
-            then
-                TogglePanel PanelMenu
-            else 
-                NoOp
-        )
+        , fromUnstyled <|
+            onTouchEvent TouchEnd
+                (\touchEvent ->
+                    if Tuple.first model.touchData - touchEvent.clientX > 100 then
+                        TogglePanel PanelMenu
+                    else
+                        NoOp
+                )
         ]
         [ renderSidebarToolbar
         , renderSearchBox model.searchTerm
-        , searchResult model.sites model.searchTerm
-        , lazy2 renderSitesWithoutCategory searchInProgress sitesWithoutCategory
+        , searchResult model.sites model.articles model.lastRefreshTime model.searchTerm
+        , lazy renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, model.articles, model.lastRefreshTime )
         , lazy2 renderCategories searchInProgress model
         ]
 
@@ -75,7 +78,7 @@ renderSidebarToolbar =
         [ class "sidebar-toolbar" ]
         [ iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]
         , iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ]
-        , iconButtonNoStyle (cogIcon [fill theme.colorPrimary]) ( "settings", False ) [ onClick <| TogglePanel PanelSettings ]
+        , iconButtonNoStyle (cogIcon [ fill theme.colorPrimary ]) ( "settings", False ) [ onClick <| TogglePanel PanelSettings ]
         ]
 
 
@@ -103,28 +106,30 @@ renderSearchBox searchTerm =
         ]
 
 
-renderSitesWithoutCategory : Bool -> List Site -> Html.Html Msg
-renderSitesWithoutCategory searchInProgress sitesWithoutCategory =
-    toUnstyled <| styled ul
-        [ sidebarBoxStyle ]
-        [ class "sitesWithoutCategory" ]
-        (if searchInProgress then
-            []
-         else
-            sitesWithoutCategory
-                |> List.map (lazy renderSiteEntry)
-        )
+renderSitesWithoutCategory : ( Bool, List Site, List Article, Time ) -> Html.Html Msg
+renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, articles, lastRefreshTime ) =
+    toUnstyled <|
+        styled ul
+            [ sidebarBoxStyle ]
+            [ class "sitesWithoutCategory" ]
+            (if searchInProgress then
+                []
+             else
+                sitesWithoutCategory
+                    |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
+            )
 
 
 renderCategories : Bool -> Model -> Html.Html Msg
 renderCategories searchInProgress model =
-    toUnstyled <| styled ul
-        [ sidebarBoxStyle ]
-        [ class "categories accordion"
-        ]
-        (if searchInProgress then
-            []
-         else
-            model.categories
-                |> List.map (lazy2 renderCategory (model.sites, model.articles, model.lastRefreshTime, model.panelsState))
-        )
+    toUnstyled <|
+        styled ul
+            [ sidebarBoxStyle ]
+            [ class "categories accordion"
+            ]
+            (if searchInProgress then
+                []
+             else
+                model.categories
+                    |> List.map (lazy2 renderCategory ( model.sites, model.articles, model.lastRefreshTime, model.panelsState ))
+            )

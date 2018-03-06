@@ -7,8 +7,8 @@ import Html
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Html.Styled.Lazy exposing (lazy)
-import Models exposing (Article, Category, DeleteMsg(..), EditSiteMsg(..), EditCategoryMsg(..), Id, Model, Msg(..), Selected, Site)
+import Html.Styled.Lazy exposing (lazy, lazy3)
+import Models exposing (Article, Category, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Id, Model, Msg(..), Selected, Site)
 import PanelsManager exposing (PanelsState, getPanelClass, getPanelState)
 import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
@@ -64,7 +64,7 @@ renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
                     []
                     [ class "category-sitesInCategory tabContentInner" ]
                     (sitesInCategory
-                        |> List.map (lazy renderSiteEntry)
+                        |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
                     )
                 ]
             ]
@@ -127,11 +127,14 @@ renderEditCategory category =
     ]
 
 
-renderSiteEntry : Site -> Html.Html Msg
-renderSiteEntry site =
+renderSiteEntry : List Article -> Time -> Site -> Html.Html Msg
+renderSiteEntry articles lastRefreshTime site =
     let
         selected =
             site.isSelected
+
+        newArticlesInSite =
+            countNewArticlesInSite site.id articles lastRefreshTime
     in
     toUnstyled <|
         li
@@ -145,7 +148,13 @@ renderSiteEntry site =
                                 ""
                            )
                 ]
-                ([ sidebarSelectionBtn
+                ([ badge
+                    [ class "site-numberOfArticles" ]
+                    [ newArticlesInSite
+                        |> toString
+                        |> text
+                    ]
+                 , sidebarSelectionBtn
                     [ class "siteInCategoryBtn"
                     , onClick <| ToggleSelectSite site.id
                     ]
@@ -168,9 +177,12 @@ renderSiteEntry site =
 
 countNewArticlesInCategory : List Site -> List Article -> Time -> Int
 countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
-    let
-        articlesInCategory =
-            articles
-                |> List.filter (\article -> (article.date > lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
-    in
-    List.length articlesInCategory
+    articles
+        |> List.filter (\article -> (article.date > lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
+        |> List.length
+
+countNewArticlesInSite : Id -> List Article -> Time -> Int
+countNewArticlesInSite siteId articles lastRefreshTime =
+    articles
+        |> List.filter (\article -> (article.date > lastRefreshTime) && (article.siteId == siteId))
+        |> List.length
