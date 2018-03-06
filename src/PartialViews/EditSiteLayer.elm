@@ -7,12 +7,12 @@ import Html.Styled.Events exposing (on, onClick, onInput, targetChecked)
 import Models exposing (Article, Category, DeleteMsg(..), EditSiteMsg(..), Id, Model, Msg(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (deleteIcon)
-import PartialViews.UiKit exposing (btn, checkbox, input, inputRow, layerInner, layerTop, secondaryBtn, select)
+import PartialViews.UiKit exposing (btn, checkbox, input, inputRow, inputRowLabel, inputRowText, layerInner, layerTop, secondaryBtn, select)
 
 
 editSiteLayer : String -> Site -> List Category -> Html Msg
 editSiteLayer animationClass site categories =
-    layerTop
+    layerTop (EditSiteMsg CloseEditSitePanel)
         [ class <| "editSiteLayer" ++ animationClass ]
         [ renderEditSiteForm site categories ]
 
@@ -77,10 +77,6 @@ renderEditSiteForm site categories =
                 [ btn
                     [ onClick <| EditSiteMsg SaveSite ]
                     [ text "save" ]
-                , styled secondaryBtn
-                    [ marginLeft (Css.rem 0.5) ]
-                    [ onClick <| EditSiteMsg CloseEditSitePanel ]
-                    [ text "close" ]
                 ]
             , iconButton (deleteIcon []) ( "delete", True ) [ onClick <| DeleteMsg <| RequestDeleteSites [ site.id ] ]
             ]
@@ -109,30 +105,3 @@ convertCategoryIdToInt string =
 
         Err err ->
             []
-
-
-inputRowLabel : String -> String -> Html msg
-inputRowLabel inputId labelText =
-    styled label
-        [ flex (int 1) ]
-        [ class "inputLabel"
-        , for inputId
-        ]
-        [ text (labelText ++ " ") ]
-
-
-inputRowText : String -> String -> String -> (String -> msg) -> Html msg
-inputRowText idText labelText val inputHandler =
-    inputRow
-        []
-        [ inputRowLabel idText labelText
-        , styled input
-            [ flex (int 5) ]
-            [ class "input"
-            , id idText
-            , value val
-            , onInput inputHandler
-            , type_ "text"
-            ]
-            []
-        ]

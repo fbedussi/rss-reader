@@ -13,6 +13,7 @@ import PartialViews.EditSiteLayer exposing (editSiteLayer)
 import PartialViews.ErrorContainer exposing (errorContainer)
 import PartialViews.Header exposing (siteHeader)
 import PartialViews.ImportLayer exposing (importLayer)
+import PartialViews.SettingsLayer exposing (settingsLayer)
 import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Modal exposing (modal)
 import PartialViews.Sidebar exposing (sidebar)
@@ -59,6 +60,7 @@ view model =
         , modal model.modal <| getModalAnimationClass <| getPanelState (toString PanelModal) model.panelsState
         , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) model.siteToEditForm model.categories
         , importLayer <| getAnimationClassTopLayers <| getPanelState (toString PanelImport) model.panelsState
+        , settingsLayer model.options <| getAnimationClassTopLayers <| getPanelState (toString PanelSettings) model.panelsState
         , styled span
             [ position fixed
             , right theme.distanceS

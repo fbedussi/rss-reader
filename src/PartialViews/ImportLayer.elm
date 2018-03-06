@@ -8,7 +8,7 @@ import PartialViews.UiKit exposing (layerTop, btn, secondaryBtn)
 
 importLayer : String -> Html Msg
 importLayer animationClass =
-    layerTop
+    layerTop (TogglePanel PanelImport)
         [ class <| "importLayer" ++ animationClass
         ]
         [ div
@@ -30,11 +30,6 @@ importLayer animationClass =
                         , onClick ExecuteImport
                         ]
                         [ text "import" ]
-                    , secondaryBtn
-                        [ class "button"
-                        , onClick <| TogglePanel PanelImport
-                        ]
-                        [ text "close" ]
                     ]
                 ]
             ]

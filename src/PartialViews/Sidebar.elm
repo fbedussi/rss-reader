@@ -9,8 +9,8 @@ import Html.Styled.Events exposing (onClick, onInput)
 import Html.Styled.Lazy exposing (lazy, lazy2)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
-import PartialViews.IconButton exposing (iconButton)
-import PartialViews.Icons exposing (plusIcon)
+import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
+import PartialViews.Icons exposing (plusIcon, cogIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
 import TouchEvents exposing (onTouchEvent, TouchEvent(..), getDirectionX, Direction(..))
@@ -70,13 +70,12 @@ renderSidebarToolbar =
     styled div
         [ padding theme.distanceXXS
         , displayFlex
+        , justifyContent spaceBetween
         ]
         [ class "sidebar-toolbar" ]
-        [ styled span
-            [marginRight (Css.em 0.5)]
-            []
-            [iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]]
+        [ iconButton (plusIcon []) ( "new category", True ) [ onClick AddNewCategory ]
         , iconButton (plusIcon []) ( "new site", True ) [ onClick AddNewSite ]
+        , iconButtonNoStyle (cogIcon [fill theme.colorPrimary]) ( "settings", False ) [ onClick <| TogglePanel PanelSettings ]
         ]
 
 

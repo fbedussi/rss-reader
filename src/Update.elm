@@ -67,11 +67,15 @@ update msg model =
 
                 updatedPanelsState =
                     if isOpen then
-                        closePanel (toString panel) model.panelsState
+                        closePanel (toString panel) model.panelsState 
                     else
                         openPanel (toString panel) model.panelsState
             in
             ( { model | panelsState = updatedPanelsState }, Cmd.none )
+
+        OpenImportPanel ->
+            ( { model | panelsState = model.panelsState |> closePanel (toString PanelSettings) |> openPanel (toString PanelImport) }, Cmd.none )
+            
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -206,6 +210,16 @@ update msg model =
               }
             , SaveOptions updatedOptions |> sendInfoOutside
             )
+
+        ChangePreviewHeight rows ->
+            let
+                options = model.options 
+
+
+                updatedOptions =
+                    {options | articlePreviewHeightInEm = String.toFloat rows |> Result.withDefault options.articlePreviewHeightInEm} 
+            in
+            ({model | options = updatedOptions }, Cmd.none )
 
         OnTouchStart touchEvent ->
             ( { model | touchData = ( touchEvent.clientX, touchEvent.clientY ) }, Cmd.none )

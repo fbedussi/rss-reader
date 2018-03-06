@@ -106,6 +106,7 @@ type Panel
     | PanelImport
     | PanelModal
     | PanelMenu
+    | PanelSettings
 
 
 type alias Model =
@@ -176,10 +177,12 @@ type Msg
     | AddNewSite
     | SaveArticle Article
     | TogglePanel Panel
+    | OpenImportPanel
     | CloseAllPanels
     | UpdateSearch String
     | ChangePage Int
     | ChangeNumberOfArticlesPerPage Int
+    | ChangePreviewHeight String
     | RegisterTime Time
     | OnTouchStart Touch
     | ScrollToTop

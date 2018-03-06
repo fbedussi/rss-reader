@@ -5,11 +5,13 @@ import Css exposing (..)
 import Css.Foreign exposing (descendants, selector)
 import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_)
-import Html.Styled.Events exposing (onCheck, onClick)
-import Models exposing (Msg(..), Selected, ErrorBoxMsg(..))
+import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_, value)
+import Html.Styled.Events exposing (onCheck, onClick, onInput)
+import Models exposing (ErrorBoxMsg(..), Msg(..), Panel, Selected)
 import PanelsManager exposing (getPanelClass)
-import PartialViews.Icons exposing (starIcon)
+import PartialViews.Icons exposing (closeIcon, starIcon)
+import Css.Media exposing (only, screen, withMedia)
+
 
 
 inputHeightInRem : Float
@@ -355,8 +357,8 @@ layerStyle =
         ]
 
 
-layerTop : List (Attribute msg) -> List (Html msg) -> Html msg
-layerTop =
+layerTop : msg ->  List (Attribute msg) -> List (Html msg) -> Html msg
+layerTop closer attributes children =
     styled div
         [ layerStyle
         , top zero
@@ -364,6 +366,25 @@ layerTop =
         , width (pct 100)
         , transforms [ translateY (pct -100) ]
         ]
+        attributes
+        ([ styled div
+                [ textAlign right
+                , marginBottom theme.distanceXS
+                , color theme.colorPrimary
+                ]
+                [ class "closeButtonWrapper" ]
+                [ btnNoStyle
+                    [ onClick closer ]
+                    [ closeIcon []
+                    , styled span
+                        [ visuallyHiddenStyle ]
+                        []
+                        [ text "settings" ]
+                    ]
+                ]
+            ] ++ children
+        )
+            
 
 
 inputRow : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -371,11 +392,46 @@ inputRow attributes children =
     styled div
         [ marginBottom (Css.rem 0.5)
         , displayFlex
-        , alignItems center
-        , height theme.inputHeight
+        , flexDirection column
+        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            [ alignItems center
+            , flexDirection row
+            , height theme.inputHeight
+            ]
         ]
         ([ class "inputRow" ] ++ attributes)
         children
+
+
+inputRowLabel : String -> String -> Html msg
+inputRowLabel inputId labelText =
+    styled label
+        [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            [flex (int 1) ]
+        ]
+        [ class "inputLabel"
+        , for inputId
+        ]
+        [ text (labelText ++ " ") ]
+
+
+inputRowText : String -> String -> String -> (String -> msg) -> Html msg
+inputRowText idText labelText val inputHandler =
+    inputRow
+        []
+        [ inputRowLabel idText labelText
+        , styled input
+            [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                [flex (int 5) ]
+            ]
+            [ class "input"
+            , id idText
+            , value val
+            , onInput inputHandler
+            , type_ "text"
+            ]
+            []
+        ]
 
 
 layerInner : List (Attribute msg) -> List (Html msg) -> Html msg
