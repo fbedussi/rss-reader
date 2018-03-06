@@ -230,6 +230,9 @@ update msg model =
         ErrorBoxMsg msg ->
             handleErrorBoxMsgs model msg
 
+        SignOut ->
+            (model, SignOutViaJs |> sendInfoOutside)
+
         NoOp ->
             ( model, Cmd.none )
 

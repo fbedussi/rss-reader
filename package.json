@@ -35,6 +35,7 @@
     }
   },
   "dependencies": {
-    "firebase": "^4.9.0"
+    "firebase": "^4.9.0",
+    "firebaseui": "^2.6.2"
   }
 }

@@ -94,6 +94,10 @@ sendInfoOutside info =
 
         ScrollToTopViaJs ->
             infoForOutside { tag = "scrollToTop", data = null }
+
+        SignOutViaJs ->
+            infoForOutside { tag = "signOut", data = null }
+        
             
                         
 

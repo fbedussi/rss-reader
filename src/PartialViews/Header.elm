@@ -73,5 +73,6 @@ siteHeader =
                 [ display inlineBlock ]
             ]
             []
-            [ iconButton (importIcon []) ( "import", True ) [ class "warning", onClick <| TogglePanel PanelImport ] ]
+            [ iconButton (importIcon []) ( "import", True ) [ onClick <| TogglePanel PanelImport ] ]
+        , iconButton (importIcon []) ( "sign out", True ) [ onClick SignOut ]
         ]

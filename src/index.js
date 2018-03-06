@@ -1,234 +1,46 @@
 import './style.css';
 import { Main } from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
+import firebase from './db/services/firebaseInit';
+import * as firebaseui from 'firebaseui';
 import authInterface from './auth/authFacade';
 import dbInterface from './db/dbFacade';
-import {toggleExcerpt, initReadMoreButtons} from './js/readMoreButton';
-import debounce from './js/debounce';
-import initBackToTopButton from './js/backToTopButton';
+import startApp from './js/elmInteroperability';
 
-window.authInterface = authInterface;
+
+// window.authInterface = authInterface;
 window.dbInterface = dbInterface;
-
-var app = Main.embed(document.getElementById('root'));
 
 registerServiceWorker();
 
-initBackToTopButton();
+var uiConfig = {
+    signInOptions: [
+        // Leave the lines as is for the providers you want to offer your users.
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    ],
+    // Terms of service url.
+    tosUrl: '<your-tos-url>'
+};
 
-app.ports.infoForElm.send({
-    tag: 'loginResult',
-    data: '7woRFDFpHZUehjOSl0IzHaWkBV82'
-})
-
-function convertObjToArray(initialArray = []) {
-    const resultArray = initialArray.map((obj) => {
-        const keys = Object.keys(obj)
-
-        if (keys.indexOf('id') !== -1) {
-            return obj;
-        } 
-        return keys.reduce((acc, key) => obj[key], {});    
+function initLogin() {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            document.querySelector('#firebaseui-auth-container').remove();
+            // User is signed in.
+            var app = Main.embed(document.getElementById('root'));
+            startApp(app, user.uid);
+        } else {
+            // User is signed out.
+            // Initialize the FirebaseUI Widget using Firebase.
+            var ui = new firebaseui.auth.AuthUI(firebase.auth());
+            // The start method will wait until the DOM is loaded.
+            ui.start('#firebaseui-auth-container', uiConfig);
+        }
+    }, function (error) {
+        console.log(error);
     });
-    return resultArray
-}
+};
 
-function addContent(storeName, content) {
-    dbInterface.create({storeName, content})
-        // .then((result) => {
-        //     console.log(result);
-        // })
-        .catch((error) => {
-            console.log(error);
-            app.ports.infoForElm.send({
-                tag: 'error',
-                data: error
-            })
-        })
-    ;
-}
-
-function saveStore(storeName, content) {
-    dbInterface.replaceAll({storeName, content})
-        .catch((error) => {
-            console.log(error);
-            app.ports.infoForElm.send({
-                tag: 'error',
-                data: error
-            })
-        })
-    ;
-}
-
-function batchDelete(storeName, idList) {
-    const deleteRequests = idList.map(contentId =>dbInterface.delete({storeName, contentId}));
-
-    Promise.all(deleteRequests)
-        // .then((result) => {
-        //     console.log(result);
-        // })
-        .catch((error) => {
-            console.log(error);
-            app.ports.infoForElm.send({
-                tag: 'error',
-                data: error
-            })
-        })
-    ;
-}
-
-function updateContent(storeName, content) {
-    dbInterface.update({storeName, content})
-        .then((result) => {
-            //console.log(result);
-        })
-        .catch((error) => {
-            console.log(error);
-            app.ports.infoForElm.send({
-                tag: 'error',
-                data: error
-            })
-        })
-    ;
-}
-
-function watchForArticleChange(){
-    const mainContent = document.querySelector('.mainContent');
-    const config = { childList: true, subtree: true };
-    const observer = new MutationObserver(debounce(initReadMoreButtons, 50));
-
-    observer.observe(mainContent, config);
-
-    window.addEventListener('resize', debounce(initReadMoreButtons, 50));
-}
-
-app.ports.infoForOutside.subscribe(function (cmd) {
-    if (!cmd.tag || !cmd.tag.length) {
-        return;
-    }
-
-    var payload = cmd.data;
-    switch (cmd.tag) {
-        case 'login':
-            authInterface.logIn(payload)
-                .then((user) => {
-                    app.ports.infoForElm.send({
-                        tag: 'loginResult',
-                        data: user.uid
-                    })
-                })
-                .catch((error) => {
-                    app.ports.infoForElm.send({
-                        tag: 'error',
-                        data: error
-                    })
-                })
-            ;
-            break;
-        
-        case 'openDb':
-            dbInterface.openDb(payload)
-                .then((result, error) => {
-                    app.ports.infoForElm.send({
-                        tag: 'dbOpened',
-                        data: result
-                    })
-                })
-                .catch((error) => {
-                    app.ports.infoForElm.send({
-                        tag: 'error',
-                        data: error
-                    })
-                })
-            ;
-            break;
-
-        case 'readAllData':
-            const readRequests = [
-                dbInterface.readAll({storeName: 'categories'}),
-                dbInterface.readAll({storeName: 'sites'}),
-                dbInterface.readAll({storeName: 'articles'}),
-                dbInterface.readAll({storeName: 'options'}),
-                dbInterface.readAll({storeName: 'appData'}),
-            ]
-
-            Promise.all(readRequests)
-                .then((result, error) => {
-                    var resultToSend = {
-                        categories: convertObjToArray(result[0]),
-                        sites: convertObjToArray(result[1]).map((site) => Object.assign({categoriesId: []}, site)), //if the array is empty firebase strip it
-                        articles: convertObjToArray(result[2]),
-                        options: result[3][0],
-                        lastRefreshedTime : result[4][0].lastRefreshedTime
-                    };
-                    app.ports.infoForElm.send({
-                        tag: 'allData',
-                        data: resultToSend
-                    })
-                })
-                .catch((error) => {
-                    app.ports.infoForElm.send({
-                        tag: 'error',
-                        data: error
-                    })
-                })
-            ;
-            break;
-
-        case 'addCategory':
-            addContent('categories', payload);
-            break;
-
-        case 'deleteCategories':
-            batchDelete('categories', payload);
-            break;
-
-        case 'updateCategory':
-            updateContent('categories', payload);
-            break;
-
-        case 'addSite':
-            addContent('sites', payload);
-            break;
-        
-        case 'deleteSites':
-            batchDelete('sites', payload);
-            break;
-
-        case 'updateSite':
-            updateContent('sites', payload);
-            break;
-        
-        case 'addArticle':
-            addContent('articles', payload);
-            break;
-
-        case 'deleteArticles':
-            batchDelete('articles', payload);
-            break;
-
-        case 'saveAllData':
-            Object.keys(payload).forEach((key) => saveStore(key, payload[key]));
-            break;
-
-        case 'saveOptions':
-            saveStore('options', payload)
-            break;
-
-        case 'saveLastRefreshedTime':
-            saveStore('lastRefreshedTime', payload)
-            break;
-
-        case 'toggleExcerpt':
-            toggleExcerpt(payload);
-            break;
-
-        case 'initReadMoreButtons':
-            watchForArticleChange();
-            break;
-
-        case 'scrollToTop':
-            document.scrollingElement.scrollTop = 0;
-            break;
-    }
+window.addEventListener('load', function () {
+    initLogin()
 });

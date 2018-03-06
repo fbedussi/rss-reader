@@ -183,6 +183,7 @@ type Msg
     | RegisterTime Time
     | OnTouchStart Touch
     | ScrollToTop
+    | SignOut
     | EditCategoryMsg EditCategoryMsg
     | EditSiteMsg EditSiteMsg
     | DeleteMsg DeleteMsg
@@ -239,6 +240,7 @@ type InfoForOutside
     | ToggleExcerptViaJs String Bool Float
     | InitReadMoreButtons
     | ScrollToTopViaJs
+    | SignOutViaJs
 
 
 type InfoForElm
