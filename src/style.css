@@ -285,6 +285,13 @@ body {
     transform: translateX(0);    
 }
 
+/*Login page*/
+.loginWrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
 /*Global styles*/
 [disabled] {
     opacity: 0.5;

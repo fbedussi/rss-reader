@@ -123,7 +123,7 @@ folderIcon : List Css.Style -> Selected -> Html msg
 folderIcon styles selected =
     let
         plusVerticalStyle =
-            "transition: transform 0.5s; transform-origin: center center;"
+            "transition: transform 0.5s; transform-origin: center 62%;"
     in
     styled svg
         ([ iconStyle ] ++ styles)

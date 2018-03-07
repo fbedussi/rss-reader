@@ -85,10 +85,7 @@ renderCategoryName category newArticlesInCategory =
             ]
         , badge
             [ class "category-numberOfArticles" ]
-            [ newArticlesInCategory
-                |> toString
-                |> text
-            ]
+            [ text <| toString newArticlesInCategory ]
         , styled span
             [ verticalAlign middle ]
             [ class "category-name" ]
@@ -148,17 +145,17 @@ renderSiteEntry articles lastRefreshTime site =
                                 ""
                            )
                 ]
-                ([ badge
-                    [ class "site-numberOfArticles" ]
-                    [ newArticlesInSite
-                        |> toString
-                        |> text
-                    ]
-                 , sidebarSelectionBtn
+                ([ sidebarSelectionBtn
                     [ class "siteInCategoryBtn"
                     , onClick <| ToggleSelectSite site.id
                     ]
-                    [ site.name |> text ]
+                    [ badge
+                        [ class "site-numberOfArticles" ]
+                        [ text <| toString newArticlesInSite ]
+                    , span
+                        []
+                        [ site.name |> text ]
+                    ]
                  ]
                     ++ (if selected then
                             [ styled span
@@ -180,6 +177,7 @@ countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
     articles
         |> List.filter (\article -> (article.date > lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
         |> List.length
+
 
 countNewArticlesInSite : Id -> List Article -> Time -> Int
 countNewArticlesInSite siteId articles lastRefreshTime =

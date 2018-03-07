@@ -3,6 +3,7 @@ module PartialViews.UiKit exposing (..)
 import Char
 import Css exposing (..)
 import Css.Foreign exposing (descendants, selector)
+import Css.Media exposing (only, screen, withMedia)
 import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_, value)
@@ -10,15 +11,13 @@ import Html.Styled.Events exposing (onCheck, onClick, onInput)
 import Models exposing (ErrorBoxMsg(..), Msg(..), Panel, Selected)
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (closeIcon, starIcon)
-import Css.Media exposing (only, screen, withMedia)
-
 
 
 inputHeightInRem : Float
 inputHeightInRem =
-    2
+    distancesInRem.l
 
-
+distancesInRem : { l : Float , m : Float , s : Float , xl : Float , xs : Float , xxl : Float , xxxl : Float , xxxs : Float , xxs : Float }
 distancesInRem =
     { xxxl = 4.25
     , xxl = 3.75
@@ -32,13 +31,16 @@ distancesInRem =
     }
 
 
-inputHeight : Rem
-inputHeight =
-    Css.rem inputHeightInRem
+hairlineWidthInPx : number
+hairlineWidthInPx =
+    2
 
+
+buttonHeightInRem = 
+    distancesInRem.m
 
 theme =
-    { colorPrimary = hex "4D79BC"
+    { colorPrimary = hex "008080"
     , colorSecondary = hex "673C4F"
     , colorAccent = hex "EAC435"
     , colorPrimaryLight = hex "03CEA4"
@@ -49,23 +51,23 @@ theme =
     , colorAlert = hex "ff0000"
     , white = hex "ffffff"
     , black = hex "000000"
-    , inputHeight = inputHeight
-    , buttonHeight = inputHeight
-    , hairlineWidth = px 2
-    , distanceXXXL = Css.rem 4.25
-    , distanceXXL = Css.rem 3.75
-    , distanceXL = Css.rem 3.25
-    , distanceL = Css.rem 2.75
-    , distanceM = Css.rem 2.25
-    , distanceS = Css.rem 1.75
-    , distanceXS = Css.rem 1.25
+    , inputHeight = calc (Css.rem inputHeightInRem) minus (Css.px <| hairlineWidthInPx)
+    , buttonHeight = Css.rem buttonHeightInRem
+    , hairlineWidth = px hairlineWidthInPx
+    , distanceXXXL = Css.rem distancesInRem.xxxl
+    , distanceXXL = Css.rem distancesInRem.xxl
+    , distanceXL = Css.rem distancesInRem.xl
+    , distanceL = Css.rem distancesInRem.l
+    , distanceM = Css.rem distancesInRem.m
+    , distanceS = Css.rem distancesInRem.s
+    , distanceXS = Css.rem distancesInRem.xs
     , distanceXXS = Css.rem distancesInRem.xxs
-    , distanceXXXS = Css.rem 0.25
+    , distanceXXXS = Css.rem distancesInRem.xxxs
     , fontSizeBase = Css.rem 1
     , fontSizeSubtitle = Css.rem 1.25
     , fontSizeTitle = Css.rem 1
     , fontSizeTitleDesktop = Css.rem 1.5
-    , headerHeight = Css.rem (inputHeightInRem + (distancesInRem.xxs * 2))
+    , headerHeight = Css.rem (buttonHeightInRem + (distancesInRem.xxs * 2))
     , breakpoints =
         { desktop = Css.rem 62
         }
@@ -151,7 +153,7 @@ btnStyle selected =
     batch
         [ display inlineBlock
         , minHeight theme.buttonHeight
-        , padding2 theme.distanceXXXS theme.distanceXS
+        , padding2 theme.distanceXXXS theme.distanceXXS
         , if selected then
             backgroundColor theme.colorPrimaryLight
           else
@@ -162,6 +164,7 @@ btnStyle selected =
         , transition "all 0.5s"
         , textTransform uppercase
         , fontWeight bold
+        , borderRadius (px 3)
         , hover
             [ backgroundColor theme.colorPrimaryLight ]
         , firstChild
@@ -221,7 +224,9 @@ input =
     styled Html.Styled.input
         [ display inlineBlock
         , height theme.inputHeight
-        , padding2 theme.distanceXXXS theme.distanceXS
+
+        --, padding2 theme.distanceXXXS theme.distanceXS
+        , standardPadding
         , border3 theme.hairlineWidth solid theme.colorHairline
         ]
 
@@ -262,7 +267,7 @@ sidebarSelectionBtn =
         [ btnNoStyleStyle
         , standardPadding
         , textAlign left
-        , display block
+        , displayFlex
         , flex (int 1)
         ]
 
@@ -337,12 +342,12 @@ badge =
         [ display inlineBlock
         , backgroundColor theme.colorAccent
         , color theme.white
-        , minWidth (Css.rem 2)
-        , height (Css.rem 2)
-        , borderRadius (pct 50)
+        , fontSize (Css.rem 0.7)
+        , borderRadius (pct 25)
         , textAlign center
-        , padding (Css.rem 0.35)
+        , padding (Css.rem 0.2)
         , verticalAlign middle
+        , marginRight (Css.rem 0.5)
         ]
 
 
@@ -357,7 +362,7 @@ layerStyle =
         ]
 
 
-layerTop : msg ->  List (Attribute msg) -> List (Html msg) -> Html msg
+layerTop : msg -> List (Attribute msg) -> List (Html msg) -> Html msg
 layerTop closer attributes children =
     styled div
         [ layerStyle
@@ -368,23 +373,23 @@ layerTop closer attributes children =
         ]
         attributes
         ([ styled div
-                [ textAlign right
-                , marginBottom theme.distanceXS
-                , color theme.colorPrimary
+            [ textAlign right
+            , marginBottom theme.distanceXS
+            , color theme.colorPrimary
+            ]
+            [ class "closeButtonWrapper" ]
+            [ btnNoStyle
+                [ onClick closer ]
+                [ closeIcon []
+                , styled span
+                    [ visuallyHiddenStyle ]
+                    []
+                    [ text "settings" ]
                 ]
-                [ class "closeButtonWrapper" ]
-                [ btnNoStyle
-                    [ onClick closer ]
-                    [ closeIcon []
-                    , styled span
-                        [ visuallyHiddenStyle ]
-                        []
-                        [ text "settings" ]
-                    ]
-                ]
-            ] ++ children
+            ]
+         ]
+            ++ children
         )
-            
 
 
 inputRow : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -407,7 +412,7 @@ inputRowLabel : String -> String -> Html msg
 inputRowLabel inputId labelText =
     styled label
         [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-            [flex (int 1) ]
+            [ flex (int 1) ]
         ]
         [ class "inputLabel"
         , for inputId
@@ -422,7 +427,7 @@ inputRowText idText labelText val inputHandler =
         [ inputRowLabel idText labelText
         , styled input
             [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-                [flex (int 5) ]
+                [ flex (int 5) ]
             ]
             [ class "input"
             , id idText

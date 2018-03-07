@@ -12,7 +12,7 @@ import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
-import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
+import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition, standardPadding)
 import Time exposing (Time)
 import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
 

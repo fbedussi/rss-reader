@@ -137,7 +137,7 @@ function elmIteroperability(app, uid) {
                     dbInterface.readAll({ storeName: 'sites' }),
                     dbInterface.readAll({ storeName: 'articles' }),
                     dbInterface.readAll({ storeName: 'options' }),
-                    dbInterface.readAll({ storeName: 'appData' }),
+                    dbInterface.readAll({ storeName: 'lastRefreshedTime' }),
                 ]
 
                 Promise.all(readRequests)
