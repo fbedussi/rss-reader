@@ -71,30 +71,40 @@ renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
     styled div
         [ textAlign center
         , displayFlex
+        , flexDirection columnReverse
         , justifyContent spaceBetween
         , showIf <| List.length articlesToDisplay == articlesPerPage
+        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                    [ flexDirection row ]
         ]
         [ class "pagerToolbar" ]
-        [ span
+        [ styled span
+            [marginBottom (Css.rem 0.5)]        
             [ class "pagerWrapper" ]
             [ styled btn
-                [ showIf <| currentPage > 1 ]
+                [ showIf <| currentPage > 1 
+                , marginRight (Css.rem 0.5)
+                ]
                 [ class "firstPageButton"
                 , onClick <| ChangePage 1
                 ]
                 [ text "<<" ]
             , styled btn
-                [ showIf <| currentPage > 1 ]
+                [ showIf <| currentPage > 1
+                , marginRight (Css.rem 0.5)
+                ]
                 [ class "prevPageButton"
                 , onClick <| ChangePage <| max 1 <| currentPage - 1
                 ]
                 [ text "<" ]
             , styled span
-                [ marginLeft (Css.em 0.5) ]
+                [ marginRight (Css.em 0.5) ]
                 [ class "currentPage" ]
                 [ text <| toString currentPage ++ "/" ++ toString lastPage ]
             , styled btn
-                [ showIf <| currentPage < lastPage ]
+                [ showIf <| currentPage < lastPage 
+                , marginRight (Css.rem 0.5)
+                ]
                 [ class "nextPageButton"
                 , onClick <| ChangePage <| min lastPage <| currentPage + 1
                 ]
@@ -106,7 +116,8 @@ renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
                 ]
                 [ text ">>" ]
             ]
-        , span
+        , styled span
+            [marginBottom (Css.rem 0.5)]
             [ class "changeNumberOfArticlesPerPageButtonsWrapper" ]
             ([ span
                 [ class "articlesPerPageLabel" ]
@@ -127,8 +138,12 @@ showIf condition =
 
 renderChangeNumberOfArticlesPerPageButton : Int -> Int -> Html Msg
 renderChangeNumberOfArticlesPerPageButton currentArticlesPerPage newArticlesPerPage =
-    selectableBtn (currentArticlesPerPage == newArticlesPerPage)
-        [ class "changeNumberOfArticlesPerPageButton"
-        , onClick <| ChangeNumberOfArticlesPerPage newArticlesPerPage
+    styled span
+        [marginLeft (Css.rem 0.5)]
+        []
+        [selectableBtn (currentArticlesPerPage == newArticlesPerPage)
+            [ class "changeNumberOfArticlesPerPageButton"
+            , onClick <| ChangeNumberOfArticlesPerPage newArticlesPerPage
+            ]
+            [ text <| toString newArticlesPerPage ]
         ]
-        [ text <| toString newArticlesPerPage ]
