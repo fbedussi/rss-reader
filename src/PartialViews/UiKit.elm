@@ -79,8 +79,9 @@ theme =
         , overlay = int 20
         , headerSmartphone = int 30
         , menu = int 40
-        , deleteActions = int 50
-        , sidebarRow = int 60
+        , layer = int 50
+        , deleteActions = int 60
+        , sidebarRow = int 70
         }
     }
 
@@ -359,7 +360,7 @@ layerStyle : Style
 layerStyle =
     batch
         [ position fixed
-        , zIndex (int 10)
+        , zIndex theme.zIndex.layer
         , backgroundColor theme.colorBackground
         , standardPadding
         , border3 (px 2) solid theme.colorHairline
