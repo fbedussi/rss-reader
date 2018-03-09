@@ -22,9 +22,11 @@ siteHeader =
         , position sticky
         , top zero
         , backgroundColor theme.colorBackground
-        , zIndex (int 10)
+        , zIndex (theme.zIndex.headerSmartphone)
         , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-            [ justifyContent flexStart ]
+            [ justifyContent flexStart 
+            , zIndex (theme.zIndex.headerDesktop)        
+            ]
         ]
         []
         [ styled btnNoStyle

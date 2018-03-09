@@ -17,7 +17,8 @@ inputHeightInRem : Float
 inputHeightInRem =
     distancesInRem.l
 
-distancesInRem : { l : Float , m : Float , s : Float , xl : Float , xs : Float , xxl : Float , xxxl : Float , xxxs : Float , xxs : Float }
+
+distancesInRem : { l : Float, m : Float, s : Float, xl : Float, xs : Float, xxl : Float, xxxl : Float, xxxs : Float, xxs : Float }
 distancesInRem =
     { xxxl = 4.25
     , xxl = 3.75
@@ -36,8 +37,9 @@ hairlineWidthInPx =
     2
 
 
-buttonHeightInRem = 
+buttonHeightInRem =
     distancesInRem.m
+
 
 theme =
     { colorPrimary = hex "008080"
@@ -73,10 +75,12 @@ theme =
         }
     , zIndex =
         { base = int 1
-        , overlay = int 2
-        , menu = int 10
-        , deleteActions = int 20
-        , sidebarRow = int 30
+        , headerDesktop = int 10
+        , overlay = int 20
+        , headerSmartphone = int 30
+        , menu = int 40
+        , deleteActions = int 50
+        , sidebarRow = int 60
         }
     }
 
@@ -362,6 +366,25 @@ layerStyle =
         ]
 
 
+closeButton : msg -> Html msg
+closeButton closer =
+    styled div
+        [ textAlign right
+        , marginBottom theme.distanceXS
+        , color theme.colorPrimary
+        ]
+        [ class "closeButtonWrapper" ]
+        [ btnNoStyle
+            [ onClick closer ]
+            [ closeIcon []
+            , styled span
+                [ visuallyHiddenStyle ]
+                []
+                [ text "close" ]
+            ]
+        ]
+
+
 layerTop : msg -> List (Attribute msg) -> List (Html msg) -> Html msg
 layerTop closer attributes children =
     styled div
@@ -372,24 +395,7 @@ layerTop closer attributes children =
         , transforms [ translateY (pct -100) ]
         ]
         attributes
-        ([ styled div
-            [ textAlign right
-            , marginBottom theme.distanceXS
-            , color theme.colorPrimary
-            ]
-            [ class "closeButtonWrapper" ]
-            [ btnNoStyle
-                [ onClick closer ]
-                [ closeIcon []
-                , styled span
-                    [ visuallyHiddenStyle ]
-                    []
-                    [ text "settings" ]
-                ]
-            ]
-         ]
-            ++ children
-        )
+        ([ closeButton closer ] ++ children)
 
 
 inputRow : List (Attribute msg) -> List (Html msg) -> Html msg

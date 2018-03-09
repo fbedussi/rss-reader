@@ -28,8 +28,8 @@ var _user$project$Native_Accordion = (function() {
                 var innerHeight = contentInner.offsetHeight;
                 
                 if (innerHeight > 0) {
-                    contentOuter.style.height = innerHeight + 'px';
                     contentOuter.addEventListener('transitionend', resetHeight)
+                    contentOuter.style.height = innerHeight + 'px';
                 } 
             }, 0);
         }

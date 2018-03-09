@@ -175,12 +175,21 @@ renderSiteEntry articles lastRefreshTime site =
 countNewArticlesInCategory : List Site -> List Article -> Time -> Int
 countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
     articles
-        |> List.filter (\article -> (article.date > lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
+        |> List.filter (\article -> (lessThanOneDayDifference article.date lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
         |> List.length
 
 
 countNewArticlesInSite : Id -> List Article -> Time -> Int
 countNewArticlesInSite siteId articles lastRefreshTime =
     articles
-        |> List.filter (\article -> (article.date > lastRefreshTime) && (article.siteId == siteId))
+        |> List.filter (\article -> (lessThanOneDayDifference article.date lastRefreshTime) && (article.siteId == siteId))
         |> List.length
+
+
+lessThanOneDayDifference : Time -> Time -> Bool
+lessThanOneDayDifference newerTime olderTime = 
+    let 
+        difference =
+            newerTime - olderTime
+    in
+    difference > 0 && difference < 1000 * 60 * 60 *25
