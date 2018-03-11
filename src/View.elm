@@ -35,7 +35,7 @@ view model =
                     else
                         ""
                    )
-                ++ (if getPanelState (toString PanelMenu) model.panelsState |> isPanelOpen then
+                ++ (if model.menuOpen then
                         " menuOpen"
                     else
                         ""

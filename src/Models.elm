@@ -121,6 +121,7 @@ type alias Model =
     , fetchingRss : Bool
     , modal : Modal
     , panelsState : PanelsState
+    , menuOpen : Bool
     , currentPage : Int
     , options : Options
     , lastRefreshTime : Time
@@ -141,6 +142,7 @@ init =
       , fetchingRss = False
       , modal = { text = "", action = NoOp }
       , panelsState = initialPanelsState
+      , menuOpen = False
       , currentPage = 1
       , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
       , lastRefreshTime = 0
@@ -177,6 +179,7 @@ type Msg
     | AddNewSite
     | SaveArticle Article
     | TogglePanel Panel
+    | ToggleMenu
     | OpenImportPanel
     | CloseAllPanels
     | UpdateSearch String

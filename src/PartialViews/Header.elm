@@ -34,7 +34,7 @@ siteHeader =
                 [ display none
                 ]
             ]
-            [ onClick <| TogglePanel PanelMenu ]
+            [ onClick ToggleMenu ]
             [ menuIcon
                 [ fill theme.colorPrimary
                 , width theme.buttonHeight

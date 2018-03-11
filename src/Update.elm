@@ -73,6 +73,9 @@ update msg model =
             in
             ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
+        ToggleMenu ->
+            ({model | menuOpen = not model.menuOpen}, Cmd.none)
+        
         OpenImportPanel ->
             ( { model | panelsState = model.panelsState |> closePanel (toString PanelSettings) |> openPanel (toString PanelImport) }, Cmd.none )
             
