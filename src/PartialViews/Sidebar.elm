@@ -13,7 +13,6 @@ import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
-import Time exposing (Time)
 import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
 
 
@@ -62,8 +61,8 @@ sidebar model =
         ]
         [ renderSidebarToolbar
         , lazy renderSearchBox model.searchTerm
-        , searchResult model.sites model.articles model.lastRefreshTime model.searchTerm
-        , renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, model.articles, model.lastRefreshTime )
+        , searchResult model.sites model.searchTerm
+        , renderSitesWithoutCategory searchInProgress sitesWithoutCategory
         , renderCategories searchInProgress model
         ]
 
@@ -107,8 +106,8 @@ renderSearchBox searchTerm =
             ]
 
 
-renderSitesWithoutCategory : ( Bool, List Site, List Article, Time ) -> Html Msg
-renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, articles, lastRefreshTime ) =
+renderSitesWithoutCategory : Bool -> List Site -> Html Msg
+renderSitesWithoutCategory searchInProgress sitesWithoutCategory =
     styled ul
         [ sidebarBoxStyle ]
         [ class "sitesWithoutCategory" ]
@@ -116,7 +115,7 @@ renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, articles, l
             []
          else
             sitesWithoutCategory
-                |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
+                |> List.map (lazy renderSiteEntry)
         )
 
 
@@ -130,5 +129,5 @@ renderCategories searchInProgress model =
             []
          else
             model.categories
-                |> List.map (renderCategory ( model.sites, model.articles, model.lastRefreshTime, model.panelsState ))
+                |> List.map (renderCategory model.sites model.panelsState)
         )

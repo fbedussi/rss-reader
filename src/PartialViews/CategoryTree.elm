@@ -14,11 +14,10 @@ import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
-import Time exposing (Time)
 
 
-renderCategory : ( List Site, List Article, Time, PanelsState ) -> Category -> Html Msg
-renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
+renderCategory : List Site -> PanelsState -> Category -> Html Msg
+renderCategory sites panelsState category =
     let
         domId =
             "cat_" ++ toString category.id
@@ -33,7 +32,7 @@ renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
             getSitesInCategories [ category.id ] sites
 
         newArticlesInCategory =
-            countNewArticlesInCategory sitesInCategory articles lastRefreshTime
+            countNewArticlesInCategory sitesInCategory
     in
     categoryWrapper
         [ class "tab"
@@ -53,7 +52,7 @@ renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
                 []
                 [ class "category-sitesInCategory tabContentInner" ]
                 (sitesInCategory
-                    |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
+                    |> List.map (lazy renderSiteEntry)
                 )
             ]
         ]
@@ -113,26 +112,19 @@ renderEditCategory category =
     ]
 
 
-renderSiteEntry : List Article -> Time -> Site -> Html.Html Msg
-renderSiteEntry articles lastRefreshTime site =
-    let
-        selected =
-            site.isSelected
-
-        newArticlesInSite =
-            countNewArticlesInSite site.id articles lastRefreshTime
-    in
+renderSiteEntry : Site -> Html.Html Msg
+renderSiteEntry site =
     toUnstyled <|
         li
             [ class "category-siteInCategory " ]
-            [ sidebarRow selected
+            [ sidebarRow site.isSelected
                 [ class <|
                     "sidebarRow"
-                        ++ (if selected then
-                                " is-selected"
-                            else
-                                ""
-                           )
+                        -- ++ (if selected then
+                        --         " is-selected"
+                        --     else
+                        --         ""
+                        --    )
                 ]
                 ([ sidebarSelectionBtn
                     [ class "siteInCategoryBtn"
@@ -140,13 +132,13 @@ renderSiteEntry articles lastRefreshTime site =
                     ]
                     [ badge
                         [ class "site-numberOfArticles" ]
-                        [ text <| toString newArticlesInSite ]
+                        [ text <| toString site.numberOfNewArticles ]
                     , span
                         []
                         [ site.name |> text ]
                     ]
                  ]
-                    ++ (if selected then
+                    ++ (if site.isSelected then
                             [ styled span
                                 [ flexShrink (int 0) ]
                                 [ class "siteInCategory-actions button-group" ]
@@ -161,24 +153,6 @@ renderSiteEntry articles lastRefreshTime site =
             ]
 
 
-countNewArticlesInCategory : List Site -> List Article -> Time -> Int
-countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
-    articles
-        |> List.filter (\article -> lessThanOneDayDifference article.date lastRefreshTime && List.any (\site -> site.id == article.siteId) sitesInCategory)
-        |> List.length
-
-
-countNewArticlesInSite : Id -> List Article -> Time -> Int
-countNewArticlesInSite siteId articles lastRefreshTime =
-    articles
-        |> List.filter (\article -> lessThanOneDayDifference article.date lastRefreshTime && (article.siteId == siteId))
-        |> List.length
-
-
-lessThanOneDayDifference : Time -> Time -> Bool
-lessThanOneDayDifference newerTime olderTime =
-    let
-        difference =
-            newerTime - olderTime
-    in
-    difference > 0 && difference < 1000 * 60 * 60 * 25
+countNewArticlesInCategory : List Site -> Int
+countNewArticlesInCategory sitesInCategory =
+    List.foldl (\site numberOfNewArticlesTot -> numberOfNewArticlesTot + site.numberOfNewArticles) 0 sitesInCategory

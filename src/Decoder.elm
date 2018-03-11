@@ -57,7 +57,7 @@ categoryDecoder =
 
 siteDecoder : Decoder Site
 siteDecoder =
-    map7 Site
+    map8 Site
         (field "id" Json.Decode.int)
         (field "categoriesId" (list Json.Decode.int))
         (field "name" Json.Decode.string)
@@ -65,6 +65,7 @@ siteDecoder =
         (field "webLink" Json.Decode.string)
         (field "starred" Json.Decode.bool)
         (succeed False)
+        (succeed 0)
 
 
 articleDecoder : Decoder Article

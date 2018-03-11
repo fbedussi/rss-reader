@@ -57,6 +57,7 @@ type alias Site =
     , webLink : String
     , starred : Bool
     , isSelected : Bool
+    , numberOfNewArticles : Int
     }
 
 
@@ -162,6 +163,7 @@ createEmptySite =
         ""
         False
         False
+        0
 
 
 type Msg

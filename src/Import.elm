@@ -106,12 +106,13 @@ fakeSiteList id categoriesId name rssLink webLink starred =
         webLink
         starred
         False
+        0
         |> List.singleton
 
 
 opmlSiteDecoder : Decoder Site
 opmlSiteDecoder =
-    map7 Site
+    map8 Site
         (succeed 0)
         (succeed [])
         (field "_title" string)
@@ -119,3 +120,4 @@ opmlSiteDecoder =
         (field "_htmlUrl" string)
         (succeed False)
         (succeed False)
+        (succeed 0)

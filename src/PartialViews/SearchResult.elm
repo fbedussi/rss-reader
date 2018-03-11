@@ -5,10 +5,9 @@ import Html.Styled.Attributes exposing (class)
 import Models exposing (Article, Msg, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderSiteEntry)
 import PartialViews.UiKit exposing (sidebarBoxStyle)
-import Time exposing (Time)
 
-searchResult : List Site -> List Article -> Time -> String -> Html Msg
-searchResult sites articles lastRefreshTime searchTerm =
+searchResult : List Site -> String -> Html Msg
+searchResult sites searchTerm =
     let
         selectedSites =
             sites |> List.filter (\site -> not (String.isEmpty searchTerm) && String.contains (String.toLower searchTerm) (String.toLower site.name))
@@ -24,7 +23,7 @@ searchResult sites articles lastRefreshTime searchTerm =
         )
         [ class "searchResult" ]
         (if List.length selectedSites > 0 then
-            selectedSites |> List.map (renderSiteEntry articles lastRefreshTime >> fromUnstyled)
+            selectedSites |> List.map (renderSiteEntry >> fromUnstyled)
          else if searchInProgress then
             [ text "no sites found" ]
          else

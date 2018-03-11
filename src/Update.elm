@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (closeModal, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
+import Helpers exposing (countNewArticlesInSite, closeModal, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
 import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite)
 import Murmur3 exposing (hashString)
@@ -147,8 +147,14 @@ update msg model =
 
                         mergedArticles =
                             mergeArticles rssArticles model.articles
+
+                        updatedSites = 
+                            model.sites |> List.map (\site -> {site | numberOfNewArticles = countNewArticlesInSite site.id mergedArticles model.lastRefreshTime })
                     in
-                    ( { updatedModel | articles = List.sortWith dateDescending mergedArticles }, InitReadMoreButtons |> sendInfoOutside )
+                    ( { updatedModel 
+                        | articles = List.sortWith dateDescending mergedArticles 
+                        , sites = updatedSites
+                    }, InitReadMoreButtons |> sendInfoOutside )
 
                 Err err ->
                     let
@@ -281,3 +287,4 @@ createNewSite sites =
         ""
         False
         False
+        0
