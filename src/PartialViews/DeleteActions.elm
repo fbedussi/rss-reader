@@ -13,14 +13,14 @@ deleteActions animationClass category sitesInCategoryIds =
     deleteActionsPanel
         [ class <| "delete-actions" ++ animationClass ]
         [ styled btn
-            [ height (Css.rem 3)
+            [ height (Css.rem 2.5)
             ]
             [ class "button"
             , onClick <| DeleteMsg <| RequestDeleteCategories [ category.id ]
             ]
             [ text "Delete category only" ]
         , styled alertBtn
-            [ height (Css.rem 3)
+            [ height (Css.rem 2.5)
             ]
             [ class "button"
             , onClick <| DeleteMsg <| RequestDeleteCategoryAndSites [ category.id ] sitesInCategoryIds

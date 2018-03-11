@@ -1,12 +1,13 @@
 module PartialViews.SearchResult exposing (searchResult)
 
-import Html.Styled exposing (Html, div, fromUnstyled, input, styled, text, ul)
+import Html.Styled exposing (Html, div, toUnstyled, fromUnstyled, input, styled, text, ul)
 import Html.Styled.Attributes exposing (class)
 import Models exposing (Article, Msg, SelectedSiteId, Site)
 import PartialViews.CategoryTree exposing (renderSiteEntry)
 import PartialViews.UiKit exposing (sidebarBoxStyle)
+import Html
 
-searchResult : List Site -> String -> Html Msg
+searchResult : List Site -> String -> Html.Html Msg
 searchResult sites searchTerm =
     let
         selectedSites =
@@ -15,17 +16,18 @@ searchResult sites searchTerm =
         searchInProgress =
             String.length searchTerm > 0
     in
-    styled ul
-        (if searchInProgress then
-            [ sidebarBoxStyle ]
-         else
-            []
-        )
-        [ class "searchResult" ]
-        (if List.length selectedSites > 0 then
-            selectedSites |> List.map (renderSiteEntry >> fromUnstyled)
-         else if searchInProgress then
-            [ text "no sites found" ]
-         else
-            []
-        )
+    toUnstyled <|
+        styled ul
+            (if searchInProgress then
+                [ sidebarBoxStyle ]
+             else
+                []
+            )
+            [ class "searchResult" ]
+            (if List.length selectedSites > 0 then
+                selectedSites |> List.map (renderSiteEntry >> fromUnstyled)
+             else if searchInProgress then
+                [ text "no sites found" ]
+             else
+                []
+            )

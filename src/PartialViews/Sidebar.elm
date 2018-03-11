@@ -8,6 +8,7 @@ import Html.Styled.Attributes exposing (attribute, class, disabled, for, fromUns
 import Html.Styled.Events exposing (onClick, onInput)
 import Html.Styled.Lazy exposing (lazy, lazy2, lazy3)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
+import PanelsManager exposing (PanelsState)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
@@ -59,12 +60,18 @@ sidebar model =
                         NoOp
                 )
         ]
-        [ renderSidebarToolbar
-        , lazy renderSearchBox model.searchTerm
-        , searchResult model.sites model.searchTerm
-        , renderSitesWithoutCategory searchInProgress sitesWithoutCategory
-        , renderCategories searchInProgress model
-        ]
+        ([ renderSidebarToolbar
+         , lazy renderSearchBox model.searchTerm
+         , lazy2 searchResult model.sites model.searchTerm
+         ]
+            ++ (if not searchInProgress then
+                    [ lazy renderSitesWithoutCategory sitesWithoutCategory
+                    , lazy3 renderCategories model.categories model.sites model.panelsState
+                    ]
+                else
+                    []
+               )
+        )
 
 
 renderSidebarToolbar : Html Msg
@@ -106,28 +113,24 @@ renderSearchBox searchTerm =
             ]
 
 
-renderSitesWithoutCategory : Bool -> List Site -> Html Msg
-renderSitesWithoutCategory searchInProgress sitesWithoutCategory =
-    styled ul
-        [ sidebarBoxStyle ]
-        [ class "sitesWithoutCategory" ]
-        (if searchInProgress then
-            []
-         else
-            sitesWithoutCategory
+renderSitesWithoutCategory : List Site -> Html.Html Msg
+renderSitesWithoutCategory sitesWithoutCategory =
+    toUnstyled <|
+        styled ul
+            [ sidebarBoxStyle ]
+            [ class "sitesWithoutCategory" ]
+            (sitesWithoutCategory
                 |> List.map (lazy renderSiteEntry)
-        )
+            )
 
 
-renderCategories : Bool -> Model -> Html Msg
-renderCategories searchInProgress model =
-    styled ul
-        [ sidebarBoxStyle ]
-        [ class "categories accordion"
-        ]
-        (if searchInProgress then
-            []
-         else
-            model.categories
-                |> List.map (renderCategory model.sites model.panelsState)
-        )
+renderCategories : List Category -> List Site -> PanelsState -> Html.Html Msg
+renderCategories categories sites panelsState =
+    toUnstyled <|
+        styled ul
+            [ sidebarBoxStyle ]
+            [ class "categories accordion"
+            ]
+            (categories
+                |> List.map (lazy3 renderCategory sites panelsState)
+            )

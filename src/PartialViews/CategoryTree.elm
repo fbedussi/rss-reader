@@ -16,7 +16,7 @@ import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
 import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
 
 
-renderCategory : List Site -> PanelsState -> Category -> Html Msg
+renderCategory : List Site -> PanelsState -> Category -> Html.Html Msg
 renderCategory sites panelsState category =
     let
         domId =
@@ -34,28 +34,29 @@ renderCategory sites panelsState category =
         newArticlesInCategory =
             countNewArticlesInCategory sitesInCategory
     in
-    categoryWrapper
-        [ class "tab"
-        , id domId
-        ]
-        [ deleteActions (getPanelState domId panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
-        , sidebarRow category.isSelected
-            [ class "tabTitle sidebarRow" ]
-            (if category.isBeingEdited then
-                renderEditCategory category
-             else
-                renderCategoryName category newArticlesInCategory
-            )
-        , tabContentOuter category.isSelected
-            [ class "tabContentOuter" ]
-            [ styled ul
-                []
-                [ class "category-sitesInCategory tabContentInner" ]
-                (sitesInCategory
-                    |> List.map (lazy renderSiteEntry)
-                )
+    toUnstyled <|
+        categoryWrapper
+            [ class "tab"
+            , id domId
             ]
-        ]
+            [ deleteActions (getPanelState domId panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
+            , sidebarRow category.isSelected
+                [ class "tabTitle sidebarRow" ]
+                (if category.isBeingEdited then
+                    renderEditCategory category
+                 else
+                    renderCategoryName category newArticlesInCategory
+                )
+            , tabContentOuter category.isSelected
+                [ class "tabContentOuter" ]
+                [ styled ul
+                    []
+                    [ class "category-sitesInCategory tabContentInner" ]
+                    (sitesInCategory
+                        |> List.map (lazy renderSiteEntry)
+                    )
+                ]
+            ]
 
 
 renderCategoryName : Category -> Int -> List (Html Msg)
@@ -118,14 +119,7 @@ renderSiteEntry site =
         li
             [ class "category-siteInCategory " ]
             [ sidebarRow site.isSelected
-                [ class <|
-                    "sidebarRow"
-                        -- ++ (if selected then
-                        --         " is-selected"
-                        --     else
-                        --         ""
-                        --    )
-                ]
+                [ class "sidebarRow" ]
                 ([ sidebarSelectionBtn
                     [ class "siteInCategoryBtn"
                     , onClick <| ToggleSelectSite site.id
