@@ -23,11 +23,8 @@ renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
         domId =
             "cat_" ++ toString category.id
 
-        selected =
-            category.isSelected
-
         triggerOpenTab =
-            if selected then
+            if category.isSelected then
                 openTab ("#" ++ domId)
             else
                 closeTab ("#" ++ domId)
@@ -43,21 +40,14 @@ renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
         , id domId
         ]
         [ deleteActions (getPanelState domId panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
-        , sidebarRow selected
-            [ class <|
-                "tabTitle sidebarRow"
-                    ++ (if selected then
-                            " is-selected"
-                        else
-                            ""
-                       )
-            ]
+        , sidebarRow category.isSelected
+            [ class "tabTitle sidebarRow" ]
             (if category.isBeingEdited then
                 renderEditCategory category
              else
                 renderCategoryName category newArticlesInCategory
             )
-        , tabContentOuter selected
+        , tabContentOuter category.isSelected
             [ class "tabContentOuter" ]
             [ styled ul
                 []

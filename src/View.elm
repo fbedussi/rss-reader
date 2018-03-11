@@ -56,7 +56,7 @@ view model =
             [ sidebar model
             , mainContent model.categories model.sites model.articles model.options model.currentPage
             ]
-        , PartialViews.UiKit.overlay (isSomePanelOpen "Panel" model.panelsState)
+        , PartialViews.UiKit.overlay (model.menuOpen || isSomePanelOpen "Panel" model.panelsState)
         , modal model.modal <| getModalAnimationClass <| getPanelState (toString PanelModal) model.panelsState
         , editSiteLayer (getPanelState (toString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) model.siteToEditForm model.categories
         , importLayer <| getAnimationClassTopLayers <| getPanelState (toString PanelImport) model.panelsState
