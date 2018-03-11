@@ -201,7 +201,10 @@ update msg model =
             ( { model | searchTerm = searchTerm }, Cmd.none )
 
         CloseAllPanels ->
-            ( { model | panelsState = closeAllPanels model.panelsState }, Cmd.none )
+            ( { model 
+                | panelsState = closeAllPanels model.panelsState 
+                , menuOpen = False
+            }, Cmd.none )
 
         ChangePage pageNumber ->
             ( { model | currentPage = pageNumber }, Cmd.none )
