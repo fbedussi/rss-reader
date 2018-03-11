@@ -1,7 +1,7 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
 import Accordion exposing (closeTab, openTab)
-import Css exposing (auto, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
+import Css exposing (auto, batch, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
 import Helpers exposing (extractId, getClass, getSitesInCategories, isArticleInSites, isSelected)
 import Html
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, toUnstyled, ul)
@@ -13,7 +13,7 @@ import PanelsManager exposing (PanelsState, getPanelClass, getPanelState)
 import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
-import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
+import PartialViews.UiKit exposing (badge, customCss, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
 
 
 renderCategory : List Site -> PanelsState -> Category -> Html.Html Msg
@@ -61,7 +61,8 @@ renderCategory sites panelsState category =
 
 renderCategoryName : Category -> Int -> List (Html Msg)
 renderCategoryName category newArticlesInCategory =
-    [ sidebarSelectionBtn
+    [ styled sidebarSelectionBtn
+        [if category.isSelected then batch [] else customCss "padding-right" "calc(3.75rem + 2em)"]
         [ class "categoryBtn"
         , onClick <| ToggleSelectedCategory category.id
         ]

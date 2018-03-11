@@ -309,7 +309,7 @@ sidebarRow selected =
         , if selected then
             selectedStyle
           else
-            customCss "padding-right" "calc(3.75rem + 2em)"
+            batch []
         , hover
             [ selectedStyle
             ]
