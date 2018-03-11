@@ -55,7 +55,7 @@ sidebar model =
             onTouchEvent TouchEnd
                 (\touchEvent ->
                     if Tuple.first model.touchData - touchEvent.clientX > 100 then
-                        TogglePanel PanelMenu
+                        ToggleMenu
                     else
                         NoOp
                 )
