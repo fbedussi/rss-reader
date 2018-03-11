@@ -12,7 +12,7 @@ import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
-import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition, standardPadding)
+import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
 import Time exposing (Time)
 import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
 
@@ -61,10 +61,10 @@ sidebar model =
                 )
         ]
         [ renderSidebarToolbar
-        , renderSearchBox model.searchTerm
+        , lazy renderSearchBox model.searchTerm
         , searchResult model.sites model.articles model.lastRefreshTime model.searchTerm
-        , lazy renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, model.articles, model.lastRefreshTime )
-        , lazy2 renderCategories searchInProgress model
+        , renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, model.articles, model.lastRefreshTime )
+        , renderCategories searchInProgress model
         ]
 
 
@@ -82,54 +82,53 @@ renderSidebarToolbar =
         ]
 
 
-renderSearchBox : String -> Html Msg
+renderSearchBox : String -> Html.Html Msg
 renderSearchBox searchTerm =
-    styled div
-        [ displayFlex
-        , standardPadding
-        , alignItems stretch
-        , flexDirection column
-        ]
-        [ class "searchWrapper" ]
-        [ styled label
-            [ marginBottom (em 0.5) ]
-            [ for "searchInput" ]
-            [ text "Search sites by name: " ]
-        , input
-            [ type_ "search"
-            , id "searchInput"
-            , placeholder "example.com"
-            , onInput UpdateSearch
-            , value searchTerm
+    toUnstyled <|
+        styled div
+            [ displayFlex
+            , standardPadding
+            , alignItems stretch
+            , flexDirection column
             ]
-            []
-        ]
+            [ class "searchWrapper" ]
+            [ styled label
+                [ marginBottom (em 0.5) ]
+                [ for "searchInput" ]
+                [ text "Search sites by name: " ]
+            , input
+                [ type_ "search"
+                , id "searchInput"
+                , placeholder "example.com"
+                , onInput UpdateSearch
+                , value searchTerm
+                ]
+                []
+            ]
 
 
-renderSitesWithoutCategory : ( Bool, List Site, List Article, Time ) -> Html.Html Msg
+renderSitesWithoutCategory : ( Bool, List Site, List Article, Time ) -> Html Msg
 renderSitesWithoutCategory ( searchInProgress, sitesWithoutCategory, articles, lastRefreshTime ) =
-    toUnstyled <|
-        styled ul
-            [ sidebarBoxStyle ]
-            [ class "sitesWithoutCategory" ]
-            (if searchInProgress then
-                []
-             else
-                sitesWithoutCategory
-                    |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
-            )
+    styled ul
+        [ sidebarBoxStyle ]
+        [ class "sitesWithoutCategory" ]
+        (if searchInProgress then
+            []
+         else
+            sitesWithoutCategory
+                |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
+        )
 
 
-renderCategories : Bool -> Model -> Html.Html Msg
+renderCategories : Bool -> Model -> Html Msg
 renderCategories searchInProgress model =
-    toUnstyled <|
-        styled ul
-            [ sidebarBoxStyle ]
-            [ class "categories accordion"
-            ]
-            (if searchInProgress then
-                []
-             else
-                model.categories
-                    |> List.map (lazy2 renderCategory ( model.sites, model.articles, model.lastRefreshTime, model.panelsState ))
-            )
+    styled ul
+        [ sidebarBoxStyle ]
+        [ class "categories accordion"
+        ]
+        (if searchInProgress then
+            []
+         else
+            model.categories
+                |> List.map (renderCategory ( model.sites, model.articles, model.lastRefreshTime, model.panelsState ))
+        )

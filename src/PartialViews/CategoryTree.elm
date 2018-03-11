@@ -17,7 +17,7 @@ import PartialViews.UiKit exposing (badge, categoryWrapper, input, sidebarRow, s
 import Time exposing (Time)
 
 
-renderCategory : ( List Site, List Article, Time, PanelsState ) -> Category -> Html.Html Msg
+renderCategory : ( List Site, List Article, Time, PanelsState ) -> Category -> Html Msg
 renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
     let
         domId =
@@ -38,36 +38,35 @@ renderCategory ( sites, articles, lastRefreshTime, panelsState ) category =
         newArticlesInCategory =
             countNewArticlesInCategory sitesInCategory articles lastRefreshTime
     in
-    toUnstyled <|
-        categoryWrapper
-            [ class "tab"
-            , id domId
+    categoryWrapper
+        [ class "tab"
+        , id domId
+        ]
+        [ deleteActions (getPanelState domId panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
+        , sidebarRow selected
+            [ class <|
+                "tabTitle sidebarRow"
+                    ++ (if selected then
+                            " is-selected"
+                        else
+                            ""
+                       )
             ]
-            [ deleteActions (getPanelState domId panelsState |> getPanelClass "is-hidden" "deletePanelOpen" "deletePanelClosed") category (extractId sitesInCategory)
-            , sidebarRow selected
-                [ class <|
-                    "tabTitle sidebarRow"
-                        ++ (if selected then
-                                " is-selected"
-                            else
-                                ""
-                           )
-                ]
-                (if category.isBeingEdited then
-                    renderEditCategory category
-                 else
-                    renderCategoryName category newArticlesInCategory
+            (if category.isBeingEdited then
+                renderEditCategory category
+             else
+                renderCategoryName category newArticlesInCategory
+            )
+        , tabContentOuter selected
+            [ class "tabContentOuter" ]
+            [ styled ul
+                []
+                [ class "category-sitesInCategory tabContentInner" ]
+                (sitesInCategory
+                    |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
                 )
-            , tabContentOuter selected
-                [ class "tabContentOuter" ]
-                [ styled ul
-                    []
-                    [ class "category-sitesInCategory tabContentInner" ]
-                    (sitesInCategory
-                        |> List.map (lazy3 renderSiteEntry articles lastRefreshTime)
-                    )
-                ]
             ]
+        ]
 
 
 renderCategoryName : Category -> Int -> List (Html Msg)
@@ -175,21 +174,21 @@ renderSiteEntry articles lastRefreshTime site =
 countNewArticlesInCategory : List Site -> List Article -> Time -> Int
 countNewArticlesInCategory sitesInCategory articles lastRefreshTime =
     articles
-        |> List.filter (\article -> (lessThanOneDayDifference article.date lastRefreshTime) && List.any (\site -> site.id == article.siteId) sitesInCategory)
+        |> List.filter (\article -> lessThanOneDayDifference article.date lastRefreshTime && List.any (\site -> site.id == article.siteId) sitesInCategory)
         |> List.length
 
 
 countNewArticlesInSite : Id -> List Article -> Time -> Int
 countNewArticlesInSite siteId articles lastRefreshTime =
     articles
-        |> List.filter (\article -> (lessThanOneDayDifference article.date lastRefreshTime) && (article.siteId == siteId))
+        |> List.filter (\article -> lessThanOneDayDifference article.date lastRefreshTime && (article.siteId == siteId))
         |> List.length
 
 
 lessThanOneDayDifference : Time -> Time -> Bool
-lessThanOneDayDifference newerTime olderTime = 
-    let 
+lessThanOneDayDifference newerTime olderTime =
+    let
         difference =
             newerTime - olderTime
     in
-    difference > 0 && difference < 1000 * 60 * 60 *25
+    difference > 0 && difference < 1000 * 60 * 60 * 25
