@@ -17,7 +17,7 @@ import PartialViews.SettingsLayer exposing (settingsLayer)
 import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Modal exposing (modal)
 import PartialViews.Sidebar exposing (sidebar)
-import PartialViews.UiKit exposing (btn, getAnimationClassTopLayers, getModalAnimationClass, overlay, theme, transition)
+import PartialViews.UiKit exposing (onDesktop, btn, getAnimationClassTopLayers, getModalAnimationClass, overlay, theme, transition)
 import PartialViews.Icons exposing (arrowTop)
 
 view : Model -> Html Msg
@@ -49,7 +49,7 @@ view model =
         [ siteHeader
         , errorContainer model.panelsState model.errorMsgs
         , styled div
-            [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            [ onDesktop
                 [ displayFlex ]
             ]
             [ class "mainWrapper" ]

@@ -71,7 +71,7 @@ theme =
     , fontSizeTitleDesktop = Css.rem 1.5
     , headerHeight = Css.rem (buttonHeightInRem + (distancesInRem.xxs * 2))
     , breakpoints =
-        { desktop = Css.rem 62
+        { desktop = 900
         }
     , zIndex =
         { base = int 1
@@ -84,6 +84,11 @@ theme =
         , sidebarRow = int 70
         }
     }
+
+
+onDesktop : List Style -> Style
+onDesktop =
+    withMedia [ only screen [ Css.Media.minWidth <| px theme.breakpoints.desktop ] ]
 
 
 customCss : String -> String -> Style
@@ -344,9 +349,9 @@ deleteActionsPanel =
 badge : List (Attribute msg) -> List (Html msg) -> Html msg
 badge =
     let
-        log = Debug.log "render" "badge"
+        log =
+            Debug.log "render" "badge"
     in
-        
     styled div
         [ display inlineBlock
         , backgroundColor theme.colorAccent
@@ -409,7 +414,7 @@ inputRow attributes children =
         [ marginBottom (Css.rem 0.5)
         , displayFlex
         , flexDirection column
-        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+        , onDesktop
             [ alignItems center
             , flexDirection row
             , height theme.inputHeight
@@ -422,7 +427,7 @@ inputRow attributes children =
 inputRowLabel : String -> String -> Html msg
 inputRowLabel inputId labelText =
     styled label
-        [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+        [ onDesktop
             [ flex (int 1) ]
         ]
         [ class "inputLabel"
@@ -437,7 +442,7 @@ inputRowText idText labelText val inputHandler =
         []
         [ inputRowLabel idText labelText
         , styled input
-            [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            [ onDesktop
                 [ flex (int 5) ]
             ]
             [ class "input"

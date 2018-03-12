@@ -76,6 +76,9 @@ update msg model =
         ToggleMenu ->
             ({model | menuOpen = not model.menuOpen}, Cmd.none)
         
+        CloseMenu ->
+            ({model | menuOpen = False}, Cmd.none)
+        
         OpenImportPanel ->
             ( { model | panelsState = model.panelsState |> closePanel (toString PanelSettings) |> openPanel (toString PanelImport) }, Cmd.none )
             
@@ -126,7 +129,7 @@ update msg model =
             , AddSiteInDb newSite |> sendInfoOutside
             )
 
-        GetArticles rssResult ->
+        GetArticles siteId rssResult ->
             let
                 updatedModel =
                     { model | fetchingRss = False }
@@ -149,7 +152,7 @@ update msg model =
                             mergeArticles rssArticles model.articles
 
                         updatedSites = 
-                            model.sites |> List.map (\site -> {site | numberOfNewArticles = countNewArticlesInSite site.id mergedArticles model.lastRefreshTime })
+                            model.sites |> List.map (\site -> if site.id == siteId then {site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime } else site)
                     in
                     ( { updatedModel 
                         | articles = List.sortWith dateDescending mergedArticles 

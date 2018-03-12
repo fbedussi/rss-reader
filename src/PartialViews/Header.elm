@@ -1,14 +1,13 @@
 module PartialViews.Header exposing (siteHeader)
 
 import Css exposing (..)
-import Css.Media exposing (only, screen, withMedia)
 import Html.Styled exposing (Html, header, img, span, styled, text)
 import Html.Styled.Attributes exposing (class, src)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..), Panel(..))
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (menuIcon, refreshIcon, logo)
-import PartialViews.UiKit exposing (btnNoStyle, input, theme)
+import PartialViews.UiKit exposing (btnNoStyle, input, theme, onDesktop)
 
 
 siteHeader : Html Msg
@@ -23,16 +22,15 @@ siteHeader =
         , top zero
         , backgroundColor theme.colorBackground
         , zIndex (theme.zIndex.headerSmartphone)
-        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+        , onDesktop
             [ justifyContent flexStart 
             , zIndex (theme.zIndex.headerDesktop)        
             ]
         ]
         []
         [ styled btnNoStyle
-            [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-                [ display none
-                ]
+            [ onDesktop
+                [ display none]
             ]
             [ onClick ToggleMenu ]
             [ menuIcon
@@ -44,7 +42,7 @@ siteHeader =
         , logo [height (Css.rem 2)]
         , styled span
             [ display none
-            , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+            , onDesktop
                 [ display inline
                 , flex (int 1)
                 ]

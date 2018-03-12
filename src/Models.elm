@@ -6,7 +6,8 @@ import Keyboard exposing (KeyCode)
 import PanelsManager exposing (PanelsState, initialPanelsState)
 import Time exposing (Time)
 import TouchEvents exposing (Touch)
-
+import Task
+import Window
 
 type alias UserUid =
     String
@@ -175,13 +176,14 @@ type Msg
     | ExecuteImport
     | StoreImportData String
     | RefreshFeeds
-    | GetArticles (Result String (List Article))
+    | GetArticles Id (Result String (List Article))
     | ToggleSelectedCategory Id
     | AddNewCategory
     | AddNewSite
     | SaveArticle Article
     | TogglePanel Panel
     | ToggleMenu
+    | CloseMenu
     | OpenImportPanel
     | CloseAllPanels
     | UpdateSearch String

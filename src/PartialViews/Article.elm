@@ -12,7 +12,7 @@ import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href,
 import Html.Styled.Events exposing (onClick)
 import Json.Encode
 import Models exposing (Article, Category, Model, Msg(..), Site, DeleteMsg(..))
-import PartialViews.UiKit exposing (article, articleTitle, btn, clear, standardPadding, starBtn, theme, transition)
+import PartialViews.UiKit exposing (onDesktop, article, articleTitle, btn, clear, standardPadding, starBtn, theme, transition)
 
 
 renderArticle : Float -> List Site -> Article -> Html Msg
@@ -41,13 +41,13 @@ renderArticle articlePreviewHeight sites articleToRender =
             ]
             [ styled div
                 [ marginBottom theme.distanceXXS
-                , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                , onDesktop
                     [ displayFlex ]
                 ]
                 [ class "starAndArticle" ]
                 [ styled span
                     [ position absolute
-                    , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                    , onDesktop
                         [ position static
                         , marginRight (Css.em 0.5)
                         ]
@@ -63,13 +63,13 @@ renderArticle articlePreviewHeight sites articleToRender =
                         )
                     ]
                 , styled div
-                    [ withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                    [ onDesktop
                         [ width <| calc (pct 100) minus (calc (Css.rem 2.05) plus (Css.em 0.5)) ]
                     ]
                     [ class "article-content" ]
                     [ styled div
                         [ marginLeft (Css.rem 2)
-                        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+                        , onDesktop
                             [ marginLeft zero ]
                         ]
                         [ class "articleDateAndSite" ]

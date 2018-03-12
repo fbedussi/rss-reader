@@ -203,13 +203,14 @@ toggleSelected items id =
 countNewArticlesInSite : Id -> List Article -> Time -> Int
 countNewArticlesInSite siteId articles lastRefreshTime =
     articles
-        |> List.filter (\article -> lessThanOneDayDifference article.date lastRefreshTime && (article.siteId == siteId))
+        |> List.filter (\article -> (article.siteId == siteId) && lessThanOneDayDifference article.date lastRefreshTime)
         |> List.length
 
+
 lessThanOneDayDifference : Time -> Time -> Bool
-lessThanOneDayDifference newerTime olderTime =
+lessThanOneDayDifference articleDate lastRefreshTime =
     let
         difference =
-            newerTime - olderTime
+            abs (articleDate - lastRefreshTime)
     in
-    difference > 0 && difference < 1000 * 60 * 60 * 25
+    difference < 1000 * 60 * 60 * 25

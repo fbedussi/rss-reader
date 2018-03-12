@@ -121,7 +121,8 @@ renderSiteEntry site =
             [ class "category-siteInCategory " ]
             [ sidebarRow site.isSelected
                 [ class "sidebarRow" ]
-                ([ sidebarSelectionBtn
+                ([ styled sidebarSelectionBtn
+                    [if site.isSelected then batch [] else customCss "padding-right" "calc(3.75rem + 2em)"]        
                     [ class "siteInCategoryBtn"
                     , onClick <| ToggleSelectSite site.id
                     ]

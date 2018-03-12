@@ -13,7 +13,7 @@ import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
-import PartialViews.UiKit exposing (input, sidebarBoxStyle, standardPadding, theme, transition)
+import PartialViews.UiKit exposing (onDesktop, input, sidebarBoxStyle, standardPadding, theme, transition)
 import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
 
 
@@ -39,7 +39,7 @@ sidebar model =
         , width (pct 90)
         , backgroundColor theme.colorBackground
         , zIndex theme.zIndex.menu
-        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+        , onDesktop
             [ position static
             , zIndex theme.zIndex.base
             , width (pct 25)

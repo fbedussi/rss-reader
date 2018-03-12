@@ -1,7 +1,6 @@
 module PartialViews.SettingsLayer exposing (settingsLayer)
 
 import Css exposing (..)
-import Css.Media exposing (only, screen, withMedia)
 import Html.Styled exposing (Html, div, styled)
 import Html.Styled.Attributes exposing (class, id, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)

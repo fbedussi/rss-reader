@@ -1,14 +1,13 @@
 module PartialViews.MainContent exposing (..)
 
 import Css exposing (..)
-import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Styled exposing (Html, a, button, div, h2, img, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (alt, checked, class, for, fromUnstyled, href, id, src, type_)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Article, Category, Model, Msg(..), Options, Site)
 import PartialViews.Article exposing (renderArticle)
-import PartialViews.UiKit exposing (btn, clear, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
+import PartialViews.UiKit exposing (onDesktop, btn, clear, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
 
 
 mainContent : List Category -> List Site -> List Article -> Options -> Int -> Html Msg
@@ -27,7 +26,7 @@ mainContent categories sites articles options currentPage =
     in
     styled main_
         [ standardPadding
-        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
+        , onDesktop
             [ width (pct 75)
             , maxWidth <| calc (pct 100) minus (Css.rem 25)
             ]
@@ -38,10 +37,9 @@ mainContent categories sites articles options currentPage =
                 [ backgroundImage (url "/no_articles.svg")
                 , backgroundSize contain
                 , backgroundRepeat noRepeat
+                , backgroundPosition2 (pct 100) zero
                 , width (pct 100)
                 , height (vh 80)
-                , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-                    [ backgroundImage (url "/no_articles_desktop.svg") ]
                 ]
                 []
                 [ styled span
@@ -74,8 +72,8 @@ renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
         , flexDirection columnReverse
         , justifyContent spaceBetween
         , showIf <| List.length articlesToDisplay == articlesPerPage
-        , withMedia [ only screen [ Css.Media.minWidth theme.breakpoints.desktop ] ]
-                    [ flexDirection row ]
+        , onDesktop
+            [ flexDirection row ]
         ]
         [ class "pagerToolbar" ]
         [ styled span
