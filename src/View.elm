@@ -64,10 +64,12 @@ view model =
         , styled span
             [ position fixed
             , right theme.distanceS
-            , bottom theme.distanceS
+            , bottom theme.distanceXS
             , opacity (int 0)
             , display none
             , transition "opacity 0.3s"
+            , onDesktop
+                [bottom theme.distanceXXXL]
             ]
             [ class "backToTopButton" ]
             [ iconButton (arrowTop [ fill theme.white ]) ( "backToTop", False ) [onClick ScrollToTop]]
