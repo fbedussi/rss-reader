@@ -84,8 +84,8 @@ articleDecoder =
 appOptionsDecoder : Decoder Options
 appOptionsDecoder =
     map2 Options
-        (field "articlesPerPage" Json.Decode.int)
-        (field "articlePreviewHeightInEm" Json.Decode.float)
+        (oneOf [field "articlesPerPage" Json.Decode.int, succeed initialModel.options.articlesPerPage])
+        (oneOf [field "articlePreviewHeightInEm" Json.Decode.float, succeed initialModel.options.articlePreviewHeightInEm])
         
 
 dateDecoder : Decoder Time

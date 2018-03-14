@@ -131,9 +131,9 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { errorMsgs = []
+initialModel : Model
+initialModel = 
+    { errorMsgs = []
       , categories = []
       , sites = []
       , articles = []
@@ -150,8 +150,11 @@ init =
       , lastRefreshTime = 0
       , touchData = ( 0.0, 0.0 )
       }
-    , Cmd.none
-    )
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( initialModel, Cmd.none )
 
 
 createEmptySite : Site

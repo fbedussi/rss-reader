@@ -147,7 +147,7 @@ function elmIteroperability(app, uid) {
                             sites: convertObjToArray(result[1]).map((site) => Object.assign({ categoriesId: [] }, site)), //if the array is empty firebase strip it
                             articles: convertObjToArray(result[2]),
                             options: result[3][0],
-                            lastRefreshedTime: result[4][0].lastRefreshedTime
+                            lastRefreshedTime: result[4][0] && result[4][0].lastRefreshedTime ? result[4][0].lastRefreshedTime : 0
                         };
                         app.ports.infoForElm.send({
                             tag: 'allData',
@@ -157,7 +157,7 @@ function elmIteroperability(app, uid) {
                     .catch((error) => {
                         app.ports.infoForElm.send({
                             tag: 'error',
-                            data: error
+                            data: error.message
                         })
                     })
                     ;
