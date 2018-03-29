@@ -77,7 +77,7 @@ articleDecoder =
         (field "title" Json.Decode.string)
         (field "excerpt" Json.Decode.string)
         (field "starred" Json.Decode.bool)
-        (field "pubDate" dateDecoder)
+        (field "date" Json.Decode.float)
         (succeed False)
 
 

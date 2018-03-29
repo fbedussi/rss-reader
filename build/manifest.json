@@ -1,6 +1,6 @@
 {
-  "short_name": "Elm App",
-  "name": "Create Elm App Sample",
+  "short_name": "flyFeed",
+  "name": "A simple rss reader written in Elm",
   "icons": [
     {
       "src": "favicon.ico",

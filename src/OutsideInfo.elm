@@ -208,6 +208,7 @@ encodeArticle article =
         , ( "title", article.title |> string )
         , ( "excerpt", article.excerpt |> string )
         , ( "starred", article.starred |> bool )
+        , ( "date", article.date |> float)
         ]
 
 encodeOptions : Options -> Value

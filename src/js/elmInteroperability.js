@@ -15,7 +15,7 @@ function convertObjToArray(initialArray = []) {
     return resultArray
 }
 
-function addContent(storeName, content) {
+function addContent(app, storeName, content) {
     dbInterface.create({ storeName, content })
         // .then((result) => {
         //     console.log(result);
@@ -30,7 +30,7 @@ function addContent(storeName, content) {
         ;
 }
 
-function saveStore(storeName, content) {
+function saveStore(app, storeName, content) {
     dbInterface.replaceAll({ storeName, content })
         .catch((error) => {
             console.log(error);
@@ -42,7 +42,7 @@ function saveStore(storeName, content) {
         ;
 }
 
-function batchDelete(storeName, idList) {
+function batchDelete(app, storeName, idList) {
     const deleteRequests = idList.map(contentId => dbInterface.delete({ storeName, contentId }));
 
     Promise.all(deleteRequests)
@@ -59,7 +59,7 @@ function batchDelete(storeName, idList) {
         ;
 }
 
-function updateContent(storeName, content) {
+function updateContent(app, storeName, content) {
     dbInterface.update({ storeName, content })
         .then((result) => {
             //console.log(result);
@@ -164,47 +164,47 @@ function elmIteroperability(app, uid) {
                 break;
 
             case 'addCategory':
-                addContent('categories', payload);
+                addContent(app, 'categories', payload);
                 break;
 
             case 'deleteCategories':
-                batchDelete('categories', payload);
+                batchDelete(app, 'categories', payload);
                 break;
 
             case 'updateCategory':
-                updateContent('categories', payload);
+                updateContent(app, 'categories', payload);
                 break;
 
             case 'addSite':
-                addContent('sites', payload);
+                addContent(app, 'sites', payload);
                 break;
 
             case 'deleteSites':
-                batchDelete('sites', payload);
+                batchDelete(app, 'sites', payload);
                 break;
 
             case 'updateSite':
-                updateContent('sites', payload);
+                updateContent(app, 'sites', payload);
                 break;
 
             case 'addArticle':
-                addContent('articles', payload);
+                addContent(app, 'articles', payload);
                 break;
 
             case 'deleteArticles':
-                batchDelete('articles', payload);
+                batchDelete(app, 'articles', payload);
                 break;
 
             case 'saveAllData':
-                Object.keys(payload).forEach((key) => saveStore(key, payload[key]));
+                Object.keys(payload).forEach((key) => saveStore(app, key, payload[key]));
                 break;
 
             case 'saveOptions':
-                saveStore('options', payload)
+                saveStore(app, 'options', payload)
                 break;
 
             case 'saveLastRefreshedTime':
-                saveStore('lastRefreshedTime', payload)
+                saveStore(app, 'lastRefreshedTime', payload)
                 break;
 
             case 'toggleExcerpt':

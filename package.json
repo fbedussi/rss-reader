@@ -1,7 +1,7 @@
 {
-  "name": "rss",
+  "name": "flyFeed",
   "version": "1.0.0",
-  "description": "a simpe rss reader written in Elm",
+  "description": "A simple rss reader written in Elm",
   "main": "app.js",
   "directories": {
     "test": "tests"
@@ -19,7 +19,7 @@
     "elm"
   ],
   "author": "Francesco Bedussi",
-  "license": "MIT",
+  "license": "GNU2",
   "bugs": {
     "url": "https://github.com/fbedussi/rss-reader/issues"
   },
