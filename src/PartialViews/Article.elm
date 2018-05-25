@@ -2,7 +2,6 @@ module PartialViews.Article exposing (renderArticle)
 
 import Css exposing (..)
 import Css.Foreign exposing (descendants, selector, typeSelector)
-import Css.Media exposing (only, screen, withMedia)
 import Date exposing (day, fromTime, month, year)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
@@ -13,7 +12,8 @@ import Html.Styled.Events exposing (onClick)
 import Json.Encode
 import Models exposing (Article, Category, Model, Msg(..), Site, DeleteMsg(..))
 import PartialViews.UiKit exposing (onDesktop, article, articleTitle, btn, clear, standardPadding, starBtn, theme, transition)
-
+import HtmlParser as HtmlParser exposing (..)
+import HtmlParser.Util exposing (..)
 
 renderArticle : Float -> List Site -> Article -> Html Msg
 renderArticle articlePreviewHeight sites articleToRender =
@@ -32,6 +32,14 @@ renderArticle articlePreviewHeight sites articleToRender =
 
         domId =
             "article_" ++ toString articleToRender.id
+
+        
+        imageUrl = parse articleToRender.excerpt
+            |> getElementsByTagName "img"
+            |> mapElements (\_ attr _ -> getValue "src" attr |> Maybe.withDefault "")
+            |> List.head
+            |> Maybe.withDefault ""
+
     in
     li
         [ class "article" ]
@@ -92,15 +100,23 @@ renderArticle articlePreviewHeight sites articleToRender =
                             ]
                             []
                         ]
-                    , styled div
+                    , styled div 
+                        [backgroundImage <| url imageUrl
+                        , width (Css.rem 13)
+                        , height (Css.rem 9)
+                        , backgroundSize cover
+                        , backgroundRepeat noRepeat
+                        , backgroundPosition center
+                        , margin4 zero (Css.em 1) (Css.em 1) zero
+                        , float left
+                        , clear "both"
+                        ]
+                        [class "article-image"]
+                        []
+                    ,styled div
                         [ descendants
                             [ typeSelector "img"
-                                [ width (Css.rem 13)
-                                , height auto
-                                , float left
-                                , margin4 zero (Css.em 1) (Css.em 1) zero
-                                , clear "both"
-                                ]
+                                [ display none ]
                             ]
                         , maxHeight (Css.em articlePreviewHeight)
                         , transition "max-height 0.3s"
@@ -109,7 +125,8 @@ renderArticle articlePreviewHeight sites articleToRender =
                         [ class "article-excerpt" ]
                         [ div
                             [ class "article-excerptInner"
-                            , Json.Encode.string articleToRender.excerpt
+                            , articleToRender.excerpt
+                                |> Json.Encode.string 
                                 |> Html.Attributes.property "innerHTML"
                                 |> fromUnstyled
                             ]
