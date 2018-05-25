@@ -6,12 +6,12 @@ import Html.Styled.Attributes exposing (class, src)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..), Panel(..))
 import PartialViews.IconButton exposing (iconButton)
-import PartialViews.Icons exposing (menuIcon, refreshIcon, logo)
-import PartialViews.UiKit exposing (btnNoStyle, input, theme, onDesktop)
+import PartialViews.Icons exposing (logo, menuIcon, refreshIcon)
+import PartialViews.UiKit exposing (btnNoStyle, input, onDesktop, theme)
 
 
-siteHeader : Html Msg
-siteHeader =
+siteHeader : Bool -> Html Msg
+siteHeader isRefreshButtonVisible =
     styled header
         [ displayFlex
         , justifyContent spaceBetween
@@ -21,16 +21,16 @@ siteHeader =
         , position sticky
         , top zero
         , backgroundColor theme.colorBackground
-        , zIndex (theme.zIndex.headerSmartphone)
+        , zIndex theme.zIndex.headerSmartphone
         , onDesktop
-            [ justifyContent flexStart 
-            , zIndex (theme.zIndex.headerDesktop)        
+            [ justifyContent flexStart
+            , zIndex theme.zIndex.headerDesktop
             ]
         ]
         []
-        [ styled btnNoStyle
+        ([ styled btnNoStyle
             [ onDesktop
-                [ display none]
+                [ display none ]
             ]
             [ onClick ToggleMenu ]
             [ menuIcon
@@ -39,8 +39,8 @@ siteHeader =
                 , height theme.buttonHeight
                 ]
             ]
-        , logo [height (Css.rem 2)]
-        , styled span
+         , logo [ height (Css.rem 2) ]
+         , styled span
             [ display none
             , onDesktop
                 [ display inline
@@ -49,5 +49,6 @@ siteHeader =
             ]
             [ class "separator" ]
             []
-        , iconButton (refreshIcon []) ( "refresh", False ) [ class "refreshButton", onClick RefreshFeeds ]
-        ]
+         , iconButton (refreshIcon []) ( "refresh", False ) [ class <| "refreshButton " ++ (if isRefreshButtonVisible then "popIn" else "is-hidden"), onClick RefreshFeeds ]
+         ]
+        )

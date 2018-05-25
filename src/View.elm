@@ -46,7 +46,7 @@ view model =
         , onClick SetMouseNavigation
         , onKeyDown VerifyKeyboardNavigation
         ]
-        [ siteHeader
+        [ siteHeader <| isRefreshButtonVisible model.articles
         , errorContainer model.panelsState model.errorMsgs
         , styled div
             [ onDesktop
@@ -74,3 +74,8 @@ view model =
             [ class "backToTopButton" ]
             [ iconButton (arrowTop [ fill theme.white ]) ( "backToTop", False ) [onClick ScrollToTop]]
         ]
+
+
+isRefreshButtonVisible : List a -> Bool
+isRefreshButtonVisible articles =
+    not <| List.isEmpty articles
