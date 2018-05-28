@@ -58,7 +58,7 @@ export function initReadMoreButtons() {
         document.querySelectorAll('.article').forEach((article) => {
             const {articleExcerpt, articleExcerptInner} = getInnerElements(article);
             const readMoreButton = article.querySelector('.readMoreButton');
-            if (articleExcerptInner.clientHeight > articleExcerpt.clientHeight) {
+            if (articleExcerptInner && articleExcerptInner.clientHeight > articleExcerpt.clientHeight) {
                 readMoreButton.tabIndex = 0;                
                 readMoreButton.style.opacity = 1;
             } else {

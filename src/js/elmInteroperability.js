@@ -149,6 +149,10 @@ function elmIteroperability(app, uid) {
                             options: result[3][0],
                             lastRefreshedTime: result[4][0] && result[4][0].lastRefreshedTime ? result[4][0].lastRefreshedTime : 0
                         };
+
+                        initBackToTopButton();
+                        watchForArticleChange();
+
                         app.ports.infoForElm.send({
                             tag: 'allData',
                             data: resultToSend
@@ -211,10 +215,10 @@ function elmIteroperability(app, uid) {
                 toggleExcerpt(payload);
                 break;
 
-            case 'initReadMoreButtons':
-                initBackToTopButton();
-                watchForArticleChange();
-                break;
+            // case 'initReadMoreButtons':
+            //     initBackToTopButton();
+            //     watchForArticleChange();
+            //     break;
 
             case 'scrollToTop':
                 document.scrollingElement.scrollTop = 0;
