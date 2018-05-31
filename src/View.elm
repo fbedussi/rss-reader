@@ -46,7 +46,7 @@ view model =
         , onClick SetMouseNavigation
         , onKeyDown VerifyKeyboardNavigation
         ]
-        [ siteHeader <| isRefreshButtonVisible model.articles
+        [ siteHeader <| isRefreshButtonVisible model.sites
         , errorContainer model.panelsState model.errorMsgs
         , styled div
             [ onDesktop
@@ -77,5 +77,5 @@ view model =
 
 
 isRefreshButtonVisible : List a -> Bool
-isRefreshButtonVisible articles =
-    not <| List.isEmpty articles
+isRefreshButtonVisible sites =
+    not <| List.isEmpty sites
