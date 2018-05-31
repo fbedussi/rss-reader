@@ -49,6 +49,6 @@ siteHeader isRefreshButtonVisible =
             ]
             [ class "separator" ]
             []
-         , iconButton (refreshIcon []) ( "refresh", False ) [ class <| "refreshButton " ++ (if isRefreshButtonVisible then "popIn" else "is-hidden"), onClick RefreshFeeds ]
+         , iconButton (refreshIcon []) ( "refresh", False ) [ class <| "refreshButton " ++ (if isRefreshButtonVisible then "popIn" else "popOut"), onClick RefreshFeeds ]
          ]
         )
