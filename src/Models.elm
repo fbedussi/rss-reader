@@ -246,6 +246,7 @@ type InfoForOutside
     | DeleteSitesInDb (List Id)
     | UpdateSiteInDb Site
     | AddArticleInDb Article
+    | AddArticlesInDb (List Article)
     | DeleteArticlesInDb (List Id)
     | SaveOptions Options
     | SaveLastRefreshedTime Time

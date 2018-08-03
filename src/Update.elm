@@ -157,7 +157,7 @@ update msg model =
                     ( { updatedModel 
                         | articles = List.sortWith dateDescending mergedArticles 
                         , sites = updatedSites
-                    }, InitReadMoreButtons |> sendInfoOutside )
+                    }, [AddArticlesInDb mergedArticles |> sendInfoOutside, InitReadMoreButtons |> sendInfoOutside] |> Cmd.batch)
 
                 Err err ->
                     let

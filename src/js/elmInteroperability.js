@@ -195,6 +195,10 @@ function elmIteroperability(app, uid) {
                 addContent(app, 'articles', payload);
                 break;
 
+            case 'addArticles':
+                payload.forEach((article) => addContent(app, 'articles', article));
+                break;
+
             case 'deleteArticles':
                 batchDelete(app, 'articles', payload);
                 break;

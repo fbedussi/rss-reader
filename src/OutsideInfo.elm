@@ -52,6 +52,9 @@ sendInfoOutside info =
         AddArticleInDb article ->
             infoForOutside { tag = "addArticle", data = encodeArticle article }
 
+        AddArticlesInDb articles ->
+            infoForOutside { tag = "addArticles", data = encodeArticles articles }
+
         DeleteArticlesInDb articleToDeleteIds ->
             infoForOutside { tag = "deleteArticles", data = encodeIdList articleToDeleteIds }
 
@@ -197,6 +200,11 @@ encodeSite site =
 encodeIdList : List Id -> Value
 encodeIdList ids =
     Json.Encode.list (List.map Json.Encode.int ids)
+
+
+encodeArticles : List Article -> Value
+encodeArticles articles =
+    Json.Encode.list (List.map encodeArticle articles)
 
 
 encodeArticle : Article -> Value
