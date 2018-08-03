@@ -1,7 +1,6 @@
 module PartialViews.Sidebar exposing (..)
 
 import Css exposing (..)
-import Css.Media exposing (only, screen, withMedia)
 import Html
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, for, fromUnstyled, href, id, placeholder, src, type_, value)

@@ -14,7 +14,8 @@ import Update.Delete exposing (handleDeleteMsgs)
 import Update.EditCategory exposing (handleEditCategoryMsgs)
 import Update.EditSite exposing (handleEditSiteMsgs)
 import Update.ErrorBox exposing (handleErrorBoxMsgs)
-
+import Xml.Extra exposing (stringToJson)
+import Debug
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -137,27 +138,17 @@ update msg model =
             case rssResult of
                 Ok feeds ->
                     let
-                        rssArticles =
-                            feeds
-                                |> List.map
-                                    (\article ->
-                                        { article
-                                            | id = hashString 12345 article.link
-                                            , excerpt =
-                                                article.excerpt
-                                        }
-                                    )
-
-                        mergedArticles =
-                            mergeArticles rssArticles model.articles
-
-                        updatedSites = 
-                            model.sites |> List.map (\site -> if site.id == siteId then {site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime } else site)
+                        lg = Debug.log "feed" feeds
                     in
-                    ( { updatedModel 
-                        | articles = List.sortWith dateDescending mergedArticles 
-                        , sites = updatedSites
-                    }, InitReadMoreButtons |> sendInfoOutside )
+                        
+                    -- let
+                    --     pippo = feeds
+                    --         |> List.map (\feed -> stringToJson feed)
+                    --         |> List.map (\result -> Result.withDefault (JSON.encode 0 createEmmptyArticle) result)
+                    --         |> List.map (\jsonResult -> decodeValue )
+                    -- in
+                        
+                    (model, Cmd.none)
 
                 Err err ->
                     let
@@ -173,6 +164,30 @@ update msg model =
                       }
                     , delay 1000 <| ErrorBoxMsg <| OpenErrorMsg errorMsgId
                     )
+        
+        -- DecodeArticle article ->
+        --     let
+        --                 rssArticles =
+        --                     feeds
+        --                         |> List.map
+        --                             (\articleTxt ->
+        --                                 { article
+        --                                     | id = hashString 12345 article.link
+        --                                     , excerpt =
+        --                                         article.excerpt
+        --                                 }
+        --                             )
+
+        --                 mergedArticles =
+        --                     mergeArticles rssArticles model.articles
+
+        --                 updatedSites = 
+        --                     model.sites |> List.map (\site -> if site.id == siteId then {site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime } else site)
+        --             in
+        --             ( { updatedModel 
+        --                 | articles = List.sortWith dateDescending mergedArticles 
+        --                 , sites = updatedSites
+        --             }, InitReadMoreButtons |> sendInfoOutside )
 
         SaveArticle articleToSave ->
             let

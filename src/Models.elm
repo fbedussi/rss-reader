@@ -170,6 +170,18 @@ createEmptySite =
         0
 
 
+createEmmptyArticle =
+    Article
+        -1
+        -1
+        ""
+        ""
+        ""
+        False
+        0
+        False
+
+
 type Msg
     = SetMouseNavigation
     | VerifyKeyboardNavigation KeyCode
@@ -179,7 +191,7 @@ type Msg
     | ExecuteImport
     | StoreImportData String
     | RefreshFeeds
-    | GetArticles Id (Result String (List Article))
+    | GetArticles Id (Result String String)
     | ToggleSelectedCategory Id
     | AddNewCategory
     | AddNewSite

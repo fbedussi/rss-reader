@@ -107,11 +107,9 @@ decodeError : Value -> Result String String
 decodeError err =
     decodeValue string err
 
-
 feedDecoder : Int -> Decoder (List Article)
 feedDecoder siteId =
     field "items" (list (feedArticleDecoder siteId))
-
 
 feedArticleDecoder : Int -> Decoder Article
 feedArticleDecoder siteId =

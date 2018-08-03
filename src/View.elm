@@ -1,7 +1,6 @@
 module View exposing (view)
 
 import Css exposing (..)
-import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getSiteToEdit, onKeyDown)
 import Html.Styled exposing (Html, div, styled, span)
 import Html.Styled.Attributes exposing (class)
