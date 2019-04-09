@@ -1,4 +1,4 @@
-module PartialViews.MainContent exposing (..)
+module PartialViews.MainContent exposing (mainContent, renderChangeNumberOfArticlesPerPageButton, renderPagination, showIf)
 
 import Css exposing (..)
 import Helpers exposing (getArticleSite, getSelectedArticles)
@@ -7,7 +7,7 @@ import Html.Styled.Attributes exposing (alt, checked, class, for, fromUnstyled, 
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Article, Category, Model, Msg(..), Options, Site)
 import PartialViews.Article exposing (renderArticle)
-import PartialViews.UiKit exposing (onDesktop, btn, clear, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
+import PartialViews.UiKit exposing (btn, clear, onDesktop, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
 
 
 mainContent : List Category -> List Site -> List Article -> Options -> Int -> Html Msg
@@ -48,6 +48,7 @@ mainContent categories sites articles options currentPage =
                     [ text "no article yet, click the refresh button" ]
                 ]
             ]
+
          else if List.length articlesToDisplay > 0 then
             [ ul
                 [ class "selectedArticles" ]
@@ -56,6 +57,7 @@ mainContent categories sites articles options currentPage =
                 )
             , renderPagination articlesToDisplay options.articlesPerPage currentPage lastPage
             ]
+
          else
             [ div
                 [ class "noArticleSelected" ]
@@ -77,10 +79,10 @@ renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
         ]
         [ class "pagerToolbar" ]
         [ styled span
-            [marginBottom (Css.rem 0.5)]        
+            [ marginBottom (Css.rem 0.5) ]
             [ class "pagerWrapper" ]
             [ styled btn
-                [ showIf <| currentPage > 1 
+                [ showIf <| currentPage > 1
                 , marginRight (Css.rem 0.5)
                 ]
                 [ class "firstPageButton"
@@ -98,9 +100,9 @@ renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
             , styled span
                 [ marginRight (Css.em 0.5) ]
                 [ class "currentPage" ]
-                [ text <| toString currentPage ++ "/" ++ toString lastPage ]
+                [ text <| String.fromInt currentPage ++ "/" ++ String.fromInt lastPage ]
             , styled btn
-                [ showIf <| currentPage < lastPage 
+                [ showIf <| currentPage < lastPage
                 , marginRight (Css.rem 0.5)
                 ]
                 [ class "nextPageButton"
@@ -115,7 +117,7 @@ renderPagination articlesToDisplay articlesPerPage currentPage lastPage =
                 [ text ">>" ]
             ]
         , styled span
-            [marginBottom (Css.rem 0.5)]
+            [ marginBottom (Css.rem 0.5) ]
             [ class "changeNumberOfArticlesPerPageButtonsWrapper" ]
             ([ span
                 [ class "articlesPerPageLabel" ]
@@ -130,6 +132,7 @@ showIf : Bool -> Style
 showIf condition =
     if condition then
         batch []
+
     else
         display none |> important
 
@@ -137,11 +140,11 @@ showIf condition =
 renderChangeNumberOfArticlesPerPageButton : Int -> Int -> Html Msg
 renderChangeNumberOfArticlesPerPageButton currentArticlesPerPage newArticlesPerPage =
     styled span
-        [marginLeft (Css.rem 0.5)]
+        [ marginLeft (Css.rem 0.5) ]
         []
-        [selectableBtn (currentArticlesPerPage == newArticlesPerPage)
+        [ selectableBtn (currentArticlesPerPage == newArticlesPerPage)
             [ class "changeNumberOfArticlesPerPageButton"
             , onClick <| ChangeNumberOfArticlesPerPage newArticlesPerPage
             ]
-            [ text <| toString newArticlesPerPage ]
+            [ text <| String.fromInt newArticlesPerPage ]
         ]

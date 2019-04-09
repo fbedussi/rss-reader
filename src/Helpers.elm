@@ -1,4 +1,4 @@
-module Helpers exposing (..)
+module Helpers exposing (closeModal, countNewArticlesInSite, dateDescending, delay, extractId, getArticleSite, getArticlesInSites, getClass, getDataToSaveInDb, getMaxId, getNextId, getSelectedArticles, getSiteToEdit, getSitesInCategories, incrementMaxId, isArticleInSites, isSelected, isSiteInCategories, lessThanOneDayDifference, mergeArticles, onKeyDown, openModal, sendMsg, toggleSelected)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Events exposing (keyCode, on)
@@ -36,6 +36,7 @@ getSelectedArticles categories sites articles =
         sitesInSelectedCategory =
             if List.isEmpty selectedCategories then
                 sites
+
             else
                 getSitesInCategories (extractId selectedCategories) sites
 
@@ -48,6 +49,7 @@ getSelectedArticles categories sites articles =
             if List.isEmpty selectedSiteIds then
                 articles
                     |> getArticlesInSites (sitesInSelectedCategory |> extractId)
+
             else
                 getArticlesInSites selectedSiteIds articles
     in
@@ -107,6 +109,7 @@ getClass class selectedId id =
         Just selId ->
             if selId == id then
                 class
+
             else
                 ""
 
@@ -162,12 +165,12 @@ sendMsg msg =
 
 closeModal : PanelsState -> PanelsState
 closeModal panelsState =
-    closePanel (toString PanelModal) panelsState
+    closePanel PanelModal panelsState
 
 
 openModal : PanelsState -> PanelsState
 openModal panelsState =
-    openPanel (toString PanelModal) panelsState
+    openPanel PanelModal panelsState
 
 
 getDataToSaveInDb : Model -> ( List Category, List Site, List Article )
@@ -195,6 +198,7 @@ toggleSelected items id =
             (\item ->
                 if item.id == id then
                     { item | isSelected = True }
+
                 else
                     { item | isSelected = False }
             )

@@ -1,9 +1,8 @@
 module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser, feedDecoder)
 
-import Date
-import Time exposing (Time)
 import Json.Decode exposing (..)
 import Models exposing (..)
+import Iso8601
 
 
 decodeDbOpened : Value -> Result String Bool
@@ -84,23 +83,8 @@ articleDecoder =
 appOptionsDecoder : Decoder Options
 appOptionsDecoder =
     map2 Options
-        (oneOf [field "articlesPerPage" Json.Decode.int, succeed initialModel.options.articlesPerPage])
-        (oneOf [field "articlePreviewHeightInEm" Json.Decode.float, succeed initialModel.options.articlePreviewHeightInEm])
-        
-
-dateDecoder : Decoder Time
-dateDecoder =
-    let
-        convert : String -> Decoder Time
-        convert raw =
-            case Date.fromString raw of
-                Ok date ->
-                    date |> Date.toTime |> succeed
-
-                Err error ->
-                    fail error
-    in
-    string |> andThen convert
+        (oneOf [ field "articlesPerPage" Json.Decode.int, succeed initialModel.options.articlesPerPage ])
+        (oneOf [ field "articlePreviewHeightInEm" Json.Decode.float, succeed initialModel.options.articlePreviewHeightInEm ])
 
 
 decodeError : Value -> Result String String
@@ -122,5 +106,5 @@ feedArticleDecoder siteId =
         (field "title" string)
         (field "description" string)
         (succeed False)
-        (field "pubDate" dateDecoder)
+        (field "pubDate" Iso8601.decoder)
         (succeed False)

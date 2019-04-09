@@ -25,6 +25,7 @@ executeImport model =
                             (\opmlCategory ( filteredCategories, looseSites ) ->
                                 if String.isEmpty opmlCategory.name then
                                     ( filteredCategories, looseSites ++ opmlCategory.sites )
+
                                 else
                                     ( filteredCategories ++ [ opmlCategory ], looseSites )
                             )

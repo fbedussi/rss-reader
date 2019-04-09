@@ -35,6 +35,8 @@
     }
   },
   "dependencies": {
+    "elm": "^0.19.0-bugfix6",
+    "elm-format": "^0.8.1",
     "firebase": "^4.9.0",
     "firebaseui": "^2.6.2"
   }

@@ -28,7 +28,7 @@ renderEditSiteForm site categories =
                 [ text "Site id: " ]
             , div
                 [ class "input is-disabled" ]
-                [ toString site.id |> text ]
+                [ String.fromInt site.id |> text ]
             ]
         , inputRowText "siteNameInput" "Name" site.name (\name -> EditSiteMsg <| UpdateSite { site | name = name })
         , inputRowText "rssLinkInput" "Rss link" site.rssLink (\rssLink -> EditSiteMsg <| UpdateSite { site | rssLink = rssLink })
@@ -57,6 +57,7 @@ renderEditSiteForm site categories =
                     [ selected
                         (if List.isEmpty site.categoriesId then
                             True
+
                          else
                             False
                         )
@@ -86,10 +87,11 @@ renderEditSiteForm site categories =
 renderCategoryOptions : List Id -> Category -> Html Msg
 renderCategoryOptions siteCategoriesId category =
     option
-        [ toString category.id |> value
+        [ String.fromInt category.id |> value
         , selected
             (if List.member category.id siteCategoriesId then
                 True
+
              else
                 False
             )

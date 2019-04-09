@@ -1,7 +1,7 @@
 module Update.Delete exposing (handleDeleteMsgs)
 
 import Helpers exposing (closeModal, openModal)
-import Models exposing (Article, Id, DeleteMsg(..), InfoForOutside(..), Modal, Model, Msg(..), Panel(..))
+import Models exposing (Article, DeleteMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..))
 import OutsideInfo exposing (sendInfoOutside)
 import PanelsManager exposing (closePanel, openPanel)
 
@@ -60,7 +60,7 @@ handleDeleteMsgs model msg =
             ( { model
                 | sites = updatedSites
                 , articles = updatedArticles
-                , panelsState = (closePanel (toString PanelEditSite) >> closeModal) model.panelsState
+                , panelsState = (closePanel (panelToString PanelEditSite) >> closeModal) model.panelsState
               }
             , Cmd.batch
                 [ DeleteSitesInDb sitesToDeleteId |> sendInfoOutside
@@ -113,6 +113,7 @@ handleDeleteMsgs model msg =
                         (\article ->
                             if List.member article.id articleToDeleteIds then
                                 { article | starred = False }
+
                             else
                                 article
                         )
@@ -133,8 +134,10 @@ deleteSitesArticles articles sitesToDeleteId =
             if List.member article.siteId sitesToDeleteId then
                 if article.starred then
                     ( articleToKeep, articleToDeleteInDbIds ++ [ article.id ] )
+
                 else
                     ( articleToKeep, articleToDeleteInDbIds )
+
             else
                 ( articleToKeep ++ [ article ], articleToDeleteInDbIds )
         )

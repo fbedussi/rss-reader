@@ -1,7 +1,7 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
-import Accordion exposing (closeTab, openTab)
-import Css exposing (auto, batch, backgroundColor, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
+-- import Accordion exposing (closeTab, openTab)
+import Css exposing (auto, backgroundColor, batch, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
 import Helpers exposing (extractId, getClass, getSitesInCategories, isArticleInSites, isSelected)
 import Html
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, toUnstyled, ul)
@@ -13,20 +13,21 @@ import PanelsManager exposing (PanelsState, getPanelClass, getPanelState)
 import PartialViews.DeleteActions exposing (deleteActions)
 import PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
 import PartialViews.Icons exposing (checkIcon, deleteIcon, editIcon, folderIcon)
-import PartialViews.UiKit exposing (badge, customCss, categoryWrapper, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
+import PartialViews.UiKit exposing (badge, categoryWrapper, customCss, input, sidebarRow, sidebarSelectionBtn, tabContentOuter, theme)
 
 
 renderCategory : List Site -> PanelsState -> Category -> Html.Html Msg
 renderCategory sites panelsState category =
     let
         domId =
-            "cat_" ++ toString category.id
+            "cat_" ++ String.fromInt category.id
 
-        triggerOpenTab =
-            if category.isSelected then
-                openTab ("#" ++ domId)
-            else
-                closeTab ("#" ++ domId)
+        -- triggerOpenTab =
+        --     if category.isSelected then
+        --         openTab ("#" ++ domId)
+
+        --     else
+        --         closeTab ("#" ++ domId)
 
         sitesInCategory =
             getSitesInCategories [ category.id ] sites
@@ -44,6 +45,7 @@ renderCategory sites panelsState category =
                 [ class "tabTitle sidebarRow" ]
                 (if category.isBeingEdited then
                     renderEditCategory category
+
                  else
                     renderCategoryName category newArticlesInCategory
                 )
@@ -62,7 +64,12 @@ renderCategory sites panelsState category =
 renderCategoryName : Category -> Int -> List (Html Msg)
 renderCategoryName category newArticlesInCategory =
     [ styled sidebarSelectionBtn
-        [if category.isSelected then batch [] else customCss "padding-right" "calc(3.75rem + 2em)"]
+        [ if category.isSelected then
+            batch []
+
+          else
+            customCss "padding-right" "calc(3.75rem + 2em)"
+        ]
         [ class "categoryBtn"
         , onClick <| ToggleSelectedCategory category.id
         ]
@@ -75,7 +82,7 @@ renderCategoryName category newArticlesInCategory =
             ]
         , badge
             [ class "category-numberOfArticles" ]
-            [ text <| toString newArticlesInCategory ]
+            [ text <| String.fromInt newArticlesInCategory ]
         , styled span
             [ verticalAlign middle ]
             [ class "category-name" ]
@@ -89,6 +96,7 @@ renderCategoryName category newArticlesInCategory =
                     , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| ToggleDeleteActions category.id ]
                     ]
                 ]
+
             else
                 []
            )
@@ -104,7 +112,7 @@ renderEditCategory category =
         [ styled input
             [ Css.flex (Css.int 1) ]
             [ class "editCategoryName-input"
-            , id <| "editCategoryName-" ++ toString category.id
+            , id <| "editCategoryName-" ++ String.fromInt category.id
             , value category.name
             , onInput <| EditCategoryMsg << UpdateCategoryName category
             ]
@@ -122,13 +130,18 @@ renderSiteEntry site =
             [ sidebarRow site.isSelected
                 [ class "sidebarRow" ]
                 ([ styled sidebarSelectionBtn
-                    [if site.isSelected then batch [] else customCss "padding-right" "calc(3.75rem + 2em)"]        
+                    [ if site.isSelected then
+                        batch []
+
+                      else
+                        customCss "padding-right" "calc(3.75rem + 2em)"
+                    ]
                     [ class "siteInCategoryBtn"
                     , onClick <| ToggleSelectSite site.id
                     ]
                     [ badge
                         [ class "site-numberOfArticles" ]
-                        [ text <| toString site.numberOfNewArticles ]
+                        [ text <| String.fromInt site.numberOfNewArticles ]
                     , span
                         []
                         [ site.name |> text ]
@@ -142,6 +155,7 @@ renderSiteEntry site =
                                 , iconButtonNoStyle (deleteIcon [ fill theme.white ]) ( "delete", False ) [ onClick <| DeleteMsg <| RequestDeleteSites [ site.id ] ]
                                 ]
                             ]
+
                         else
                             []
                        )

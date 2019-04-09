@@ -4,7 +4,7 @@ import Css exposing (..)
 import Html.Styled exposing (Html, div, styled)
 import Html.Styled.Attributes exposing (class, id, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import Models exposing (Msg(..), Panel(..), Options)
+import Models exposing (Msg(..), Options, Panel(..))
 import PartialViews.IconButton exposing (iconButton)
 import PartialViews.Icons exposing (exitIcon, importIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, inputRowLabel, layerTop, secondaryBtn, theme)
@@ -30,7 +30,7 @@ settingsLayer options animationClass =
                     [ flex (int 5) ]
                     [ class "input"
                     , id "previewRows"
-                    , value <| toString options.articlePreviewHeightInEm
+                    , value <| String.fromFloat options.articlePreviewHeightInEm
                     , onInput ChangePreviewHeight
                     , type_ "number"
                     ]

@@ -1,25 +1,25 @@
 module Update.EditSite exposing (handleEditSiteMsgs)
 
-import Models exposing (Model, EditSiteMsg(..), Panel(..), Msg(..))
 import Helpers exposing (sendMsg)
-import PanelsManager exposing ( closePanel, openPanel)
+import Models exposing (EditSiteMsg(..), Model, Msg(..), Panel(..))
 import OutsideInfo exposing (sendInfoOutside)
+import PanelsManager exposing (closePanel, openPanel)
 
 
-handleEditSiteMsgs : Model -> EditSiteMsg -> (Model, Cmd Msg)
+handleEditSiteMsgs : Model -> EditSiteMsg -> ( Model, Cmd Msg )
 handleEditSiteMsgs model msg =
     case msg of
         OpenEditSitePanel site ->
             ( { model
                 | siteToEditForm = site
-                , panelsState = openPanel (toString PanelEditSite) model.panelsState
+                , panelsState = openPanel (panelToString PanelEditSite) model.panelsState
               }
             , Cmd.none
             )
 
         CloseEditSitePanel ->
             ( { model
-                | panelsState = closePanel (toString PanelEditSite) model.panelsState
+                | panelsState = closePanel (panelToString PanelEditSite) model.panelsState
               }
             , Cmd.none
             )
@@ -35,6 +35,7 @@ handleEditSiteMsgs model msg =
                             (\site ->
                                 if site.id == model.siteToEditForm.id then
                                     model.siteToEditForm
+
                                 else
                                     site
                             )

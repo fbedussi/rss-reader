@@ -18,6 +18,7 @@ handleEditCategoryMsgs model msg =
                                         | isSelected = True
                                         , isBeingEdited = True
                                     }
+
                                 else
                                     category
                             )
@@ -35,6 +36,7 @@ handleEditCategoryMsgs model msg =
                                     { category
                                         | isBeingEdited = False
                                     }
+
                                 else
                                     category
                             )
@@ -52,6 +54,7 @@ handleEditCategoryMsgs model msg =
                         (\modelCategory ->
                             if modelCategory.id == category.id then
                                 updateCategory
+
                             else
                                 category
                         )

@@ -1,13 +1,15 @@
-module Models exposing (..)
+module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, init, initialModel)
 
-import Dom exposing (Error)
+import Browser.Dom exposing (Error)
 import Json.Encode
-import Keyboard exposing (KeyCode)
+import Char exposing (KeyCode)
 import PanelsManager exposing (PanelsState, initialPanelsState)
-import Time exposing (Time)
-import TouchEvents exposing (Touch)
 import Task
-import Window
+-- import Time exposing (Time)
+-- import TouchEvents exposing (Touch)
+-- import Window
+import Time exposing (Month)
+
 
 type alias UserUid =
     String
@@ -110,6 +112,14 @@ type Panel
     | PanelMenu
     | PanelSettings
 
+panelToString : Panel -> String
+panelToString panel =
+ case panel of
+    PanelEditSite -> "PanelEditSite"
+    PanelImport -> "PanelImport"
+    PanelModal -> "PanelModal"
+    PanelMenu -> "PanelMenu"
+    PanelSettings -> "PanelSettings"
 
 type alias Model =
     { errorMsgs : List String
@@ -132,24 +142,24 @@ type alias Model =
 
 
 initialModel : Model
-initialModel = 
+initialModel =
     { errorMsgs = []
-      , categories = []
-      , sites = []
-      , articles = []
-      , siteToEditForm = createEmptySite
-      , importData = ""
-      , searchTerm = ""
-      , keyboardNavigation = False
-      , fetchingRss = False
-      , modal = { text = "", action = NoOp }
-      , panelsState = initialPanelsState
-      , menuOpen = False
-      , currentPage = 1
-      , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
-      , lastRefreshTime = 0
-      , touchData = ( 0.0, 0.0 )
-      }
+    , categories = []
+    , sites = []
+    , articles = []
+    , siteToEditForm = createEmptySite
+    , importData = ""
+    , searchTerm = ""
+    , keyboardNavigation = False
+    , fetchingRss = False
+    , modal = { text = "", action = NoOp }
+    , panelsState = initialPanelsState
+    , menuOpen = False
+    , currentPage = 1
+    , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
+    , lastRefreshTime = 0
+    , touchData = ( 0.0, 0.0 )
+    }
 
 
 init : ( Model, Cmd Msg )
@@ -194,7 +204,7 @@ type Msg
     | ChangeNumberOfArticlesPerPage Int
     | ChangePreviewHeight String
     | RegisterTime Time
-    | OnTouchStart Touch
+    -- | OnTouchStart Touch
     | ScrollToTop
     | SignOut
     | EditCategoryMsg EditCategoryMsg
@@ -260,3 +270,20 @@ type InfoForElm
     = UserLoggedIn UserUid
     | DbOpened
     | NewData (List Category) (List Site) (List Article) Options Time
+
+
+toEnglishMonth : Month -> String
+toEnglishMonth month =
+  case month of
+    Jan -> "Jan"
+    Feb -> "Feb"
+    Mar -> "Mar"
+    Apr -> "Apr"
+    May -> "May"
+    Jun -> "Jun"
+    Jul -> "Jul"
+    Aug -> "Aug"
+    Sep -> "Sep"
+    Oct -> "Oct"
+    Nov -> "Nov"
+    Dec -> "Dec"

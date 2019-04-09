@@ -1,12 +1,21 @@
-module Subscriptions exposing (..)
+module Subscriptions exposing (subscriptions)
 
-import Models exposing (Model, Msg(..), ErrorBoxMsg(..))
+import Models exposing (ErrorBoxMsg(..), Model, Msg(..))
 import OutsideInfo exposing (getInfoFromOutside)
-import Window
+-- import Window
+import Browser
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [
-        getInfoFromOutside Outside <| ErrorBoxMsg << LogErr
-        , Window.resizes (\{height, width} -> if model.menuOpen then CloseMenu else NoOp)
-    ]
+    Sub.batch
+        [ getInfoFromOutside Outside <| ErrorBoxMsg << LogErr
+        , Browser.events.onResize
+            (\{ height, width } ->
+                if model.menuOpen then
+                    CloseMenu
+
+                else
+                    NoOp
+            )
+        ]

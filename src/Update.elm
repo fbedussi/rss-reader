@@ -1,8 +1,8 @@
-module Update exposing (..)
+module Update exposing (createNewCategory, createNewSite, update)
 
-import Dom exposing (focus)
+import Browser.Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (countNewArticlesInSite, closeModal, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
+import Helpers exposing (closeModal, countNewArticlesInSite, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
 import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite)
 import Murmur3 exposing (hashString)
@@ -45,7 +45,7 @@ update msg model =
         ToggleDeleteActions categoryId ->
             let
                 panelId =
-                    "cat_" ++ toString categoryId
+                    "cat_" ++ String.fromInt categoryId
 
                 isOpen =
                     getPanelState panelId model.panelsState |> isPanelOpen
@@ -54,6 +54,7 @@ update msg model =
                     closePanelsFuzzy "cat_" model.panelsState
                         |> (if isOpen then
                                 closePanel panelId
+
                             else
                                 openPanel panelId
                            )
@@ -63,25 +64,25 @@ update msg model =
         TogglePanel panel ->
             let
                 isOpen =
-                    getPanelState (toString panel) model.panelsState |> isPanelOpen
+                    getPanelState (panelToString panel) model.panelsState |> isPanelOpen
 
                 updatedPanelsState =
                     if isOpen then
-                        closePanel (toString panel) model.panelsState 
+                        closePanel (panelToString panel) model.panelsState
+
                     else
-                        openPanel (toString panel) model.panelsState
+                        openPanel (panelToString panel) model.panelsState
             in
             ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
         ToggleMenu ->
-            ({model | menuOpen = not model.menuOpen}, Cmd.none)
-        
+            ( { model | menuOpen = not model.menuOpen }, Cmd.none )
+
         CloseMenu ->
-            ({model | menuOpen = False}, Cmd.none)
-        
+            ( { model | menuOpen = False }, Cmd.none )
+
         OpenImportPanel ->
-            ( { model | panelsState = model.panelsState |> closePanel (toString PanelSettings) |> openPanel (toString PanelImport) }, Cmd.none )
-            
+            ( { model | panelsState = model.panelsState |> closePanel (PanelSettings) |> openPanel (panelToString PanelImport) }, Cmd.none )
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -105,7 +106,7 @@ update msg model =
                 | categories = List.append model.categories [ newCategory ]
               }
             , Cmd.batch
-                [ Dom.focus ("editCategoryName-" ++ toString newCategory.id) |> Task.attempt (\_ -> NoOp)
+                [ Dom.focus ("editCategoryName-" ++ String.fromInt newCategory.id) |> Task.attempt (\_ -> NoOp)
                 , AddCategoryInDb newCategory |> sendInfoOutside
                 ]
             )
@@ -124,7 +125,7 @@ update msg model =
             ( { model
                 | sites = List.append model.sites [ newSite ]
                 , siteToEditForm = newSite
-                , panelsState = openPanel (toString PanelEditSite) model.panelsState
+                , panelsState = openPanel (panelToString PanelEditSite) model.panelsState
               }
             , AddSiteInDb newSite |> sendInfoOutside
             )
@@ -151,18 +152,28 @@ update msg model =
                         mergedArticles =
                             mergeArticles rssArticles model.articles
 
-                        updatedSites = 
-                            model.sites |> List.map (\site -> if site.id == siteId then {site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime } else site)
+                        updatedSites =
+                            model.sites
+                                |> List.map
+                                    (\site ->
+                                        if site.id == siteId then
+                                            { site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime }
+
+                                        else
+                                            site
+                                    )
                     in
-                    ( { updatedModel 
-                        | articles = List.sortWith dateDescending mergedArticles 
+                    ( { updatedModel
+                        | articles = List.sortWith dateDescending mergedArticles
                         , sites = updatedSites
-                    }, InitReadMoreButtons |> sendInfoOutside )
+                      }
+                    , InitReadMoreButtons |> sendInfoOutside
+                    )
 
                 Err err ->
                     let
                         errorMsgId =
-                            hashString 1234 err |> toString
+                            hashString 1234 err |> Debug.toString
 
                         updatedPanelsState =
                             initPanel errorMsgId model.panelsState
@@ -184,6 +195,7 @@ update msg model =
                         (\article ->
                             if article.id == articleToSave.id then
                                 udatedArticleToSave
+
                             else
                                 article
                         )
@@ -204,10 +216,12 @@ update msg model =
             ( { model | searchTerm = searchTerm }, Cmd.none )
 
         CloseAllPanels ->
-            ( { model 
-                | panelsState = closeAllPanels model.panelsState 
+            ( { model
+                | panelsState = closeAllPanels model.panelsState
                 , menuOpen = False
-            }, Cmd.none )
+              }
+            , Cmd.none
+            )
 
         ChangePage pageNumber ->
             ( { model | currentPage = pageNumber }, ScrollToTopViaJs |> sendInfoOutside )
@@ -228,13 +242,13 @@ update msg model =
 
         ChangePreviewHeight rows ->
             let
-                options = model.options 
-
+                options =
+                    model.options
 
                 updatedOptions =
-                    {options | articlePreviewHeightInEm = String.toFloat rows |> Result.withDefault options.articlePreviewHeightInEm} 
+                    { options | articlePreviewHeightInEm = String.toFloat rows |> Result.withDefault options.articlePreviewHeightInEm }
             in
-            ({model | options = updatedOptions }, Cmd.none )
+            ( { model | options = updatedOptions }, Cmd.none )
 
         OnTouchStart touchEvent ->
             ( { model | touchData = ( touchEvent.clientX, touchEvent.clientY ) }, Cmd.none )
@@ -247,6 +261,7 @@ update msg model =
                             (\article ->
                                 if article.id == articleId then
                                     { article | isOpen = toOpen }
+
                                 else
                                     article
                             )
@@ -260,7 +275,7 @@ update msg model =
             handleErrorBoxMsgs model msg
 
         SignOut ->
-            (model, SignOutViaJs |> sendInfoOutside)
+            ( model, SignOutViaJs |> sendInfoOutside )
 
         NoOp ->
             ( model, Cmd.none )

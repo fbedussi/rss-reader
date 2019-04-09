@@ -15,7 +15,7 @@ handleErrorBoxMsgs model msg =
         RequestRemoveErrorMsg msgToRemove ->
             let
                 updatedPanelsState =
-                    closePanel (hashString 1234 msgToRemove |> toString) model.panelsState
+                    closePanel (hashString 1234 msgToRemove |> Debug.toString) model.panelsState
             in
             ( { model | panelsState = updatedPanelsState }, delay 1500 (ErrorBoxMsg <| RemoveErrorMsg msgToRemove) )
 
@@ -31,4 +31,4 @@ handleErrorBoxMsgs model msg =
                 log =
                     Debug.log "Error: " err
             in
-            ( { model | errorMsgs = model.errorMsgs ++ [ toString err ] }, Cmd.none )
+            ( { model | errorMsgs = model.errorMsgs ++ [ Debug.toString err ] }, Cmd.none )

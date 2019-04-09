@@ -7,6 +7,7 @@ import Murmur3 exposing (hashString)
 import PanelsManager exposing (PanelsState, getPanelClass, getPanelState)
 import PartialViews.UiKit exposing (closeBtn, errorMessage, standardPadding)
 
+
 errorContainer : PanelsState -> List String -> Html Msg
 errorContainer panelsState errorMsgs =
     div
@@ -20,12 +21,12 @@ renderErrorMsg : PanelsState -> String -> Html Msg
 renderErrorMsg panelsState errorMsg =
     let
         panelId =
-            hashString 1234 errorMsg |> toString
+            hashString 1234 errorMsg |> Debug.toString
 
         animationClass =
             getPanelState panelId panelsState |> getPanelClass "expand" "" "collapse"
 
-        log = Debug.log "animationClass" animationClass
+        log =
+            Debug.log "animationClass" animationClass
     in
     errorMessage animationClass errorMsg
-        

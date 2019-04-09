@@ -1,4 +1,4 @@
-module PartialViews.Sidebar exposing (..)
+module PartialViews.Sidebar exposing (renderCategories, renderSearchBox, renderSidebarToolbar, renderSitesWithoutCategory, sidebar)
 
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
@@ -13,8 +13,8 @@ import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
-import PartialViews.UiKit exposing (onDesktop, input, sidebarBoxStyle, standardPadding, theme, transition)
-import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
+import PartialViews.UiKit exposing (input, onDesktop, sidebarBoxStyle, standardPadding, theme, transition)
+-- import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
 
 
 sidebar : Model -> Html Msg
@@ -50,15 +50,16 @@ sidebar model =
             ]
         ]
         [ class "sidebar"
-        , fromUnstyled <| onTouchEvent TouchStart OnTouchStart
-        , fromUnstyled <|
-            onTouchEvent TouchEnd
-                (\touchEvent ->
-                    if Tuple.first model.touchData - touchEvent.clientX > 100 then
-                        ToggleMenu
-                    else
-                        NoOp
-                )
+        -- , fromUnstyled <| onTouchEvent TouchStart OnTouchStart
+        -- , fromUnstyled <|
+        --     onTouchEvent TouchEnd
+        --         (\touchEvent ->
+        --             if Tuple.first model.touchData - touchEvent.clientX > 100 then
+        --                 ToggleMenu
+
+        --             else
+        --                 NoOp
+        --         )
         ]
         ([ renderSidebarToolbar
          , lazy renderSearchBox model.searchTerm
@@ -68,6 +69,7 @@ sidebar model =
                     [ lazy renderSitesWithoutCategory sitesWithoutCategory
                     , lazy3 renderCategories model.categories model.sites model.panelsState
                     ]
+
                 else
                     []
                )

@@ -28,7 +28,7 @@ siteHeader isRefreshButtonVisible =
             ]
         ]
         []
-        ([ styled btnNoStyle
+        [ styled btnNoStyle
             [ onDesktop
                 [ display none ]
             ]
@@ -39,8 +39,8 @@ siteHeader isRefreshButtonVisible =
                 , height theme.buttonHeight
                 ]
             ]
-         , logo [ height (Css.rem 2) ]
-         , styled span
+        , logo [ height (Css.rem 2) ]
+        , styled span
             [ display none
             , onDesktop
                 [ display inline
@@ -49,6 +49,16 @@ siteHeader isRefreshButtonVisible =
             ]
             [ class "separator" ]
             []
-         , iconButton (refreshIcon []) ( "refresh", False ) [ class <| "refreshButton " ++ (if isRefreshButtonVisible then "popIn" else "popOut"), onClick RefreshFeeds ]
-         ]
-        )
+        , iconButton (refreshIcon [])
+            ( "refresh", False )
+            [ class <|
+                "refreshButton "
+                    ++ (if isRefreshButtonVisible then
+                            "popIn"
+
+                        else
+                            "popOut"
+                       )
+            , onClick RefreshFeeds
+            ]
+        ]

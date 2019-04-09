@@ -1,8 +1,8 @@
-module PartialViews.UiKit exposing (..)
+module PartialViews.UiKit exposing (alertBtn, appearance, article, articleTitle, badge, btn, btnNoStyle, btnNoStyleStyle, btnStyle, buttonHeightInRem, categoryWrapper, checkbox, clear, clipZero, closeBtn, closeButton, customCss, deleteActionsPanel, distancesInRem, errorMessage, getAnimationClassTopLayers, getModalAnimationClass, hairlineWidthInPx, input, inputHeightInRem, inputRow, inputRowLabel, inputRowText, layerInner, layerStyle, layerTop, noStyle, onDesktop, overlay, pointerEventsNone, pseudoContent, secondaryBtn, select, selectableBtn, sidebarBoxStyle, sidebarRow, sidebarSelectionBtn, standardPadding, starBtn, stroke, tabContentOuter, theme, transformOrigin, transition, visuallyHiddenStyle)
 
 import Char
 import Css exposing (..)
-import Css.Foreign exposing (descendants, selector)
+import Css.Global exposing (descendants, selector)
 import Css.Media exposing (only, screen, withMedia)
 import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
@@ -166,6 +166,7 @@ btnStyle selected =
         , padding2 theme.distanceXXXS theme.distanceXXS
         , if selected then
             backgroundColor theme.colorPrimaryLight
+
           else
             backgroundColor theme.colorPrimary
         , color theme.white
@@ -313,6 +314,7 @@ sidebarRow selected =
         , transition "background-color 0.5s"
         , if selected then
             selectedStyle
+
           else
             batch []
         , hover
@@ -328,6 +330,7 @@ tabContentOuter selected =
         , overflow hidden
         , if selected then
             height auto
+
           else
             height zero
         ]
@@ -471,6 +474,7 @@ overlay active =
                 batch
                     [ opacity (int 1)
                     ]
+
             else
                 batch
                     [ opacity (int 0)
@@ -500,6 +504,7 @@ starBtn idString selected clickHandle =
         iconFill =
             if selected then
                 theme.colorAccent
+
             else
                 rgba 0 0 0 0
     in
@@ -634,6 +639,7 @@ checkbox checkboxId selected clickHandler =
                 , height (pct 70)
                 , if selected then
                     backgroundColor theme.colorPrimary
+
                   else
                     backgroundColor transparent
                 ]

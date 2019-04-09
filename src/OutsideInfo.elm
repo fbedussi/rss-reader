@@ -1,9 +1,10 @@
-port module OutsideInfo exposing (..)
+port module OutsideInfo exposing (encodeArticle, encodeCategory, encodeIdList, encodeOptions, encodeSite, getInfoFromOutside, infoForElm, infoForOutside, sendInfoOutside, switchInfoForElm)
 
 import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
 import Json.Encode exposing (..)
 import Models exposing (..)
 import Time exposing (Time)
+
 
 port infoForOutside : GenericOutsideData -> Cmd msg
 
@@ -65,7 +66,6 @@ sendInfoOutside info =
                         [ ( "lastRefreshedTime", lastRefreshedTime |> float ) ]
             in
             infoForOutside { tag = "saveLastRefreshedTime", data = refreshedTimeData }
-        
 
         SaveAllData ( categories, sites, articles ) ->
             let
@@ -97,9 +97,6 @@ sendInfoOutside info =
 
         SignOutViaJs ->
             infoForOutside { tag = "signOut", data = null }
-        
-            
-                        
 
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
@@ -140,7 +137,7 @@ getInfoFromOutside tagger onError =
                             onError e
 
                 _ ->
-                    onError <| "Unexpected info from outside: " ++ toString outsideInfo
+                    onError <| "Unexpected info from outside: " ++ Debug.toString outsideInfo
         )
 
 
@@ -208,12 +205,13 @@ encodeArticle article =
         , ( "title", article.title |> string )
         , ( "excerpt", article.excerpt |> string )
         , ( "starred", article.starred |> bool )
-        , ( "date", article.date |> float)
+        , ( "date", article.date |> float )
         ]
 
+
 encodeOptions : Options -> Value
-encodeOptions options = 
+encodeOptions options =
     object
-        [("articlesPerPage", options.articlesPerPage |> int)
-        , ("articlePreviewHeightInEm", options.articlePreviewHeightInEm |> float)
+        [ ( "articlesPerPage", options.articlesPerPage |> int )
+        , ( "articlePreviewHeightInEm", options.articlePreviewHeightInEm |> float )
         ]

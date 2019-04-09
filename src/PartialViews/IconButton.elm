@@ -27,6 +27,7 @@ iconButton_ element icon labelData styles attributes =
         hiddenStyle =
             if showLabel then
                 noStyle
+
             else
                 visuallyHiddenStyle
     in
