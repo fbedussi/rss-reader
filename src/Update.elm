@@ -210,7 +210,7 @@ update msg model =
             }, Cmd.none )
 
         ChangePage pageNumber ->
-            ( { model | currentPage = pageNumber }, Cmd.none )
+            ( { model | currentPage = pageNumber }, ScrollToTopViaJs |> sendInfoOutside )
 
         ChangeNumberOfArticlesPerPage newArticlesPerPage ->
             let
