@@ -1,12 +1,13 @@
 module View exposing (view)
 
+import Browser exposing (Document)
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getSiteToEdit, onKeyDown)
-import Html.Styled exposing (Html, div, span, styled)
+import Html.Styled exposing (Html, div, span, styled, toUnstyled)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (Model, Msg(..), Panel(..))
+import Models exposing (Model, Msg(..), Panel(..), panelToString)
 import PanelsManager exposing (getPanelState, isPanelOpen, isSomePanelOpen)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
 import PartialViews.ErrorContainer exposing (errorContainer)
@@ -21,7 +22,7 @@ import PartialViews.Sidebar exposing (sidebar)
 import PartialViews.UiKit exposing (btn, getAnimationClassTopLayers, getModalAnimationClass, onDesktop, overlay, theme, transition)
 
 
-view : Model -> Html Msg
+view : Model -> Document Msg
 view model =
     let
         bodyClass =
@@ -44,40 +45,46 @@ view model =
                     else
                         ""
                    )
+
+        content =
+            toUnstyled <|
+                div
+                    [ class bodyClass
+                    , onClick SetMouseNavigation
+                    , onKeyDown VerifyKeyboardNavigation
+                    ]
+                    [ siteHeader <| isRefreshButtonVisible model.sites
+                    , errorContainer model.panelsState model.errorMsgs
+                    , styled div
+                        [ onDesktop
+                            [ displayFlex ]
+                        ]
+                        [ class "mainWrapper" ]
+                        [ sidebar model
+                        , mainContent model.categories model.sites model.articles model.options model.currentPage
+                        ]
+                    , PartialViews.UiKit.overlay (model.menuOpen || isSomePanelOpen "Panel" model.panelsState)
+                    , modal model.modal <| getModalAnimationClass <| getPanelState (panelToString PanelModal) model.panelsState
+                    , editSiteLayer (getPanelState (panelToString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) model.siteToEditForm model.categories
+                    , importLayer <| getAnimationClassTopLayers <| getPanelState (panelToString PanelImport) model.panelsState
+                    , settingsLayer model.options <| getAnimationClassTopLayers <| getPanelState (panelToString PanelSettings) model.panelsState
+                    , styled span
+                        [ position fixed
+                        , right theme.distanceS
+                        , bottom theme.distanceXS
+                        , opacity (int 0)
+                        , display none
+                        , transition "opacity 0.3s"
+                        , onDesktop
+                            [ bottom theme.distanceXXXL ]
+                        ]
+                        [ class "backToTopButton" ]
+                        [ iconButton (arrowTop [ fill theme.white ]) ( "backToTop", False ) [ onClick ScrollToTop ] ]
+                    ]
     in
-    div
-        [ class bodyClass
-        , onClick SetMouseNavigation
-        , onKeyDown VerifyKeyboardNavigation
-        ]
-        [ siteHeader <| isRefreshButtonVisible model.sites
-        , errorContainer model.panelsState model.errorMsgs
-        , styled div
-            [ onDesktop
-                [ displayFlex ]
-            ]
-            [ class "mainWrapper" ]
-            [ sidebar model
-            , mainContent model.categories model.sites model.articles model.options model.currentPage
-            ]
-        , PartialViews.UiKit.overlay (model.menuOpen || isSomePanelOpen "Panel" model.panelsState)
-        , modal model.modal <| getModalAnimationClass <| getPanelState (panelToString PanelModal) model.panelsState
-        , editSiteLayer (getPanelState (PanelEditSite) model.panelsState |> getAnimationClassTopLayers) model.siteToEditForm model.categories
-        , importLayer <| getAnimationClassTopLayers <| getPanelState (panelToString PanelImport) model.panelsState
-        , settingsLayer model.options <| getAnimationClassTopLayers <| getPanelState (panelToString PanelSettings) model.panelsState
-        , styled span
-            [ position fixed
-            , right theme.distanceS
-            , bottom theme.distanceXS
-            , opacity (int 0)
-            , display none
-            , transition "opacity 0.3s"
-            , onDesktop
-                [ bottom theme.distanceXXXL ]
-            ]
-            [ class "backToTopButton" ]
-            [ iconButton (arrowTop [ fill theme.white ]) ( "backToTop", False ) [ onClick ScrollToTop ] ]
-        ]
+    { title = "FlyFeed"
+    , body = [ content ]
+    }
 
 
 isRefreshButtonVisible : List a -> Bool

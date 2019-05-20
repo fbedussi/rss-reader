@@ -1,15 +1,15 @@
-port module OutsideInfo exposing (encodeArticle, encodeCategory, encodeIdList, encodeOptions, encodeSite, getInfoFromOutside, infoForElm, infoForOutside, sendInfoOutside, switchInfoForElm)
+port module OutsideInfo exposing (encodeArticle, encodeCategory, encodeIdList, encodeOptions, encodeSite, getInfoFromOutside, infoForElmPort, infoForOutside, sendInfoOutside, switchInfoForElm)
 
 import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
 import Json.Encode exposing (..)
 import Models exposing (..)
-import Time exposing (Time)
+import Time exposing (posixToMillis)
 
 
 port infoForOutside : GenericOutsideData -> Cmd msg
 
 
-port infoForElm : (GenericOutsideData -> msg) -> Sub msg
+port infoForElmPort : (GenericOutsideData -> msg) -> Sub msg
 
 
 sendInfoOutside : InfoForOutside -> Cmd msg
@@ -63,7 +63,7 @@ sendInfoOutside info =
             let
                 refreshedTimeData =
                     object
-                        [ ( "lastRefreshedTime", lastRefreshedTime |> float ) ]
+                        [ ( "lastRefreshedTime", lastRefreshedTime |> posixToMillis |> int ) ]
             in
             infoForOutside { tag = "saveLastRefreshedTime", data = refreshedTimeData }
 
@@ -71,9 +71,9 @@ sendInfoOutside info =
             let
                 allData =
                     object
-                        [ ( "categories", categories |> List.map encodeCategory |> list )
-                        , ( "sites", sites |> List.map encodeSite |> list )
-                        , ( "articles", articles |> List.map encodeArticle |> list )
+                        [ ( "categories", categories |> list encodeCategory )
+                        , ( "sites", sites |> list encodeSite )
+                        , ( "articles", articles |> list encodeArticle )
                         ]
             in
             infoForOutside { tag = "saveAllData", data = allData }
@@ -101,7 +101,7 @@ sendInfoOutside info =
 
 getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
 getInfoFromOutside tagger onError =
-    infoForElm
+    infoForElmPort
         (\outsideInfo ->
             case outsideInfo.tag of
                 "loginResult" ->
@@ -110,7 +110,7 @@ getInfoFromOutside tagger onError =
                             tagger <| UserLoggedIn userUid
 
                         Err e ->
-                            onError e
+                            onError "Login error"
 
                 "dbOpened" ->
                     case decodeDbOpened outsideInfo.data of
@@ -118,7 +118,7 @@ getInfoFromOutside tagger onError =
                             tagger <| DbOpened
 
                         Err e ->
-                            onError e
+                            onError "Cannot open the DB"
 
                 "allData" ->
                     case decodeData outsideInfo.data of
@@ -126,7 +126,7 @@ getInfoFromOutside tagger onError =
                             tagger <| NewData data.categories data.sites data.articles data.options data.lastRefreshedTime
 
                         Err e ->
-                            onError e
+                            onError "Error receiving data"
 
                 "error" ->
                     case decodeError outsideInfo.data of
@@ -134,10 +134,10 @@ getInfoFromOutside tagger onError =
                             onError errorString
 
                         Err e ->
-                            onError e
+                            onError "Error received"
 
                 _ ->
-                    onError <| "Unexpected info from outside: " ++ Debug.toString outsideInfo
+                    onError <| "Unexpected info from outside " ++ Debug.toString outsideInfo
         )
 
 
@@ -183,7 +183,7 @@ encodeSite : Site -> Value
 encodeSite site =
     object
         [ ( "id", site.id |> int )
-        , ( "categoriesId", site.categoriesId |> List.map int |> list )
+        , ( "categoriesId", site.categoriesId |> list int )
         , ( "name", site.name |> string )
         , ( "rssLink", site.rssLink |> string )
         , ( "webLink", site.webLink |> string )
@@ -193,7 +193,7 @@ encodeSite site =
 
 encodeIdList : List Id -> Value
 encodeIdList ids =
-    Json.Encode.list (List.map Json.Encode.int ids)
+    list int ids
 
 
 encodeArticle : Article -> Value
@@ -205,7 +205,7 @@ encodeArticle article =
         , ( "title", article.title |> string )
         , ( "excerpt", article.excerpt |> string )
         , ( "starred", article.starred |> bool )
-        , ( "date", article.date |> float )
+        , ( "date", article.date |> posixToMillis |> int )
         ]
 
 

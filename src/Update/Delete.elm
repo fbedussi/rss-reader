@@ -1,7 +1,7 @@
 module Update.Delete exposing (handleDeleteMsgs)
 
 import Helpers exposing (closeModal, openModal)
-import Models exposing (Article, DeleteMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..))
+import Models exposing (Article, DeleteMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), panelToString)
 import OutsideInfo exposing (sendInfoOutside)
 import PanelsManager exposing (closePanel, openPanel)
 

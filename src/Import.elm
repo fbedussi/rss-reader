@@ -22,12 +22,12 @@ executeImport model =
                 ( filteredCategories, looseSites ) =
                     opmlCategories
                         |> List.foldl
-                            (\opmlCategory ( filteredCategories, looseSites ) ->
+                            (\opmlCategory ( filteredCategories_intermediate, looseSites_intermediate ) ->
                                 if String.isEmpty opmlCategory.name then
-                                    ( filteredCategories, looseSites ++ opmlCategory.sites )
+                                    ( filteredCategories_intermediate, looseSites_intermediate ++ opmlCategory.sites )
 
                                 else
-                                    ( filteredCategories ++ [ opmlCategory ], looseSites )
+                                    ( filteredCategories_intermediate ++ [ opmlCategory ], looseSites_intermediate )
                             )
                             ( [], [] )
 
@@ -43,7 +43,12 @@ executeImport model =
             }
 
         Err err ->
-            { model | errorMsgs = model.errorMsgs ++ [ err ] }
+            { model | errorMsgs = model.errorMsgs ++ [ opmlErrorToString err ] }
+
+
+opmlErrorToString : Error -> String
+opmlErrorToString err =
+    "opmlCategory decoding error"
 
 
 extractCategoryFromOpml : Int -> OpmlCategory -> Category
@@ -66,7 +71,7 @@ extractSiteFromOpml categoryId site =
     { site | categoriesId = [ categoryId ] }
 
 
-decodeOpml : String -> Result String (List OpmlCategory)
+decodeOpml : String -> Result Error (List OpmlCategory)
 decodeOpml importData =
     Json.Decode.decodeString opmlDecoder importData
 

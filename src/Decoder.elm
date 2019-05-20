@@ -1,21 +1,22 @@
 module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser, feedDecoder)
 
+import Iso8601
 import Json.Decode exposing (..)
 import Models exposing (..)
-import Iso8601
+import Time exposing (millisToPosix)
 
 
-decodeDbOpened : Value -> Result String Bool
+decodeDbOpened : Value -> Result Error Bool
 decodeDbOpened value =
     decodeValue bool value
 
 
-decodeUser : Value -> Result String UserUid
+decodeUser : Value -> Result Error UserUid
 decodeUser value =
     decodeValue string value
 
 
-decodeData : Value -> Result String Data
+decodeData : Value -> Result Error Data
 decodeData value =
     decodeValue dataDecoder value
 
@@ -27,7 +28,7 @@ dataDecoder =
         (field "sites" sitesDecoder)
         (field "articles" articlesDecoder)
         (field "options" appOptionsDecoder)
-        (field "lastRefreshedTime" Json.Decode.float)
+        (field "lastRefreshedTime" Json.Decode.int |> map millisToPosix)
 
 
 categoriesDecoder : Decoder (List Category)
@@ -76,7 +77,7 @@ articleDecoder =
         (field "title" Json.Decode.string)
         (field "excerpt" Json.Decode.string)
         (field "starred" Json.Decode.bool)
-        (field "date" Json.Decode.float)
+        (field "date" Json.Decode.int |> map millisToPosix)
         (succeed False)
 
 
@@ -87,7 +88,7 @@ appOptionsDecoder =
         (oneOf [ field "articlePreviewHeightInEm" Json.Decode.float, succeed initialModel.options.articlePreviewHeightInEm ])
 
 
-decodeError : Value -> Result String String
+decodeError : Value -> Result Error String
 decodeError err =
     decodeValue string err
 

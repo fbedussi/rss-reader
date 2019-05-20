@@ -3,11 +3,11 @@ module Helpers exposing (closeModal, countNewArticlesInSite, dateDescending, del
 import Html.Styled exposing (Attribute)
 import Html.Styled.Events exposing (keyCode, on)
 import Json.Decode as Json
-import Models exposing (Article, Category, Id, Model, Msg, Panel(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite)
+import Models exposing (Article, Category, Id, Model, Msg, Panel(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite, panelToString)
 import PanelsManager exposing (PanelsState, closePanel, openPanel)
 import Process
 import Task
-import Time exposing (Time)
+import Time exposing (posixToMillis)
 
 
 getSitesInCategories : List Id -> List Site -> List Site
@@ -130,10 +130,10 @@ isSelected selectedId id =
 getArticleSite : List Site -> Article -> Site
 getArticleSite sites article =
     let
-        site =
+        selectedSite =
             sites |> List.filter (\site -> site.id == article.siteId) |> List.head
     in
-    case site of
+    case selectedSite of
         Just site ->
             site
 
@@ -146,16 +146,16 @@ getSiteToEdit siteToEditId sites =
     sites |> List.filter (\site -> site.id == siteToEditId) |> List.head
 
 
-delay : Time -> msg -> Cmd msg
+delay : Time.Posix -> msg -> Cmd msg
 delay time msg =
-    Process.sleep time
+    Process.sleep (posixToMillis time |> toFloat)
         |> Task.andThen (always <| Task.succeed msg)
         |> Task.perform identity
 
 
-onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown : (Char -> msg) -> Attribute msg
 onKeyDown tagger =
-    on "keydown" (Json.map tagger keyCode)
+    on "keydown" (Json.map (\code -> tagger (Char.fromCode code)) keyCode)
 
 
 sendMsg : Msg -> Cmd Msg
@@ -165,12 +165,12 @@ sendMsg msg =
 
 closeModal : PanelsState -> PanelsState
 closeModal panelsState =
-    closePanel PanelModal panelsState
+    closePanel (panelToString PanelModal) panelsState
 
 
 openModal : PanelsState -> PanelsState
 openModal panelsState =
-    openPanel PanelModal panelsState
+    openPanel (panelToString PanelModal) panelsState
 
 
 getDataToSaveInDb : Model -> ( List Category, List Site, List Article )
@@ -180,7 +180,7 @@ getDataToSaveInDb model =
 
 dateDescending : Article -> Article -> Order
 dateDescending article1 article2 =
-    case compare article1.date article2.date of
+    case compare (Time.posixToMillis article1.date) (Time.posixToMillis article2.date) of
         LT ->
             GT
 
@@ -191,7 +191,7 @@ dateDescending article1 article2 =
             LT
 
 
-toggleSelected : List { c | id : b, isSelected : a } -> b -> List { c | id : b, isSelected : Bool }
+toggleSelected : List { c | id : b, isSelected : Bool } -> b -> List { c | id : b, isSelected : Bool }
 toggleSelected items id =
     items
         |> List.map
@@ -204,17 +204,17 @@ toggleSelected items id =
             )
 
 
-countNewArticlesInSite : Id -> List Article -> Time -> Int
+countNewArticlesInSite : Id -> List Article -> Time.Posix -> Int
 countNewArticlesInSite siteId articles lastRefreshTime =
     articles
         |> List.filter (\article -> (article.siteId == siteId) && lessThanOneDayDifference article.date lastRefreshTime)
         |> List.length
 
 
-lessThanOneDayDifference : Time -> Time -> Bool
+lessThanOneDayDifference : Time.Posix -> Time.Posix -> Bool
 lessThanOneDayDifference articleDate lastRefreshTime =
     let
         difference =
-            abs (articleDate - lastRefreshTime)
+            abs (posixToMillis articleDate - posixToMillis lastRefreshTime)
     in
     difference < 1000 * 60 * 60 * 25

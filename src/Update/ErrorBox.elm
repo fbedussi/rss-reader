@@ -4,6 +4,7 @@ import Helpers exposing (delay)
 import Models exposing (ErrorBoxMsg(..), Model, Msg(..))
 import Murmur3 exposing (hashString)
 import PanelsManager exposing (closePanel, openPanel)
+import Time exposing (millisToPosix)
 
 
 handleErrorBoxMsgs : Model -> ErrorBoxMsg -> ( Model, Cmd Msg )
@@ -17,7 +18,7 @@ handleErrorBoxMsgs model msg =
                 updatedPanelsState =
                     closePanel (hashString 1234 msgToRemove |> Debug.toString) model.panelsState
             in
-            ( { model | panelsState = updatedPanelsState }, delay 1500 (ErrorBoxMsg <| RemoveErrorMsg msgToRemove) )
+            ( { model | panelsState = updatedPanelsState }, delay (millisToPosix 1500) (ErrorBoxMsg <| RemoveErrorMsg msgToRemove) )
 
         RemoveErrorMsg msgToRemove ->
             let

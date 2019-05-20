@@ -14,6 +14,9 @@ import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, onDesktop, sidebarBoxStyle, standardPadding, theme, transition)
+
+
+
 -- import TouchEvents exposing (Direction(..), TouchEvent(..), getDirectionX, onTouchEvent)
 
 
@@ -50,13 +53,13 @@ sidebar model =
             ]
         ]
         [ class "sidebar"
+
         -- , fromUnstyled <| onTouchEvent TouchStart OnTouchStart
         -- , fromUnstyled <|
         --     onTouchEvent TouchEnd
         --         (\touchEvent ->
         --             if Tuple.first model.touchData - touchEvent.clientX > 100 then
         --                 ToggleMenu
-
         --             else
         --                 NoOp
         --         )
@@ -90,49 +93,46 @@ renderSidebarToolbar =
         ]
 
 
-renderSearchBox : String -> Html.Html Msg
+renderSearchBox : String -> Html Msg
 renderSearchBox searchTerm =
-    toUnstyled <|
-        styled div
-            [ displayFlex
-            , standardPadding
-            , alignItems stretch
-            , flexDirection column
+    styled div
+        [ displayFlex
+        , standardPadding
+        , alignItems stretch
+        , flexDirection column
+        ]
+        [ class "searchWrapper" ]
+        [ styled label
+            [ marginBottom (em 0.5) ]
+            [ for "searchInput" ]
+            [ text "Search sites by name: " ]
+        , input
+            [ type_ "search"
+            , id "searchInput"
+            , placeholder "example.com"
+            , onInput UpdateSearch
+            , value searchTerm
             ]
-            [ class "searchWrapper" ]
-            [ styled label
-                [ marginBottom (em 0.5) ]
-                [ for "searchInput" ]
-                [ text "Search sites by name: " ]
-            , input
-                [ type_ "search"
-                , id "searchInput"
-                , placeholder "example.com"
-                , onInput UpdateSearch
-                , value searchTerm
-                ]
-                []
-            ]
+            []
+        ]
 
 
-renderSitesWithoutCategory : List Site -> Html.Html Msg
+renderSitesWithoutCategory : List Site -> Html Msg
 renderSitesWithoutCategory sitesWithoutCategory =
-    toUnstyled <|
-        styled ul
-            [ sidebarBoxStyle ]
-            [ class "sitesWithoutCategory" ]
-            (sitesWithoutCategory
-                |> List.map (lazy renderSiteEntry)
-            )
+    styled ul
+        [ sidebarBoxStyle ]
+        [ class "sitesWithoutCategory" ]
+        (sitesWithoutCategory
+            |> List.map (lazy renderSiteEntry)
+        )
 
 
-renderCategories : List Category -> List Site -> PanelsState -> Html.Html Msg
+renderCategories : List Category -> List Site -> PanelsState -> Html Msg
 renderCategories categories sites panelsState =
-    toUnstyled <|
-        styled ul
-            [ sidebarBoxStyle ]
-            [ class "categories accordion"
-            ]
-            (categories
-                |> List.map (lazy3 renderCategory sites panelsState)
-            )
+    styled ul
+        [ sidebarBoxStyle ]
+        [ class "categories accordion"
+        ]
+        (categories
+            |> List.map (lazy3 renderCategory sites panelsState)
+        )

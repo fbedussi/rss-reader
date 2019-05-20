@@ -8,7 +8,7 @@ import PartialViews.CategoryTree exposing (renderSiteEntry)
 import PartialViews.UiKit exposing (sidebarBoxStyle)
 
 
-searchResult : List Site -> String -> Html.Html Msg
+searchResult : List Site -> String -> Html Msg
 searchResult sites searchTerm =
     let
         selectedSites =
@@ -17,21 +17,20 @@ searchResult sites searchTerm =
         searchInProgress =
             String.length searchTerm > 0
     in
-    toUnstyled <|
-        styled ul
-            (if searchInProgress then
-                [ sidebarBoxStyle ]
+    styled ul
+        (if searchInProgress then
+            [ sidebarBoxStyle ]
 
-             else
-                []
-            )
-            [ class "searchResult" ]
-            (if List.length selectedSites > 0 then
-                selectedSites |> List.map (renderSiteEntry >> fromUnstyled)
+         else
+            []
+        )
+        [ class "searchResult" ]
+        (if List.length selectedSites > 0 then
+            selectedSites |> List.map renderSiteEntry
 
-             else if searchInProgress then
-                [ text "no sites found" ]
+         else if searchInProgress then
+            [ text "no sites found" ]
 
-             else
-                []
-            )
+         else
+            []
+        )

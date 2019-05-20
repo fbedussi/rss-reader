@@ -1,7 +1,7 @@
 module Update.EditSite exposing (handleEditSiteMsgs)
 
 import Helpers exposing (sendMsg)
-import Models exposing (EditSiteMsg(..), Model, Msg(..), Panel(..))
+import Models exposing (EditSiteMsg(..), Model, Msg(..), Panel(..), panelToString)
 import OutsideInfo exposing (sendInfoOutside)
 import PanelsManager exposing (closePanel, openPanel)
 

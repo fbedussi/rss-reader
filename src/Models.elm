@@ -1,14 +1,13 @@
-module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, init, initialModel)
+module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, init, initialModel, panelToString, toEnglishMonth)
+
+-- import TouchEvents exposing (Touch)
 
 import Browser.Dom exposing (Error)
+import Char exposing (Char)
 import Json.Encode
-import Char exposing (KeyCode)
 import PanelsManager exposing (PanelsState, initialPanelsState)
 import Task
--- import Time exposing (Time)
--- import TouchEvents exposing (Touch)
--- import Window
-import Time exposing (Month)
+import Time exposing (Month(..), millisToPosix)
 
 
 type alias UserUid =
@@ -47,7 +46,7 @@ type alias Article =
     , title : String
     , excerpt : String
     , starred : Bool
-    , date : Time
+    , date : Time.Posix
     , isOpen : Bool
     }
 
@@ -77,7 +76,7 @@ type alias Data =
     , sites : List Site
     , articles : List Article
     , options : Options
-    , lastRefreshedTime : Float
+    , lastRefreshedTime : Time.Posix
     }
 
 
@@ -112,14 +111,25 @@ type Panel
     | PanelMenu
     | PanelSettings
 
+
 panelToString : Panel -> String
 panelToString panel =
- case panel of
-    PanelEditSite -> "PanelEditSite"
-    PanelImport -> "PanelImport"
-    PanelModal -> "PanelModal"
-    PanelMenu -> "PanelMenu"
-    PanelSettings -> "PanelSettings"
+    case panel of
+        PanelEditSite ->
+            "PanelEditSite"
+
+        PanelImport ->
+            "PanelImport"
+
+        PanelModal ->
+            "PanelModal"
+
+        PanelMenu ->
+            "PanelMenu"
+
+        PanelSettings ->
+            "PanelSettings"
+
 
 type alias Model =
     { errorMsgs : List String
@@ -136,7 +146,7 @@ type alias Model =
     , menuOpen : Bool
     , currentPage : Int
     , options : Options
-    , lastRefreshTime : Time
+    , lastRefreshTime : Time.Posix
     , touchData : ( Float, Float )
     }
 
@@ -156,14 +166,14 @@ initialModel =
     , panelsState = initialPanelsState
     , menuOpen = False
     , currentPage = 1
-    , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15.0 }
-    , lastRefreshTime = 0
-    , touchData = ( 0.0, 0.0 )
+    , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15 }
+    , lastRefreshTime = millisToPosix 0
+    , touchData = ( 0, 0 )
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init _ =
     ( initialModel, Cmd.none )
 
 
@@ -182,7 +192,7 @@ createEmptySite =
 
 type Msg
     = SetMouseNavigation
-    | VerifyKeyboardNavigation KeyCode
+    | VerifyKeyboardNavigation Char
     | ToggleSelectSite Id
     | ToggleDeleteActions Id
     | ToggleExcerpt Id String Bool
@@ -203,8 +213,8 @@ type Msg
     | ChangePage Int
     | ChangeNumberOfArticlesPerPage Int
     | ChangePreviewHeight String
-    | RegisterTime Time
-    -- | OnTouchStart Touch
+    | RegisterTime Time.Posix
+      -- | OnTouchStart Touch
     | ScrollToTop
     | SignOut
     | EditCategoryMsg EditCategoryMsg
@@ -258,7 +268,7 @@ type InfoForOutside
     | AddArticleInDb Article
     | DeleteArticlesInDb (List Id)
     | SaveOptions Options
-    | SaveLastRefreshedTime Time
+    | SaveLastRefreshedTime Time.Posix
     | SaveAllData ( List Category, List Site, List Article )
     | ToggleExcerptViaJs String Bool Float
     | InitReadMoreButtons
@@ -269,21 +279,44 @@ type InfoForOutside
 type InfoForElm
     = UserLoggedIn UserUid
     | DbOpened
-    | NewData (List Category) (List Site) (List Article) Options Time
+    | NewData (List Category) (List Site) (List Article) Options Time.Posix
 
 
 toEnglishMonth : Month -> String
 toEnglishMonth month =
-  case month of
-    Jan -> "Jan"
-    Feb -> "Feb"
-    Mar -> "Mar"
-    Apr -> "Apr"
-    May -> "May"
-    Jun -> "Jun"
-    Jul -> "Jul"
-    Aug -> "Aug"
-    Sep -> "Sep"
-    Oct -> "Oct"
-    Nov -> "Nov"
-    Dec -> "Dec"
+    case month of
+        Jan ->
+            "Jan"
+
+        Feb ->
+            "Feb"
+
+        Mar ->
+            "Mar"
+
+        Apr ->
+            "Apr"
+
+        May ->
+            "May"
+
+        Jun ->
+            "Jun"
+
+        Jul ->
+            "Jul"
+
+        Aug ->
+            "Aug"
+
+        Sep ->
+            "Sep"
+
+        Oct ->
+            "Oct"
+
+        Nov ->
+            "Nov"
+
+        Dec ->
+            "Dec"

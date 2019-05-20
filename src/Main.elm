@@ -8,10 +8,10 @@ import Update exposing (update)
 import View exposing (view)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
     Browser.document
-        { view = view >> toUnstyled
+        { view = view
         , init = init
         , update = update
         , subscriptions = subscriptions

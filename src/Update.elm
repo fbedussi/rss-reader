@@ -4,12 +4,12 @@ import Browser.Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (closeModal, countNewArticlesInSite, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite)
+import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite, panelToString)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
 import Task
-import Time
+import Time exposing (millisToPosix)
 import Update.Delete exposing (handleDeleteMsgs)
 import Update.EditCategory exposing (handleEditCategoryMsgs)
 import Update.EditSite exposing (handleEditSiteMsgs)
@@ -23,7 +23,7 @@ update msg model =
             ( { model | keyboardNavigation = False }, Cmd.none )
 
         VerifyKeyboardNavigation keyCode ->
-            ( { model | keyboardNavigation = keyCode == 9 }, Cmd.none )
+            ( { model | keyboardNavigation = keyCode == '\t' }, Cmd.none )
 
         ToggleSelectedCategory categoryId ->
             ( { model
@@ -82,7 +82,7 @@ update msg model =
             ( { model | menuOpen = False }, Cmd.none )
 
         OpenImportPanel ->
-            ( { model | panelsState = model.panelsState |> closePanel (PanelSettings) |> openPanel (panelToString PanelImport) }, Cmd.none )
+            ( { model | panelsState = model.panelsState |> closePanel (panelToString PanelSettings) |> openPanel (panelToString PanelImport) }, Cmd.none )
 
         StoreImportData importData ->
             ( { model | importData = importData }, Cmd.none )
@@ -94,8 +94,8 @@ update msg model =
             in
             ( newModel, getDataToSaveInDb newModel |> SaveAllData |> sendInfoOutside )
 
-        DeleteMsg msg ->
-            handleDeleteMsgs model msg
+        DeleteMsg msgToDelete ->
+            handleDeleteMsgs model msgToDelete
 
         AddNewCategory ->
             let
@@ -106,13 +106,13 @@ update msg model =
                 | categories = List.append model.categories [ newCategory ]
               }
             , Cmd.batch
-                [ Dom.focus ("editCategoryName-" ++ String.fromInt newCategory.id) |> Task.attempt (\_ -> NoOp)
+                [ focus ("editCategoryName-" ++ String.fromInt newCategory.id) |> Task.attempt (\_ -> NoOp)
                 , AddCategoryInDb newCategory |> sendInfoOutside
                 ]
             )
 
-        EditCategoryMsg msg ->
-            handleEditCategoryMsgs model msg
+        EditCategoryMsg editCategoryMsg ->
+            handleEditCategoryMsgs model editCategoryMsg
 
         EditSiteMsg editSiteMsg ->
             handleEditSiteMsgs model editSiteMsg
@@ -180,9 +180,9 @@ update msg model =
                     in
                     ( { updatedModel
                         | panelsState = updatedPanelsState
-                        , errorMsgs = List.filter (\msg -> msg /= err) model.errorMsgs ++ [ err ]
+                        , errorMsgs = List.filter (\errorMsg -> errorMsg /= err) model.errorMsgs ++ [ err ]
                       }
-                    , delay 1000 <| ErrorBoxMsg <| OpenErrorMsg errorMsgId
+                    , delay (millisToPosix 1000) <| ErrorBoxMsg <| OpenErrorMsg errorMsgId
                     )
 
         SaveArticle articleToSave ->
@@ -246,13 +246,12 @@ update msg model =
                     model.options
 
                 updatedOptions =
-                    { options | articlePreviewHeightInEm = String.toFloat rows |> Result.withDefault options.articlePreviewHeightInEm }
+                    { options | articlePreviewHeightInEm = String.toFloat rows |> Maybe.withDefault options.articlePreviewHeightInEm }
             in
             ( { model | options = updatedOptions }, Cmd.none )
 
-        OnTouchStart touchEvent ->
-            ( { model | touchData = ( touchEvent.clientX, touchEvent.clientY ) }, Cmd.none )
-
+        -- OnTouchStart touchEvent ->
+        --     ( { model | touchData = ( touchEvent.clientX, touchEvent.clientY ) }, Cmd.none )
         ToggleExcerpt articleId domId toOpen ->
             let
                 updatedArticles =
@@ -271,8 +270,8 @@ update msg model =
         ScrollToTop ->
             ( model, ScrollToTopViaJs |> sendInfoOutside )
 
-        ErrorBoxMsg msg ->
-            handleErrorBoxMsgs model msg
+        ErrorBoxMsg errorBoxMsg ->
+            handleErrorBoxMsgs model errorBoxMsg
 
         SignOut ->
             ( model, SignOutViaJs |> sendInfoOutside )

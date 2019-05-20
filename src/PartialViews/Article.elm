@@ -1,21 +1,22 @@
 module PartialViews.Article exposing (renderArticle)
 
+-- import Date exposing (day, fromTime, month, year)
+-- import HtmlParser as HtmlParser exposing (..)
+
 import Css exposing (..)
 import Css.Global exposing (descendants, selector, typeSelector)
--- import Date exposing (day, fromTime, month, year)
-import Time exposing (toDay, toMonth, toYear, utc)
 import Helpers exposing (getArticleSite, getSelectedArticles)
 import Html.Attributes
 import Html.Attributes.Aria exposing (ariaHidden)
+import Html.Parser
+import Html.Parser.Util exposing (..)
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, target, type_)
 import Html.Styled.Events exposing (onClick)
--- import HtmlParser as HtmlParser exposing (..)
--- import HtmlParser.Util exposing (..)
-import Html.Parser
 import Json.Encode
 import Models exposing (Article, Category, DeleteMsg(..), Model, Msg(..), Site, toEnglishMonth)
 import PartialViews.UiKit exposing (article, articleTitle, btn, clear, onDesktop, standardPadding, starBtn, theme, transition)
+import Time exposing (toDay, toMonth, toYear, utc)
 
 
 renderArticle : Float -> List Site -> Article -> Html Msg
@@ -32,20 +33,27 @@ renderArticle articlePreviewHeight sites articleToRender =
             getArticleSite sites articleToRender
 
         date =
-            fromTime articleToRender.date
+            articleToRender.date
 
         domId =
             "article_" ++ String.fromInt articleToRender.id
 
         articleExcerptParsed =
-            Html.parser.run articleToRender.excerpt
+            case Html.Parser.run articleToRender.excerpt of
+                Ok listNodes ->
+                    listNodes
+
+                Err err ->
+                    []
 
         imageUrl =
-            articleExcerptParsed
-                |> getElementsByTagName "img"
-                |> mapElements (\_ attr _ -> getValue "src" attr |> Maybe.withDefault "")
-                |> List.head
-                |> Maybe.withDefault ""
+            ""
+
+        -- articleExcerptParsed
+        --     |> getElementsByTagName "img"
+        --     |> mapElements (\_ attr _ -> getValue "src" attr |> Maybe.withDefault "")
+        --     |> List.head
+        --     |> Maybe.withDefault ""
     in
     li
         [ class "article" ]
@@ -90,7 +98,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                         [ class "articleDateAndSite" ]
                         [ div
                             [ class "articleDate" ]
-                            [ text <| ((String.fromInt <| toDay utc date) ++ " " ++ (toEnglishMonth <| toMonth utc date) ++ " " ++ (String.fromInt <| toTear utc date)) ]
+                            [ text <| ((String.fromInt <| toDay utc date) ++ " " ++ (toEnglishMonth <| toMonth utc date) ++ " " ++ (String.fromInt <| toYear utc date)) ]
                         , div
                             [ class "articleSite" ]
                             [ text site.name ]
