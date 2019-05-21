@@ -173,7 +173,7 @@ update msg model =
                 Err err ->
                     let
                         errorMsgId =
-                            hashString 1234 err |> Debug.toString
+                            hashString 1234 err |> String.fromInt
 
                         updatedPanelsState =
                             initPanel errorMsgId model.panelsState
