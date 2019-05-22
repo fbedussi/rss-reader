@@ -1,4 +1,4 @@
-module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, init, initialModel, panelToString, toEnglishMonth)
+module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), ErrorMsg, GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, init, initialModel, panelToString, toEnglishMonth)
 
 -- import TouchEvents exposing (Touch)
 
@@ -131,8 +131,14 @@ panelToString panel =
             "PanelSettings"
 
 
+type alias ErrorMsg =
+    { text : String
+    , id : String
+    }
+
+
 type alias Model =
-    { errorMsgs : List String
+    { errorMsgs : List ErrorMsg
     , categories : List Category
     , sites : List Site
     , articles : List Article
@@ -232,9 +238,9 @@ type EditCategoryMsg
 
 
 type ErrorBoxMsg
-    = OpenErrorMsg String
-    | RequestRemoveErrorMsg String
-    | RemoveErrorMsg String
+    = OpenErrorMsg ErrorMsg
+    | RequestRemoveErrorMsg ErrorMsg
+    | RemoveErrorMsg ErrorMsg
     | LogErr String
 
 

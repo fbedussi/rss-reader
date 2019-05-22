@@ -2,7 +2,7 @@ module Update exposing (createNewCategory, createNewSite, update)
 
 import Browser.Dom exposing (focus)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (closeModal, countNewArticlesInSite, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
+import Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
 import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite, panelToString)
 import Murmur3 exposing (hashString)
@@ -172,17 +172,20 @@ update msg model =
 
                 Err err ->
                     let
-                        errorMsgId =
-                            hashString 1234 err |> String.fromInt
+                        errorMsg =
+                            createErrorMsg err
 
                         updatedPanelsState =
-                            initPanel errorMsgId model.panelsState
+                            initPanel errorMsg.id model.panelsState
                     in
                     ( { updatedModel
                         | panelsState = updatedPanelsState
-                        , errorMsgs = List.filter (\errorMsg -> errorMsg /= err) model.errorMsgs ++ [ err ]
+                        , errorMsgs = List.filter (\e -> e.id /= errorMsg.id) model.errorMsgs ++ [ errorMsg ]
                       }
-                    , delay (millisToPosix 1000) <| ErrorBoxMsg <| OpenErrorMsg errorMsgId
+                    , Cmd.batch
+                        [ delay (millisToPosix 1000) <| ErrorBoxMsg <| OpenErrorMsg errorMsg
+                        , delay (millisToPosix 10000) <| ErrorBoxMsg <| RequestRemoveErrorMsg errorMsg
+                        ]
                     )
 
         SaveArticle articleToSave ->

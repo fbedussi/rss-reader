@@ -1,5 +1,6 @@
 module Import exposing (executeImport)
 
+import Helpers exposing (createErrorMsg)
 import Json.Decode exposing (..)
 import Models exposing (Category, Model, Site)
 
@@ -43,7 +44,7 @@ executeImport model =
             }
 
         Err err ->
-            { model | errorMsgs = model.errorMsgs ++ [ opmlErrorToString err ] }
+            { model | errorMsgs = model.errorMsgs ++ [ opmlErrorToString err |> createErrorMsg ] }
 
 
 opmlErrorToString : Error -> String

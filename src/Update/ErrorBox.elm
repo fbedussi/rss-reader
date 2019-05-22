@@ -1,8 +1,7 @@
 module Update.ErrorBox exposing (handleErrorBoxMsgs)
 
-import Helpers exposing (delay)
-import Models exposing (ErrorBoxMsg(..), Model, Msg(..))
-import Murmur3 exposing (hashString)
+import Helpers exposing (createErrorMsg, delay)
+import Models exposing (ErrorBoxMsg(..), ErrorMsg, Model, Msg(..))
 import PanelsManager exposing (closePanel, openPanel)
 import Time exposing (millisToPosix)
 
@@ -10,20 +9,20 @@ import Time exposing (millisToPosix)
 handleErrorBoxMsgs : Model -> ErrorBoxMsg -> ( Model, Cmd Msg )
 handleErrorBoxMsgs model msg =
     case msg of
-        OpenErrorMsg errorMsgId ->
-            ( { model | panelsState = openPanel errorMsgId model.panelsState }, Cmd.none )
+        OpenErrorMsg errorMsg ->
+            ( { model | panelsState = openPanel errorMsg.id model.panelsState }, Cmd.none )
 
         RequestRemoveErrorMsg msgToRemove ->
             let
                 updatedPanelsState =
-                    closePanel (hashString 1234 msgToRemove |> Debug.toString) model.panelsState
+                    closePanel msgToRemove.id model.panelsState
             in
             ( { model | panelsState = updatedPanelsState }, delay (millisToPosix 1500) (ErrorBoxMsg <| RemoveErrorMsg msgToRemove) )
 
         RemoveErrorMsg msgToRemove ->
             let
                 newErrorMsgs =
-                    model.errorMsgs |> List.filter (\modelMsg -> modelMsg /= msgToRemove)
+                    model.errorMsgs |> List.filter (\modelMsg -> modelMsg.id /= msgToRemove.id)
             in
             ( { model | errorMsgs = newErrorMsgs }, Cmd.none )
 
@@ -32,4 +31,4 @@ handleErrorBoxMsgs model msg =
                 log =
                     Debug.log "Error: " err
             in
-            ( { model | errorMsgs = model.errorMsgs ++ [ Debug.toString err ] }, Cmd.none )
+            ( { model | errorMsgs = model.errorMsgs ++ [ Debug.toString err |> createErrorMsg ] }, Cmd.none )

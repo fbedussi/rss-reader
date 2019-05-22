@@ -1,9 +1,10 @@
-module Helpers exposing (closeModal, countNewArticlesInSite, dateDescending, delay, extractId, getArticleSite, getArticlesInSites, getClass, getDataToSaveInDb, getMaxId, getNextId, getSelectedArticles, getSiteToEdit, getSitesInCategories, incrementMaxId, isArticleInSites, isSelected, isSiteInCategories, lessThanOneDayDifference, mergeArticles, onKeyDown, openModal, sendMsg, toggleSelected)
+module Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, extractId, getArticleSite, getArticlesInSites, getClass, getDataToSaveInDb, getMaxId, getNextId, getSelectedArticles, getSiteToEdit, getSitesInCategories, incrementMaxId, isArticleInSites, isSelected, isSiteInCategories, lessThanOneDayDifference, mergeArticles, onKeyDown, openModal, sendMsg, toggleSelected)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Events exposing (keyCode, on)
 import Json.Decode as Json
-import Models exposing (Article, Category, Id, Model, Msg, Panel(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite, panelToString)
+import Models exposing (Article, Category, ErrorMsg, Id, Model, Msg, Panel(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite, panelToString)
+import Murmur3 exposing (hashString)
 import PanelsManager exposing (PanelsState, closePanel, openPanel)
 import Process
 import Task
@@ -218,3 +219,10 @@ lessThanOneDayDifference articleDate lastRefreshTime =
             abs (posixToMillis articleDate - posixToMillis lastRefreshTime)
     in
     difference < 1000 * 60 * 60 * 25
+
+
+createErrorMsg : String -> ErrorMsg
+createErrorMsg text =
+    { id = hashString 1234 text |> String.fromInt
+    , text = text
+    }
