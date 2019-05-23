@@ -16,7 +16,14 @@ getFeeds sites =
 getSiteFeed : Site -> Task String (List Article)
 getSiteFeed site =
     Http.get
-        ("https://api.rss2json.com/v1/api.json?rss_url=" ++ Url.percentEncode site.rssLink)
+        ("https://rss2json.giorgioaquino.now.sh/?url=" ++ site.rssLink)
         (feedDecoder site.id)
         |> Http.toTask
-        |> Task.mapError (\err -> "Error reading feeds for site: " ++ site.name)
+        |> Task.mapError
+            (\err ->
+                let
+                    log =
+                        "Error reading from site " ++ site.name ++ ": " ++ Debug.toString err |> Debug.log
+                in
+                "Error reading feeds for site: " ++ site.name
+            )
