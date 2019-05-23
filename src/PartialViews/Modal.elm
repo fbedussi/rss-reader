@@ -13,13 +13,14 @@ modal data animationClass =
     styled div
         [ width (em 30)
         , maxWidth (pct 90)
-        , zIndex (int 20)
+        , zIndex (int 50)
         , position absolute
         , top (pct 50)
         , left (pct 50)
         , transforms [ translate2 (pct -50) (pct -50) ]
         , backgroundColor theme.colorBackground
         , borderRadius (Css.px 3)
+        , border3 (Css.px 1) solid theme.colorHairline
         ]
         [ class <| "modal" ++ animationClass ]
         [ styled div
