@@ -26,8 +26,5 @@ renderErrorMsg panelsState errorMsg =
 
         animationClass =
             getPanelState panelId panelsState |> getPanelClass "expand" "" "collapse"
-
-        log =
-            Debug.log "animationClass" animationClass
     in
     errorMessage animationClass errorMsg
