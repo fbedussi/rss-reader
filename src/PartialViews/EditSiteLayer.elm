@@ -50,8 +50,7 @@ renderEditSiteForm site categories =
             , styled select
                 [ flex (int 5) ]
                 [ class "siteCategorySelect"
-
-                -- , onInput (\categoryId -> EditSiteMsg <| UpdateSite { site | categoriesId = convertCategoryIdToInt categoryId })
+                , onInput (\categoryId -> EditSiteMsg <| UpdateSite { site | categoriesId = [ convertCategoryIdToInt categoryId ] })
                 , id "selectCategory"
                 ]
                 (option
@@ -100,14 +99,5 @@ renderCategoryOptions siteCategoriesId category =
         [ text category.name ]
 
 
-
---  convertCategoryIdToInt : String -> List Int
-
-
 convertCategoryIdToInt string =
-    case string of
-        Ok id ->
-            [ id ]
-
-        Err err ->
-            []
+    String.toInt string |> Maybe.withDefault 0
