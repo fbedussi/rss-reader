@@ -1,7 +1,6 @@
 module PartialViews.Article exposing (renderArticle)
 
 -- import Date exposing (day, fromTime, month, year)
--- import HtmlParser as HtmlParser exposing (..)
 
 import Css exposing (..)
 import Css.Global exposing (descendants, selector, typeSelector)
@@ -13,6 +12,7 @@ import Html.Parser.Util exposing (..)
 import Html.Styled exposing (Html, a, button, div, h2, input, label, li, main_, span, styled, text, ul)
 import Html.Styled.Attributes exposing (checked, class, for, fromUnstyled, href, id, src, target, type_)
 import Html.Styled.Events exposing (onClick)
+import HtmlParserUtils exposing (getElementsByTagName, getValue, mapElements)
 import Json.Encode
 import Models exposing (Article, Category, DeleteMsg(..), Model, Msg(..), Site, toEnglishMonth)
 import PartialViews.UiKit exposing (article, articleTitle, btn, clear, onDesktop, standardPadding, starBtn, theme, transition)
@@ -47,13 +47,11 @@ renderArticle articlePreviewHeight sites articleToRender =
                     []
 
         imageUrl =
-            ""
-
-        -- articleExcerptParsed
-        --     |> getElementsByTagName "img"
-        --     |> mapElements (\_ attr _ -> getValue "src" attr |> Maybe.withDefault "")
-        --     |> List.head
-        --     |> Maybe.withDefault ""
+            articleExcerptParsed
+                |> getElementsByTagName "img"
+                |> mapElements (\_ attr _ -> getValue "src" attr |> Maybe.withDefault "")
+                |> List.head
+                |> Maybe.withDefault ""
     in
     li
         [ class "article" ]
@@ -108,12 +106,8 @@ renderArticle articlePreviewHeight sites articleToRender =
                         [ a
                             [ class "article-link"
                             , href articleToRender.link
-                            , Html.Styled.Attributes.target "_blank"
-                            , Json.Encode.string articleToRender.title
-                                |> Html.Attributes.property "innerHTML"
-                                |> fromUnstyled
                             ]
-                            []
+                            [ text articleToRender.title ]
                         ]
                     , articleImage imageUrl
                     , styled div

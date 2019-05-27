@@ -1,9 +1,6 @@
-- login/register
-- logo
-- settings
+- import/export site data
 
 # Post migration
 
 - Close panel with swipe
-- Article image
 - Accordion
