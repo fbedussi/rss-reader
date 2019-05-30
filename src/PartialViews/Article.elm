@@ -104,6 +104,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                         [ a
                             [ class "article-link"
                             , href articleToRender.link
+                            , target "_blank"
                             ]
                             [ text articleToRender.title ]
                         ]

@@ -48,12 +48,12 @@ articlesDecoder =
 
 categoryDecoder : Decoder Category
 categoryDecoder =
-    map4 Category
+    map5 Category
         (field "id" Json.Decode.int)
         (field "name" Json.Decode.string)
         (succeed False)
         (succeed False)
-
+        (succeed 0)
 
 siteDecoder : Decoder Site
 siteDecoder =

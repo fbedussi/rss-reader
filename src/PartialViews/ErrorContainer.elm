@@ -13,16 +13,15 @@ errorContainer panelsState errorMsgs =
     div
         [ class "errorContainer" ]
         (errorMsgs
-            |> List.map (\errorMsg -> errorMsg.text)
             |> List.map (renderErrorMsg panelsState)
         )
 
 
-renderErrorMsg : PanelsState -> String -> Html Msg
+renderErrorMsg : PanelsState -> ErrorMsg -> Html Msg
 renderErrorMsg panelsState errorMsg =
     let
         panelId =
-            hashString 1234 errorMsg |> String.fromInt
+            hashString 1234 errorMsg.text |> String.fromInt
 
         animationClass =
             getPanelState panelId panelsState |> getPanelClass "expand" "" "collapse"

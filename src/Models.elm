@@ -2,11 +2,11 @@ module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(
 
 -- import TouchEvents exposing (Touch)
 
-import Browser.Dom exposing (Error)
+import Browser.Dom exposing (Error, Viewport)
 import Char exposing (Char)
 import Json.Encode
 import PanelsManager exposing (PanelsState, initialPanelsState)
-import Task
+import Task exposing (Task)
 import Time exposing (Month(..), millisToPosix)
 
 
@@ -68,6 +68,7 @@ type alias Category =
     , name : String
     , isSelected : Bool
     , isBeingEdited : Bool
+    , height: Int
     }
 
 
@@ -207,6 +208,7 @@ type Msg
     | RefreshFeeds
     | GetArticles Id (Result String (List Article))
     | ToggleSelectedCategory Id
+    | OpenTab Id (Result Error Viewport) 
     | AddNewCategory
     | AddNewSite
     | SaveArticle Article

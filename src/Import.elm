@@ -59,6 +59,7 @@ extractCategoryFromOpml index opmlCategory =
         opmlCategory.name
         False
         False
+        0
 
 
 extractSitesFromOpml : Int -> OpmlCategory -> List Site

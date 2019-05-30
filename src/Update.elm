@@ -1,6 +1,6 @@
 module Update exposing (createNewCategory, createNewSite, update)
 
-import Browser.Dom exposing (focus)
+import Browser.Dom exposing (focus, getViewportOf)
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
@@ -31,8 +31,15 @@ update msg model =
                 , currentPage = 1
                 , sites = model.sites |> List.map (\site -> { site | isSelected = False })
               }
-            , Cmd.none
+            , Task.attempt (OpenTab categoryId) (getViewportOf <| "cat_" ++ (String.fromInt categoryId) ++ "_inner") 
             )
+
+        OpenTab categoryId innerViewport ->
+            case innerViewport of
+                Ok height ->
+                    ({model | categories = updateCategoriesHeight (round height.viewport.height) categoryId model.categories}, Cmd.none)
+                Err notFound ->
+                    (model, Cmd.none)
 
         ToggleSelectSite siteId ->
             ( { model
@@ -294,6 +301,7 @@ createNewCategory categories =
         "New Category"
         True
         True
+        0
 
 
 createNewSite : List Site -> Site
@@ -311,3 +319,9 @@ createNewSite sites =
         False
         False
         0
+
+
+updateCategoriesHeight : Int -> Id -> List Category -> List Category 
+updateCategoriesHeight height id categories =
+    categories
+        |> List.map (\category -> let newHeight = if category.id == id then height else 0 in {category | height = newHeight})    

@@ -8,7 +8,7 @@ import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_, value)
 import Html.Styled.Events exposing (onCheck, onClick, onInput)
-import Models exposing (ErrorBoxMsg(..), Msg(..), Panel, Selected)
+import Models exposing (ErrorBoxMsg(..), Msg(..), Panel, Selected, ErrorMsg)
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (closeIcon, starIcon)
 
@@ -323,16 +323,12 @@ sidebarRow selected =
         ]
 
 
-tabContentOuter : Selected -> List (Attribute msg) -> List (Html msg) -> Html msg
-tabContentOuter selected =
+tabContentOuter : Int -> List (Attribute msg) -> List (Html msg) -> Html msg
+tabContentOuter h =
     styled div
         [ transition "height 0.5s"
         , overflow hidden
-        , if selected then
-            height auto
-
-          else
-            height zero
+        , height (px (toFloat h))
         ]
 
 
@@ -575,7 +571,7 @@ getModalAnimationClass panelState =
     getPanelClass "is-hidden" "popInCentered" "popOutCentered" panelState
 
 
-errorMessage : String -> String -> Html Msg
+errorMessage : String -> ErrorMsg -> Html Msg
 errorMessage animationClass errorMsg =
     styled div
         [ backgroundColor theme.colorAlert
@@ -593,7 +589,7 @@ errorMessage animationClass errorMsg =
             [ class "errorMsg-inner" ]
             [ span
                 [ class "errorMsg-text" ]
-                [ text errorMsg ]
+                [ text errorMsg.text ]
             , closeBtn <| ErrorBoxMsg <| RequestRemoveErrorMsg errorMsg
             ]
         ]

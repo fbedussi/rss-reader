@@ -25,9 +25,10 @@ renderCategory sites panelsState category =
 
         -- triggerOpenTab =
         --     if category.isSelected then
-        --         openTab ("#" ++ domId)
+        --         openTab domId
         --     else
-        --         closeTab ("#" ++ domId)
+        --         closeTab domId
+
         sitesInCategory =
             getSitesInCategories [ category.id ] sites
 
@@ -47,11 +48,11 @@ renderCategory sites panelsState category =
              else
                 renderCategoryName category newArticlesInCategory
             )
-        , tabContentOuter category.isSelected
+        , tabContentOuter category.height
             [ class "tabContentOuter" ]
             [ styled ul
                 []
-                [ class "category-sitesInCategory tabContentInner" ]
+                [ class "category-sitesInCategory tabContentInner", id (domId ++ "_inner") ]
                 (sitesInCategory
                     |> List.map (renderSiteEntry |> lazy)
                 )
