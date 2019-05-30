@@ -3,4 +3,4 @@
 # Post migration
 
 - Close panel with swipe
-- Accordion
+- Accordion animation

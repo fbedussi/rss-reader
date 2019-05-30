@@ -1,7 +1,5 @@
 module PartialViews.Article exposing (renderArticle)
 
--- import Date exposing (day, fromTime, month, year)
-
 import Css exposing (..)
 import Css.Global exposing (descendants, selector, typeSelector)
 import Helpers exposing (getArticleSite, getSelectedArticles)
