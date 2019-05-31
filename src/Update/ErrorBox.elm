@@ -27,8 +27,8 @@ handleErrorBoxMsgs model msg =
             ( { model | errorMsgs = newErrorMsgs }, Cmd.none )
 
         LogErr err ->
-            let
-                log =
-                    Debug.log "Error: " err
-            in
-            ( { model | errorMsgs = model.errorMsgs ++ [ Debug.toString err |> createErrorMsg ] }, Cmd.none )
+            -- let
+            --     log =
+            --         Debug.log "Error: " err
+            -- in
+            ( { model | errorMsgs = model.errorMsgs ++ [ "Error" |> createErrorMsg ] }, Cmd.none )

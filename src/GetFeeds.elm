@@ -21,9 +21,9 @@ getSiteFeed site =
         |> Http.toTask
         |> Task.mapError
             (\err ->
-                let
-                    log =
-                        "Error reading from site " ++ site.name ++ ": " ++ Debug.toString err |> Debug.log
-                in
+                -- let
+                --     log =
+                --         "Error reading from site " ++ site.name ++ ": " ++ Debug.toString err |> Debug.log
+                -- in
                 "Error reading feeds for site: " ++ site.name
             )

@@ -163,13 +163,13 @@ menuIcon styles =
     styled svg
         ([ iconStyle ] ++ styles)
         [ viewBox "0 0 16 16" ]
-        [ path [ d "M1 11h14v3H1z", Svg.Styled.Attributes.id "bottom" ]
+        [ path [ d "M1 11.246h14v1.5H1zM1", Svg.Styled.Attributes.id "bottom" ]
             []
-        , path [ d "M1 7h14v3H1z", Svg.Styled.Attributes.id "central" ]
+        , path [ d "M1 7.246h14v1.5H1zM1", Svg.Styled.Attributes.id "central" ]
             []
-        , path [ d "M1 3h14v3H1z", Svg.Styled.Attributes.id "top" ]
+        , path [ d "M1 3.246h14v1.5H1z", Svg.Styled.Attributes.id "top" ]
             []
-        , path [ d "M1 7h14v3H1z", Svg.Styled.Attributes.id "centralBis" ]
+        , path [ d "M1 7.246h14v1.5H1z", Svg.Styled.Attributes.id "centralBis" ]
             []
         ]
 

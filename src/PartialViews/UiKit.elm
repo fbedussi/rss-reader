@@ -347,10 +347,6 @@ deleteActionsPanel =
 
 badge : List (Attribute msg) -> List (Html msg) -> Html msg
 badge =
-    let
-        log =
-            Debug.log "render" "badge"
-    in
     styled div
         [ display inlineBlock
         , backgroundColor theme.colorAccent

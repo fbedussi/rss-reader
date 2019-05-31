@@ -137,7 +137,7 @@ getInfoFromOutside tagger onError =
                             onError "Error received"
 
                 _ ->
-                    onError <| "Unexpected info from outside " ++ Debug.toString outsideInfo
+                    onError <| "Unexpected info from outside " {- ++ Debug.toString outsideInfo -}
         )
 
 
