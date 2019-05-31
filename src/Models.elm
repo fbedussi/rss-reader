@@ -68,7 +68,7 @@ type alias Category =
     , name : String
     , isSelected : Bool
     , isBeingEdited : Bool
-    , height: Int
+    , height : Int
     }
 
 
@@ -208,7 +208,7 @@ type Msg
     | RefreshFeeds
     | GetArticles Id (Result String (List Article))
     | ToggleSelectedCategory Id
-    | OpenTab Id (Result Error Viewport) 
+    | OpenTab Id (Result Error Viewport)
     | AddNewCategory
     | AddNewSite
     | SaveArticle Article
@@ -222,7 +222,7 @@ type Msg
     | ChangeNumberOfArticlesPerPage Int
     | ChangePreviewHeight String
     | RegisterTime Time.Posix
-      -- | OnTouchStart Touch
+    | OnTouchStart ( Float, Float )
     | ScrollToTop
     | SignOut
     | EditCategoryMsg EditCategoryMsg

@@ -1,9 +1,7 @@
 module PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
 
--- import Accordion exposing (closeTab, openTab)
-
 import Css exposing (auto, backgroundColor, batch, displayFlex, em, fill, flexShrink, height, int, marginRight, middle, pct, verticalAlign, width)
-import Helpers exposing (extractId, getClass, getSitesInCategories, isArticleInSites, isSelected)
+import Helpers exposing (extractId, getClass, getInnerTabId, getOuterTabId, getSitesInCategories, isArticleInSites, isSelected)
 import Html
 import Html.Styled exposing (Html, a, article, button, div, h2, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, href, id, src, value)
@@ -21,13 +19,7 @@ renderCategory : List Site -> PanelsState -> Category -> Html Msg
 renderCategory sites panelsState category =
     let
         domId =
-            "cat_" ++ String.fromInt category.id
-
-        -- triggerOpenTab =
-        --     if category.isSelected then
-        --         openTab domId
-        --     else
-        --         closeTab domId
+            getOuterTabId category.id
 
         sitesInCategory =
             getSitesInCategories [ category.id ] sites
@@ -52,7 +44,7 @@ renderCategory sites panelsState category =
             [ class "tabContentOuter" ]
             [ styled ul
                 []
-                [ class "category-sitesInCategory tabContentInner", id (domId ++ "_inner") ]
+                [ class "category-sitesInCategory tabContentInner", id (getInnerTabId category.id) ]
                 (sitesInCategory
                     |> List.map (renderSiteEntry |> lazy)
                 )

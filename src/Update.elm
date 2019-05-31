@@ -31,15 +31,16 @@ update msg model =
                 , currentPage = 1
                 , sites = model.sites |> List.map (\site -> { site | isSelected = False })
               }
-            , Task.attempt (OpenTab categoryId) (getViewportOf <| "cat_" ++ (String.fromInt categoryId) ++ "_inner") 
+            , Task.attempt (OpenTab categoryId) (getViewportOf <| "cat_" ++ String.fromInt categoryId ++ "_inner")
             )
 
         OpenTab categoryId innerViewport ->
             case innerViewport of
                 Ok height ->
-                    ({model | categories = updateCategoriesHeight (round height.viewport.height) categoryId model.categories}, Cmd.none)
+                    ( { model | categories = updateCategoriesHeight (round height.viewport.height) categoryId model.categories }, Cmd.none )
+
                 Err notFound ->
-                    (model, Cmd.none)
+                    ( model, Cmd.none )
 
         ToggleSelectSite siteId ->
             ( { model
@@ -260,8 +261,13 @@ update msg model =
             in
             ( { model | options = updatedOptions }, Cmd.none )
 
-        -- OnTouchStart touchEvent ->
-        --     ( { model | touchData = ( touchEvent.clientX, touchEvent.clientY ) }, Cmd.none )
+        OnTouchStart coordinates ->
+            let
+                ( x, y ) =
+                    coordinates
+            in
+            ( { model | touchData = ( x, y ) }, Cmd.none )
+
         ToggleExcerpt articleId domId toOpen ->
             let
                 updatedArticles =
@@ -321,7 +327,18 @@ createNewSite sites =
         0
 
 
-updateCategoriesHeight : Int -> Id -> List Category -> List Category 
+updateCategoriesHeight : Int -> Id -> List Category -> List Category
 updateCategoriesHeight height id categories =
     categories
-        |> List.map (\category -> let newHeight = if category.id == id then height else 0 in {category | height = newHeight})    
+        |> List.map
+            (\category ->
+                let
+                    newHeight =
+                        if category.id == id then
+                            height
+
+                        else
+                            0
+                in
+                { category | height = newHeight }
+            )

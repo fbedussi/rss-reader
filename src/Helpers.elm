@@ -1,4 +1,4 @@
-module Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, extractId, getArticleSite, getArticlesInSites, getClass, getDataToSaveInDb, getMaxId, getNextId, getSelectedArticles, getSiteToEdit, getSitesInCategories, incrementMaxId, isArticleInSites, isSelected, isSiteInCategories, lessThanOneDayDifference, mergeArticles, onKeyDown, openModal, sendMsg, toggleSelected)
+module Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, extractId, getArticleSite, getArticlesInSites, getClass, getDataToSaveInDb, getInnerTabId, getMaxId, getNextId, getOuterTabId, getSelectedArticles, getSiteToEdit, getSitesInCategories, idPrefix, incrementMaxId, isArticleInSites, isSelected, isSiteInCategories, lessThanOneDayDifference, mergeArticles, onKeyDown, openModal, sendMsg, toggleSelected)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Events exposing (keyCode, on)
@@ -226,3 +226,17 @@ createErrorMsg text =
     { id = hashString 1234 text |> String.fromInt
     , text = text
     }
+
+
+idPrefix =
+    "cat_"
+
+
+getOuterTabId : Id -> String
+getOuterTabId categoryId =
+    idPrefix ++ String.fromInt categoryId
+
+
+getInnerTabId : Id -> String
+getInnerTabId categoryId =
+    idPrefix ++ String.fromInt categoryId ++ "_inner"
