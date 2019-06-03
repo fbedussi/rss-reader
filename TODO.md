@@ -1,3 +1,2 @@
 - import/export site data
-- New article counters
 - Save articles
