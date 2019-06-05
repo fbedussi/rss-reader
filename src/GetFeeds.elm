@@ -16,7 +16,7 @@ getFeeds sites =
 getSiteFeed : Site -> Task String (List Article)
 getSiteFeed site =
     Http.get
-        ("https://rss2json.giorgioaquino.now.sh/?url=" ++ site.rssLink)
+        ("https://rss2json.fbedussi.now.sh/?url=" ++ site.rssLink)
         (feedDecoder site.id)
         |> Http.toTask
         |> Task.mapError
