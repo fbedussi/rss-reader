@@ -3,7 +3,6 @@ module PartialViews.Sidebar exposing (renderCategories, renderSearchBox, renderS
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Html
-import Html.Events.Extra.Touch as Touch
 import Html.Styled exposing (Html, a, article, aside, button, div, h2, label, li, main_, span, styled, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (attribute, class, disabled, for, fromUnstyled, href, id, placeholder, src, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -15,14 +14,7 @@ import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
 import PartialViews.Icons exposing (cogIcon, plusIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, onDesktop, sidebarBoxStyle, standardPadding, theme, transition)
-
-
-touchCoordinates : Touch.Event -> ( Float, Float )
-touchCoordinates touchEvent =
-    List.head touchEvent.changedTouches
-        |> Maybe.map .clientPos
-        |> Maybe.withDefault ( 0, 0 )
-
+import Swiper exposing (onSwipeEvents)
 
 sidebar : Model -> Html Msg
 sidebar model =
@@ -56,24 +48,7 @@ sidebar model =
             , transforms []
             ]
         ]
-        [ class "sidebar"
-        , fromUnstyled <| Touch.onStart (OnTouchStart << touchCoordinates)
-        , fromUnstyled <|
-            Touch.onEnd
-                ((\coordinates ->
-                    let
-                        ( x, y ) =
-                            coordinates
-                    in
-                    if Tuple.first model.touchData - x > 100 then
-                        ToggleMenu
-
-                    else
-                        NoOp
-                 )
-                    << touchCoordinates
-                )
-        ]
+        ([ class "sidebar" ] ++ (onSwipeEvents Swiped |> List.map fromUnstyled))
         ([ renderSidebarToolbar
          , lazy renderSearchBox model.searchTerm
          , lazy2 searchResult model.sites model.searchTerm

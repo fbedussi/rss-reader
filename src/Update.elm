@@ -14,7 +14,7 @@ import Update.Delete exposing (handleDeleteMsgs)
 import Update.EditCategory exposing (handleEditCategoryMsgs)
 import Update.EditSite exposing (handleEditSiteMsgs)
 import Update.ErrorBox exposing (handleErrorBoxMsgs)
-
+import Swiper
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -261,12 +261,15 @@ update msg model =
             in
             ( { model | options = updatedOptions }, Cmd.none )
 
-        OnTouchStart coordinates ->
+        Swiped evt ->
             let
-                ( x, y ) =
-                    coordinates
+                ( newState, swipedRight) =
+                    Swiper.hasSwipedRight evt model.swipingState
             in
-            ( { model | touchData = ( x, y ) }, Cmd.none )
+                ( { model 
+                    | swipingState = newState
+                    , userSwipedLeft = swipedRight
+                    , menuOpen = not swipedRight }, Cmd.none )
 
         ToggleExcerpt articleId domId toOpen ->
             let

@@ -8,6 +8,7 @@ import Json.Encode
 import PanelsManager exposing (PanelsState, initialPanelsState)
 import Task exposing (Task)
 import Time exposing (Month(..), millisToPosix)
+import Swiper exposing (SwipingState, initialSwipingState, SwipeEvent)
 
 
 type alias UserUid =
@@ -154,7 +155,8 @@ type alias Model =
     , currentPage : Int
     , options : Options
     , lastRefreshTime : Time.Posix
-    , touchData : ( Float, Float )
+    , swipingState : SwipingState
+    , userSwipedLeft : Bool
     }
 
 
@@ -175,7 +177,8 @@ initialModel =
     , currentPage = 1
     , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15 }
     , lastRefreshTime = millisToPosix 0
-    , touchData = ( 0, 0 )
+    , swipingState = initialSwipingState
+    , userSwipedLeft = False    
     }
 
 
@@ -222,7 +225,7 @@ type Msg
     | ChangeNumberOfArticlesPerPage Int
     | ChangePreviewHeight String
     | RegisterTime Time.Posix
-    | OnTouchStart ( Float, Float )
+    | Swiped SwipeEvent
     | ScrollToTop
     | SignOut
     | EditCategoryMsg EditCategoryMsg
