@@ -264,7 +264,7 @@ update msg model =
         Swiped evt ->
             let
                 ( newState, swipedRight) =
-                    Swiper.hasSwipedRight evt model.swipingState
+                    Swiper.hasSwipedRight 100 evt model.swipingState
             in
                 ( { model 
                     | swipingState = newState
