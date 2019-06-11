@@ -18,8 +18,10 @@ siteHeader isRefreshButtonVisible =
         , alignItems center
         , padding theme.distanceXXS
         , borderBottom3 theme.hairlineWidth solid theme.colorHairline
+        , position fixed
         , position sticky
         , top zero
+        , width (pct 100)
         , backgroundColor theme.colorBackground
         , zIndex theme.zIndex.headerSmartphone
         , onDesktop
