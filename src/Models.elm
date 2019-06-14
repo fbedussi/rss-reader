@@ -61,6 +61,7 @@ type alias Site =
     , starred : Bool
     , isSelected : Bool
     , numberOfNewArticles : Int
+    , isActive: Bool
     }
 
 
@@ -198,6 +199,7 @@ createEmptySite =
         False
         False
         0
+        True
 
 
 type Msg

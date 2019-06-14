@@ -328,6 +328,7 @@ createNewSite sites =
         False
         False
         0
+        True
 
 
 updateCategoriesHeight : Int -> Id -> List Category -> List Category

@@ -4,6 +4,7 @@ import Iso8601
 import Json.Decode exposing (..)
 import Models exposing (..)
 import Time exposing (millisToPosix)
+import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 
 
 decodeDbOpened : Value -> Result Error Bool
@@ -57,17 +58,17 @@ categoryDecoder =
 
 siteDecoder : Decoder Site
 siteDecoder =
-    map8 Site
-        (field "id" Json.Decode.int)
-        (field "categoriesId" (list Json.Decode.int))
-        (field "name" Json.Decode.string)
-        (field "rssLink" Json.Decode.string)
-        (field "webLink" Json.Decode.string)
-        (field "starred" Json.Decode.bool)
-        (succeed False)
-        (succeed 0)
-
-
+    succeed Site
+        |> required "id" int
+        |> required "categoriesId" (list Json.Decode.int)
+        |> required "name" string
+        |> required "rssLink" string
+        |> required "webLink" string
+        |> required "starred" bool
+        |> hardcoded False
+        |> hardcoded 0
+        |> optional "isActive" bool True
+        
 articleDecoder : Decoder Article
 articleDecoder =
     map8 Article

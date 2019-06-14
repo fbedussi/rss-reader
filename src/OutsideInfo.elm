@@ -188,6 +188,7 @@ encodeSite site =
         , ( "rssLink", site.rssLink |> string )
         , ( "webLink", site.webLink |> string )
         , ( "starred", site.starred |> bool )
+        , ( "isActive", site.isActive |> bool )
         ]
 
 

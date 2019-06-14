@@ -3,7 +3,7 @@ module Import exposing (executeImport)
 import Helpers exposing (createErrorMsg)
 import Json.Decode exposing (..)
 import Models exposing (Category, Model, Site)
-
+import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 
 type alias OpmlCategory =
     { sites : List Site
@@ -115,17 +115,20 @@ fakeSiteList id categoriesId name rssLink webLink starred =
         starred
         False
         0
+        True
         |> List.singleton
 
 
 opmlSiteDecoder : Decoder Site
 opmlSiteDecoder =
-    map8 Site
-        (succeed 0)
-        (succeed [])
-        (field "_title" string)
-        (field "_xmlUrl" string)
-        (field "_htmlUrl" string)
-        (succeed False)
-        (succeed False)
-        (succeed 0)
+    succeed Site
+        |> hardcoded 0
+        |> hardcoded []
+        |> required "_title" string
+        |> required "_xmlUrl" string
+        |> required "_htmlUrl" string
+        |> hardcoded False
+        |> hardcoded False
+        |> hardcoded 0
+        |> hardcoded True
+

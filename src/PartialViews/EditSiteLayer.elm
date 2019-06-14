@@ -46,6 +46,17 @@ renderEditSiteForm site categories =
             ]
         , inputRow
             []
+            [ styled span
+                [ flex (int 1) ]
+                [ class "fakeCheckboxLabel" ]
+                [ text "Active" ]
+            , styled span
+                [ flex (int 5) ]
+                []
+                [ checkbox "activeCheckbox" site.isActive (onClick <| EditSiteMsg <| UpdateSite { site | isActive = not site.isActive }) ]
+            ]
+        , inputRow
+            []
             [ inputRowLabel "selectCategory" "Select a category"
             , styled select
                 [ flex (int 5) ]
