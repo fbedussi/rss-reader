@@ -10,6 +10,7 @@ import Url
 getFeeds : List Site -> List (Cmd Msg)
 getFeeds sites =
     sites
+        |> List.filter (\site -> site.isActive)
         |> List.map (\site -> Task.attempt (GetArticles site.id) (getSiteFeed site))
 
 

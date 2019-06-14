@@ -73,7 +73,7 @@ renderEditSiteForm site categories =
                             False
                         )
                     ]
-                    [ text "Pick a catelgory" ]
+                    [ text "Pick a category" ]
                     :: (categories
                             |> List.map (renderCategoryOptions site.categoriesId)
                        )

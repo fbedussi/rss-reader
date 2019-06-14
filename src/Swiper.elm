@@ -92,7 +92,7 @@ hasSwipedLeft threshold =
 Returns a tuple with the new SwipingState and the Bool answer.
 -}
 hasSwipedRight : Float -> SwipeEvent -> SwipingState -> ( SwipingState, Bool )
-hasSwipedRight threshold=
+hasSwipedRight threshold =
     hasSwiped threshold Right
 
 
@@ -133,18 +133,28 @@ hasSwiped threshold dir evt (SwipingState { touchStarted }) =
 -}
 checkSwiped : Coords -> Coords -> Direction -> Float -> Bool
 checkSwiped start end dir threshold =
+    let 
+        isGreater = isGreaterThanThreshold threshold
+    in
     case dir of
         Left ->
-            start.clientX < end.clientX && end.clientX - start.clientX > threshold
+            isGreater end.clientX start.clientX
 
         Right ->
-            start.clientX > end.clientX && start.clientX - end.clientX > threshold
+            isGreater start.clientX end.clientX
 
         Up ->
-            start.clientY > end.clientY && start.clientY - end.clientY > threshold
+            isGreater start.clientY end.clientY
 
         Down ->
-            start.clientY < end.clientY && end.clientY - start.clientY > threshold
+            isGreater end.clientY start.clientY
+
+
+{-| Helper function that checks is a number is greater than another and the 
+    difference is above a specified threshold -}
+isGreaterThanThreshold : Float -> Float -> Float -> Bool
+isGreaterThanThreshold threshold shouldBeGreater shouldBeSmaller =
+    shouldBeGreater > shouldBeSmaller && shouldBeGreater - shouldBeSmaller > threshold
 
 
 {-| Convenience function that will indicate if this is a "touchend" event.

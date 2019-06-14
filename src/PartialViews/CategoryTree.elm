@@ -132,7 +132,8 @@ renderSiteEntry site =
                 [ badge
                     [ class "site-numberOfArticles" ]
                     [ text <| String.fromInt site.numberOfNewArticles ]
-                , span
+                , styled span
+                    [if site.isActive then Css.textDecoration Css.none else Css.textDecoration Css.lineThrough]
                     []
                     [ site.name |> text ]
                 ]
