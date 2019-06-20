@@ -6,9 +6,9 @@ import Browser.Dom exposing (Error, Viewport)
 import Char exposing (Char)
 import Json.Encode
 import PanelsManager exposing (PanelsState, initialPanelsState)
+import Swiper exposing (SwipeEvent, SwipingState, initialSwipingState)
 import Task exposing (Task)
 import Time exposing (Month(..), millisToPosix)
-import Swiper exposing (SwipingState, initialSwipingState, SwipeEvent)
 
 
 type alias UserUid =
@@ -61,7 +61,8 @@ type alias Site =
     , starred : Bool
     , isSelected : Bool
     , numberOfNewArticles : Int
-    , isActive: Bool
+    , isActive : Bool
+    , numberOfFailures : Int
     }
 
 
@@ -179,7 +180,7 @@ initialModel =
     , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15 }
     , lastRefreshTime = millisToPosix 0
     , swipingState = initialSwipingState
-    , userSwipedLeft = False    
+    , userSwipedLeft = False
     }
 
 
@@ -200,6 +201,7 @@ createEmptySite =
         False
         0
         True
+        0
 
 
 type Msg

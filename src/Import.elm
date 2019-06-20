@@ -2,8 +2,9 @@ module Import exposing (executeImport)
 
 import Helpers exposing (createErrorMsg)
 import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Models exposing (Category, Model, Site)
-import Json.Decode.Pipeline exposing (required, optional, hardcoded)
+
 
 type alias OpmlCategory =
     { sites : List Site
@@ -116,6 +117,7 @@ fakeSiteList id categoriesId name rssLink webLink starred =
         False
         0
         True
+        0
         |> List.singleton
 
 
@@ -131,4 +133,4 @@ opmlSiteDecoder =
         |> hardcoded False
         |> hardcoded 0
         |> hardcoded True
-
+        |> hardcoded 0

@@ -28,7 +28,7 @@ renderEditSiteForm site categories =
                 [ text "Site id: " ]
             , div
                 [ class "input is-disabled" ]
-                [ String.fromInt site.id |> text ]
+                [ String.fromInt site.id ++ " - Number of failures: " ++ String.fromInt site.numberOfFailures |> text ]
             ]
         , inputRowText "siteNameInput" "Name" site.name (\name -> EditSiteMsg <| UpdateSite { site | name = name })
         , inputRowText "rssLinkInput" "Rss link" site.rssLink (\rssLink -> EditSiteMsg <| UpdateSite { site | rssLink = rssLink })

@@ -2,9 +2,9 @@ module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser, fe
 
 import Iso8601
 import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Models exposing (..)
 import Time exposing (millisToPosix)
-import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 
 
 decodeDbOpened : Value -> Result Error Bool
@@ -56,6 +56,7 @@ categoryDecoder =
         (succeed False)
         (succeed 0)
 
+
 siteDecoder : Decoder Site
 siteDecoder =
     succeed Site
@@ -68,7 +69,9 @@ siteDecoder =
         |> hardcoded False
         |> hardcoded 0
         |> optional "isActive" bool True
-        
+        |> optional "numberOfFailures" int 0
+
+
 articleDecoder : Decoder Article
 articleDecoder =
     map8 Article

@@ -8,13 +8,14 @@ import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(.
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
+import Swiper
 import Task
 import Time exposing (millisToPosix)
 import Update.Delete exposing (handleDeleteMsgs)
 import Update.EditCategory exposing (handleEditCategoryMsgs)
 import Update.EditSite exposing (handleEditSiteMsgs)
 import Update.ErrorBox exposing (handleErrorBoxMsgs)
-import Swiper
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -263,13 +264,16 @@ update msg model =
 
         Swiped evt ->
             let
-                ( newState, swipedRight) =
+                ( newState, swipedRight ) =
                     Swiper.hasSwipedRight 100 evt model.swipingState
             in
-                ( { model 
-                    | swipingState = newState
-                    , userSwipedLeft = swipedRight
-                    , menuOpen = not swipedRight }, Cmd.none )
+            ( { model
+                | swipingState = newState
+                , userSwipedLeft = swipedRight
+                , menuOpen = not swipedRight
+              }
+            , Cmd.none
+            )
 
         ToggleExcerpt articleId domId toOpen ->
             let
@@ -329,6 +333,7 @@ createNewSite sites =
         False
         0
         True
+        0
 
 
 updateCategoriesHeight : Int -> Id -> List Category -> List Category
