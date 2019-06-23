@@ -87,9 +87,10 @@ articleDecoder =
 
 appOptionsDecoder : Decoder Options
 appOptionsDecoder =
-    map2 Options
+    map3 Options
         (oneOf [ field "articlesPerPage" Json.Decode.int, succeed initialModel.options.articlesPerPage ])
         (oneOf [ field "articlePreviewHeightInEm" Json.Decode.float, succeed initialModel.options.articlePreviewHeightInEm ])
+        (oneOf [ field "maxNumberOfFailures" Json.Decode.int, succeed initialModel.options.maxNumberOfFailures ])
 
 
 decodeError : Value -> Result Error String

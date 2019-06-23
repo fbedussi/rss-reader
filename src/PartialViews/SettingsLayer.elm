@@ -36,5 +36,18 @@ settingsLayer options animationClass =
                     ]
                     []
                 ]
+            , inputRow
+                []
+                [ inputRowLabel "maxNumberOfFailures" "Number of consecutive failures before disabling a site"
+                , styled input
+                    [ flex (int 5) ]
+                    [ class "input"
+                    , id "maxNumberOfFailures"
+                    , value <| String.fromInt options.maxNumberOfFailures
+                    , onInput ChangeMaxNumberOfFailures
+                    , type_ "number"
+                    ]
+                    []
+                ]
             ]
         ]

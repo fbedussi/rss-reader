@@ -217,4 +217,5 @@ encodeOptions options =
     object
         [ ( "articlesPerPage", options.articlesPerPage |> int )
         , ( "articlePreviewHeightInEm", options.articlePreviewHeightInEm |> float )
+        , ( "maxNumberOfFailures", options.maxNumberOfFailures |> int )
         ]

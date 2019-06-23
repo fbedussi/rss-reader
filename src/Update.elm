@@ -161,22 +161,34 @@ update msg model =
                         mergedArticles =
                             mergeArticles rssArticles model.articles
 
-                        updatedSites =
-                            model.sites
-                                |> List.map
-                                    (\site ->
-                                        if site.id == siteId then
-                                            { site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime }
+                        ( updatedSites, sitesToResetFailures ) =
+                            List.foldl
+                                (\site ( updatedSites_, sitesToResetFailures_ ) ->
+                                    if site.id == siteId then
+                                        let
+                                            updatedSite =
+                                                { site | numberOfNewArticles = countNewArticlesInSite site.id rssArticles model.lastRefreshTime, numberOfFailures = 0 }
 
-                                        else
-                                            site
-                                    )
+                                            newSitesToResetFailures =
+                                                if site.numberOfFailures /= updatedSite.numberOfFailures then
+                                                    sitesToResetFailures_ ++ [ updatedSite ]
+
+                                                else
+                                                    sitesToResetFailures_
+                                        in
+                                        ( updatedSites_ ++ [ updatedSite ], newSitesToResetFailures )
+
+                                    else
+                                        ( updatedSites_ ++ [ site ], sitesToResetFailures_ )
+                                )
+                                ( [], [] )
+                                model.sites
                     in
                     ( { updatedModel
                         | articles = List.sortWith dateDescending mergedArticles
                         , sites = updatedSites
                       }
-                    , InitReadMoreButtons |> sendInfoOutside
+                    , Cmd.batch (sendInfoOutside InitReadMoreButtons :: List.map (\site -> UpdateSiteInDb site |> sendInfoOutside) sitesToResetFailures)
                     )
 
                 Err err ->
@@ -186,14 +198,27 @@ update msg model =
 
                         updatedPanelsState =
                             initPanel errorMsg.id model.panelsState
+
+                        failedSite =
+                            List.filter (\site -> site.id == siteId) model.sites |> List.head
+
+                        updateFailedSiteCmd =
+                            case failedSite of
+                                Just site ->
+                                    incrementNumberOfFailures model.options.maxNumberOfFailures site |> UpdateSiteInDb |> sendInfoOutside
+
+                                Nothing ->
+                                    Cmd.none
                     in
                     ( { updatedModel
                         | panelsState = updatedPanelsState
+                        , sites = findSiteAndIncrementNumberOfFailures model.options.maxNumberOfFailures model.sites siteId
                         , errorMsgs = List.filter (\e -> e.id /= errorMsg.id) model.errorMsgs ++ [ errorMsg ]
                       }
                     , Cmd.batch
                         [ delay (millisToPosix 1000) <| ErrorBoxMsg <| OpenErrorMsg errorMsg
                         , delay (millisToPosix 10000) <| ErrorBoxMsg <| RequestRemoveErrorMsg errorMsg
+                        , updateFailedSiteCmd
                         ]
                     )
 
@@ -259,6 +284,19 @@ update msg model =
 
                 updatedOptions =
                     { options | articlePreviewHeightInEm = String.toFloat rows |> Maybe.withDefault options.articlePreviewHeightInEm }
+            in
+            ( { model | options = updatedOptions }, Cmd.none )
+
+        ChangeMaxNumberOfFailures newMax ->
+            let
+                newMaxInt =
+                    String.toInt newMax |> Maybe.withDefault Models.defaultOptions.maxNumberOfFailures
+
+                options =
+                    model.options
+
+                updatedOptions =
+                    { options | maxNumberOfFailures = newMaxInt }
             in
             ( { model | options = updatedOptions }, Cmd.none )
 
@@ -351,3 +389,33 @@ updateCategoriesHeight height id categories =
                 in
                 { category | height = newHeight }
             )
+
+
+incrementNumberOfFailures : Int -> Site -> Site
+incrementNumberOfFailures maxNumberOfFailures site =
+    let
+        newNumberOfFailures =
+            site.numberOfFailures + 1
+    in
+    { site
+        | numberOfFailures = newNumberOfFailures
+        , isActive =
+            if newNumberOfFailures > maxNumberOfFailures then
+                False
+
+            else
+                site.isActive
+    }
+
+
+findSiteAndIncrementNumberOfFailures : Int -> List Site -> Id -> List Site
+findSiteAndIncrementNumberOfFailures maxNumberOfFailures sites siteId =
+    List.map
+        (\site ->
+            if site.id == siteId then
+                incrementNumberOfFailures maxNumberOfFailures site
+
+            else
+                site
+        )
+        sites

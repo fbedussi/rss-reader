@@ -1,4 +1,4 @@
-module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), ErrorMsg, GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, init, initialModel, panelToString, toEnglishMonth)
+module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), ErrorMsg, GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, defaultOptions, init, initialModel, panelToString, toEnglishMonth)
 
 -- import TouchEvents exposing (Touch)
 
@@ -25,6 +25,7 @@ type alias LoginData =
 type alias Options =
     { articlesPerPage : Int
     , articlePreviewHeightInEm : Float
+    , maxNumberOfFailures : Int
     }
 
 
@@ -162,6 +163,10 @@ type alias Model =
     }
 
 
+defaultOptions =
+    Options 10 15.0 5
+
+
 initialModel : Model
 initialModel =
     { errorMsgs = []
@@ -177,7 +182,7 @@ initialModel =
     , panelsState = initialPanelsState
     , menuOpen = False
     , currentPage = 1
-    , options = { articlesPerPage = 10, articlePreviewHeightInEm = 15 }
+    , options = defaultOptions
     , lastRefreshTime = millisToPosix 0
     , swipingState = initialSwipingState
     , userSwipedLeft = False
@@ -228,6 +233,7 @@ type Msg
     | ChangePage Int
     | ChangeNumberOfArticlesPerPage Int
     | ChangePreviewHeight String
+    | ChangeMaxNumberOfFailures String
     | RegisterTime Time.Posix
     | Swiped SwipeEvent
     | ScrollToTop
