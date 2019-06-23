@@ -7,6 +7,7 @@ import Helpers exposing (getSiteToEdit, onKeyDown)
 import Html.Styled exposing (Html, div, span, styled, toUnstyled)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick)
+import Html.Styled.Lazy as HSL
 import Models exposing (Model, Msg(..), Panel(..), panelToString)
 import PanelsManager exposing (getPanelState, isPanelOpen, isSomePanelOpen)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
@@ -60,8 +61,8 @@ view model =
                             [ displayFlex ]
                         ]
                         [ class "mainWrapper" ]
-                        [ sidebar model
-                        , mainContent model.categories model.sites model.articles model.options model.currentPage
+                        [ HSL.lazy4 sidebar model.sites model.searchTerm model.categories model.panelsState
+                        , HSL.lazy5 mainContent model.categories model.sites model.articles model.options model.currentPage
                         ]
                     , PartialViews.UiKit.overlay (model.menuOpen || isSomePanelOpen "Panel" model.panelsState)
                     , modal model.modal <| getModalAnimationClass <| getPanelState (panelToString PanelModal) model.panelsState

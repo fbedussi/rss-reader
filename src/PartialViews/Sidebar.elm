@@ -16,15 +16,16 @@ import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, onDesktop, sidebarBoxStyle, standardPadding, theme, transition)
 import Swiper exposing (onSwipeEvents)
 
-sidebar : Model -> Html Msg
-sidebar model =
+
+sidebar : List Site -> String -> List Category -> PanelsState -> Html Msg
+sidebar sites searchTerm categories panelsState =
     let
         sitesWithoutCategory =
-            model.sites
+            sites
                 |> List.filter (\site -> List.isEmpty site.categoriesId)
 
         searchInProgress =
-            not <| String.isEmpty model.searchTerm
+            not <| String.isEmpty searchTerm
     in
     styled aside
         [ position fixed
@@ -50,12 +51,12 @@ sidebar model =
         ]
         ([ class "sidebar" ] ++ (onSwipeEvents Swiped |> List.map fromUnstyled))
         ([ renderSidebarToolbar
-         , lazy renderSearchBox model.searchTerm
-         , lazy2 searchResult model.sites model.searchTerm
+         , lazy renderSearchBox searchTerm
+         , lazy2 searchResult sites searchTerm
          ]
             ++ (if not searchInProgress then
                     [ lazy renderSitesWithoutCategory sitesWithoutCategory
-                    , lazy3 renderCategories model.categories model.sites model.panelsState
+                    , lazy3 renderCategories categories sites panelsState
                     ]
 
                 else
