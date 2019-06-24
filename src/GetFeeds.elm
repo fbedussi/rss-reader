@@ -11,20 +11,12 @@ getFeeds : List Site -> List (Cmd Msg)
 getFeeds sites =
     sites
         |> List.filter (\site -> site.isActive)
-        |> List.map (\site -> Task.attempt (GetArticles site.id) (getSiteFeed site))
+        |> List.map (\site -> getSiteFeed site)
 
 
-getSiteFeed : Site -> Task String (List Article)
+getSiteFeed : Site -> Cmd Msg
 getSiteFeed site =
     Http.get
-        ("https://rss2json.fbedussi.now.sh/?url=" ++ site.rssLink)
-        (feedDecoder site.id)
-        |> Http.toTask
-        |> Task.mapError
-            (\err ->
-                -- let
-                --     log =
-                --         "Error reading from site " ++ site.name ++ ": " ++ Debug.toString err |> Debug.log
-                -- in
-                "Error reading feeds for site: " ++ site.name
-            )
+        { url = "https://rss2json.fbedussi.now.sh/?url=" ++ site.rssLink
+        , expect = Http.expectJson (GetArticles site.id) (feedDecoder site.id)
+        }

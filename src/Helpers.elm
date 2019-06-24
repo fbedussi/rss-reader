@@ -2,6 +2,7 @@ module Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dat
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Events exposing (keyCode, on)
+import Http
 import Json.Decode as Json
 import Models exposing (Article, Category, ErrorMsg, Id, Model, Msg, Panel(..), SelectedCategoryId, SelectedSiteId, Site, createEmptySite, panelToString)
 import Murmur3 exposing (hashString)

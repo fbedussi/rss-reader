@@ -2,8 +2,9 @@ module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(
 
 -- import TouchEvents exposing (Touch)
 
-import Browser.Dom exposing (Error, Viewport)
+import Browser.Dom as Dom
 import Char exposing (Char)
+import Http
 import Json.Encode
 import PanelsManager exposing (PanelsState, initialPanelsState)
 import Swiper exposing (SwipeEvent, SwipingState, initialSwipingState)
@@ -218,9 +219,9 @@ type Msg
     | ExecuteImport
     | StoreImportData String
     | RefreshFeeds
-    | GetArticles Id (Result String (List Article))
+    | GetArticles Id (Result Http.Error (List Article))
     | ToggleSelectedCategory Id
-    | OpenTab Id (Result Error Viewport)
+    | OpenTab Id (Result Dom.Error Dom.Viewport)
     | AddNewCategory
     | AddNewSite
     | SaveArticle Article

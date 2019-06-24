@@ -193,22 +193,22 @@ update msg model =
 
                 Err err ->
                     let
-                        errorMsg =
-                            createErrorMsg err
+                        failedSite =
+                            List.filter (\site -> site.id == siteId) model.sites |> List.head
 
                         updatedPanelsState =
                             initPanel errorMsg.id model.panelsState
 
-                        failedSite =
-                            List.filter (\site -> site.id == siteId) model.sites |> List.head
+                        errorBaseText =
+                            "Error reading feeds for site: "
 
-                        updateFailedSiteCmd =
+                        ( updateFailedSiteCmd, errorMsg ) =
                             case failedSite of
                                 Just site ->
-                                    incrementNumberOfFailures model.options.maxNumberOfFailures site |> UpdateSiteInDb |> sendInfoOutside
+                                    ( incrementNumberOfFailures model.options.maxNumberOfFailures site |> UpdateSiteInDb |> sendInfoOutside, errorBaseText ++ site.name |> createErrorMsg )
 
                                 Nothing ->
-                                    Cmd.none
+                                    ( Cmd.none, errorBaseText ++ String.fromInt siteId |> createErrorMsg )
                     in
                     ( { updatedModel
                         | panelsState = updatedPanelsState
