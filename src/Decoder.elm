@@ -1,4 +1,4 @@
-module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser, feedDecoder)
+module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeScrollTop, decodeUser, feedDecoder)
 
 import Iso8601
 import Json.Decode exposing (..)
@@ -114,3 +114,8 @@ feedArticleDecoder siteId =
         (succeed False)
         (field "isoDate" Iso8601.decoder)
         (succeed False)
+
+
+decodeScrollTop : Value -> Result Error Int
+decodeScrollTop scrollTopJson =
+    decodeValue int scrollTopJson

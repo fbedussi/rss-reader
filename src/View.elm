@@ -4,17 +4,17 @@ import Browser exposing (Document)
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
 import Helpers exposing (getSiteToEdit, onKeyDown)
+import Html.Attributes.Aria exposing (ariaHidden)
 import Html.Styled exposing (Html, div, span, styled, toUnstyled)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled.Lazy as HSL
 import Models exposing (Model, Msg(..), Panel(..), panelToString)
 import PanelsManager exposing (getPanelState, isPanelOpen, isSomePanelOpen)
+import PartialViews.BackToTop exposing (backToTop)
 import PartialViews.EditSiteLayer exposing (editSiteLayer)
 import PartialViews.ErrorContainer exposing (errorContainer)
 import PartialViews.Header exposing (siteHeader)
-import PartialViews.IconButton exposing (iconButton)
-import PartialViews.Icons exposing (arrowTop)
 import PartialViews.ImportLayer exposing (importLayer)
 import PartialViews.MainContent exposing (mainContent)
 import PartialViews.Modal exposing (modal)
@@ -69,18 +69,7 @@ view model =
                     , editSiteLayer (getPanelState (panelToString PanelEditSite) model.panelsState |> getAnimationClassTopLayers) model.siteToEditForm model.categories
                     , importLayer <| getAnimationClassTopLayers <| getPanelState (panelToString PanelImport) model.panelsState
                     , settingsLayer model.options <| getAnimationClassTopLayers <| getPanelState (panelToString PanelSettings) model.panelsState
-                    , styled span
-                        [ position fixed
-                        , right theme.distanceS
-                        , bottom theme.distanceXS
-                        , opacity (int 0)
-                        , display none
-                        , transition "opacity 0.3s"
-                        , onDesktop
-                            [ bottom theme.distanceXXXL ]
-                        ]
-                        [ class "backToTopButton" ]
-                        [ iconButton (arrowTop [ fill theme.white ]) ( "backToTop", False ) [ onClick ScrollToTop ] ]
+                    , backToTop model.isBackToTopVisible
                     ]
     in
     { title = "FlyFeed"

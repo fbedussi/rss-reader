@@ -161,6 +161,7 @@ type alias Model =
     , lastRefreshTime : Time.Posix
     , swipingState : SwipingState
     , userSwipedLeft : Bool
+    , isBackToTopVisible : Bool
     }
 
 
@@ -187,6 +188,7 @@ initialModel =
     , lastRefreshTime = millisToPosix 0
     , swipingState = initialSwipingState
     , userSwipedLeft = False
+    , isBackToTopVisible = False
     }
 
 
@@ -302,6 +304,7 @@ type InfoForElm
     = UserLoggedIn UserUid
     | DbOpened
     | NewData (List Category) (List Site) (List Article) Options Time.Posix
+    | PageScroll Int
 
 
 toEnglishMonth : Month -> String

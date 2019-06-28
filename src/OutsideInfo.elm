@@ -1,6 +1,6 @@
 port module OutsideInfo exposing (encodeArticle, encodeCategory, encodeIdList, encodeOptions, encodeSite, getInfoFromOutside, infoForElmPort, infoForOutside, sendInfoOutside, switchInfoForElm)
 
-import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeUser)
+import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeScrollTop, decodeUser)
 import Json.Encode exposing (..)
 import Models exposing (..)
 import Time exposing (posixToMillis)
@@ -99,7 +99,7 @@ sendInfoOutside info =
             infoForOutside { tag = "signOut", data = null }
 
 
-getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
+getInfoFromOutside : (InfoForElm -> Msg) -> (String -> Msg) -> Sub Msg
 getInfoFromOutside tagger onError =
     infoForElmPort
         (\outsideInfo ->
@@ -127,6 +127,14 @@ getInfoFromOutside tagger onError =
 
                         Err e ->
                             onError "Error receiving data"
+
+                "pageScroll" ->
+                    case decodeScrollTop outsideInfo.data of
+                        Ok scrollTop ->
+                            tagger <| PageScroll scrollTop
+
+                        Err e ->
+                            NoOp
 
                 "error" ->
                     case decodeError outsideInfo.data of
@@ -170,6 +178,13 @@ switchInfoForElm infoForElm model =
               }
             , Cmd.none
             )
+
+        PageScroll scrollTop ->
+            let
+                _ =
+                    Debug.log "scrollTop" scrollTop
+            in
+            ( { model | isBackToTopVisible = scrollTop > 1000 }, Cmd.none )
 
 
 encodeCategory : Category -> Value

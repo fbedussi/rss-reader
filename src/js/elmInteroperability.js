@@ -1,6 +1,5 @@
 import { toggleExcerpt, initReadMoreButtons } from "./readMoreButton";
 import debounce from "./debounce";
-import initBackToTopButton from "./backToTopButton";
 import firebase from "../db/services/firebaseInit";
 
 function convertObjToArray(initialArray = []) {
@@ -89,6 +88,15 @@ function elmIteroperability(app, uid) {
     data: uid
   });
 
+  function sendScrollPosition() {
+    app.ports.infoForElmPort.send({
+      tag: "pageScroll",
+      data: document.scrollingElement.scrollTop
+    });
+  }
+
+  window.addEventListener("scroll", debounce(sendScrollPosition, 70));
+
   app.ports.infoForOutside.subscribe(function(cmd) {
     if (!cmd.tag || !cmd.tag.length) {
       return;
@@ -154,7 +162,6 @@ function elmIteroperability(app, uid) {
                   : 0
             };
 
-            initBackToTopButton();
             watchForArticleChange();
 
             app.ports.infoForElmPort.send({
@@ -218,10 +225,10 @@ function elmIteroperability(app, uid) {
         toggleExcerpt(payload);
         break;
 
-      // case 'initReadMoreButtons':
-      //     initBackToTopButton();
-      //     watchForArticleChange();
-      //     break;
+      case "initReadMoreButtons":
+        initBackToTopButton();
+        watchForArticleChange();
+        break;
 
       case "scrollToTop":
         document.scrollingElement.scrollTop = 0;
