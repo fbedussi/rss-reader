@@ -1,4 +1,4 @@
-import { toggleExcerpt, initReadMoreButtons } from "./readMoreButton";
+import { toggleExcerpt } from "./readMoreButton";
 import debounce from "./debounce";
 import firebase from "../db/services/firebaseInit";
 
@@ -70,16 +70,6 @@ function updateContent(app, storeName, content) {
         data: error
       });
     });
-}
-
-function watchForArticleChange() {
-  const mainContent = document.querySelector(".mainContent");
-  const config = { childList: true, subtree: true };
-  const observer = new MutationObserver(debounce(initReadMoreButtons, 50));
-
-  observer.observe(mainContent, config);
-
-  window.addEventListener("resize", debounce(initReadMoreButtons, 50));
 }
 
 function elmIteroperability(app, uid) {
@@ -162,8 +152,6 @@ function elmIteroperability(app, uid) {
                   : 0
             };
 
-            watchForArticleChange();
-
             app.ports.infoForElmPort.send({
               tag: "allData",
               data: resultToSend
@@ -219,19 +207,6 @@ function elmIteroperability(app, uid) {
 
       case "saveLastRefreshedTime":
         saveStore(app, "lastRefreshedTime", payload);
-        break;
-
-      case "toggleExcerpt":
-        toggleExcerpt(payload);
-        break;
-
-      case "initReadMoreButtons":
-        initBackToTopButton();
-        watchForArticleChange();
-        break;
-
-      case "scrollToTop":
-        document.scrollingElement.scrollTop = 0;
         break;
 
       case "signOut":

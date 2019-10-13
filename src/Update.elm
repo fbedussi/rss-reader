@@ -1,6 +1,8 @@
 module Update exposing (createNewCategory, createNewSite, update)
 
-import Browser.Dom exposing (focus, getViewportOf)
+import Article exposing (getArticleExcerptDomId, setArticleInnerHeight, toggleArticle)
+import Browser.Dom as Dom exposing (focus, getViewportOf)
+import Css
 import GetFeeds exposing (getFeeds)
 import Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
@@ -153,13 +155,11 @@ update msg model =
                                     (\article ->
                                         { article
                                             | id = hashString 12345 article.link
-                                            , excerpt =
-                                                article.excerpt
                                         }
                                     )
 
                         mergedArticles =
-                            mergeArticles rssArticles model.articles
+                            mergeArticles rssArticles model.articles |> List.sortWith dateDescending
 
                         ( updatedSites, sitesToResetFailures ) =
                             List.foldl
@@ -185,10 +185,12 @@ update msg model =
                                 model.sites
                     in
                     ( { updatedModel
-                        | articles = List.sortWith dateDescending mergedArticles
+                        | articles = mergedArticles
                         , sites = updatedSites
                       }
-                    , Cmd.batch (sendInfoOutside InitReadMoreButtons :: List.map (\site -> UpdateSiteInDb site |> sendInfoOutside) sitesToResetFailures)
+                    , (sitesToResetFailures |> List.map (\site -> UpdateSiteInDb site |> sendInfoOutside))
+                        ++ (mergedArticles |> List.map (\article -> Task.attempt (SetArticleInnerHeight article.id) (Dom.getViewportOf <| getArticleExcerptDomId article.id)))
+                        |> Cmd.batch
                     )
 
                 Err err ->
@@ -261,7 +263,7 @@ update msg model =
             )
 
         ChangePage pageNumber ->
-            ( { model | currentPage = pageNumber }, ScrollToTopViaJs |> sendInfoOutside )
+            ( { model | currentPage = pageNumber }, resetViewport )
 
         ChangeNumberOfArticlesPerPage newArticlesPerPage ->
             let
@@ -314,28 +316,36 @@ update msg model =
             )
 
         ToggleExcerpt articleId domId toOpen ->
-            let
-                updatedArticles =
-                    model.articles
-                        |> List.map
-                            (\article ->
-                                if article.id == articleId then
-                                    { article | isOpen = toOpen }
+            if toOpen then
+                ( model, Task.attempt (SetArticleHeight articleId domId toOpen) (Dom.getViewportOf <| getArticleExcerptDomId articleId) )
 
-                                else
-                                    article
-                            )
-            in
-            ( { model | articles = updatedArticles }, ToggleExcerptViaJs domId toOpen model.options.articlePreviewHeightInEm |> sendInfoOutside )
+            else
+                ( { model | articles = toggleArticle model.articles articleId toOpen model.options.articlePreviewHeightInEm }, Cmd.none )
 
-        ScrollToTop ->
-            ( model, ScrollToTopViaJs |> sendInfoOutside )
+        SetArticleHeight articleId domId toOpen viewport ->
+            case viewport of
+                Ok viewportData ->
+                    ( { model | articles = toggleArticle model.articles articleId toOpen viewportData.viewport.height }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        SetArticleInnerHeight articleId viewport ->
+            case viewport of
+                Ok viewportData ->
+                    ( { model | articles = setArticleInnerHeight model.articles articleId viewportData.viewport.height }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         ErrorBoxMsg errorBoxMsg ->
             handleErrorBoxMsgs model errorBoxMsg
 
         SignOut ->
             ( model, SignOutViaJs |> sendInfoOutside )
+
+        ScrollToTop ->
+            ( model, resetViewport )
 
         NoOp ->
             ( model, Cmd.none )
@@ -419,3 +429,8 @@ findSiteAndIncrementNumberOfFailures maxNumberOfFailures sites siteId =
                 site
         )
         sites
+
+
+resetViewport : Cmd Msg
+resetViewport =
+    Task.perform (\_ -> NoOp) (Dom.setViewport 0 0)

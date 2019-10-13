@@ -1,5 +1,6 @@
 module Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeScrollTop, decodeUser, feedDecoder)
 
+import Css
 import Iso8601
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
@@ -74,15 +75,17 @@ siteDecoder =
 
 articleDecoder : Decoder Article
 articleDecoder =
-    map8 Article
-        (field "id" Json.Decode.int)
-        (field "siteId" Json.Decode.int)
-        (field "link" Json.Decode.string)
-        (field "title" Json.Decode.string)
-        (field "excerpt" Json.Decode.string)
-        (field "starred" Json.Decode.bool)
-        (field "date" Json.Decode.int |> map millisToPosix)
-        (succeed False)
+    succeed Article
+        |> required "id" int
+        |> required "siteId" int
+        |> required "link" string
+        |> required "title" string
+        |> required "excerpt" string
+        |> required "starred" bool
+        |> required "date" (int |> map millisToPosix)
+        |> hardcoded False
+        |> hardcoded initialModel.options.articlePreviewHeightInEm
+        |> hardcoded 0
 
 
 appOptionsDecoder : Decoder Options
@@ -105,15 +108,17 @@ feedDecoder siteId =
 
 feedArticleDecoder : Int -> Decoder Article
 feedArticleDecoder siteId =
-    map8 Article
-        (succeed 0)
-        (succeed siteId)
-        (field "link" string)
-        (field "title" string)
-        (field "content" string)
-        (succeed False)
-        (field "isoDate" Iso8601.decoder)
-        (succeed False)
+    succeed Article
+        |> hardcoded 0
+        |> hardcoded siteId
+        |> required "link" string
+        |> required "title" string
+        |> required "content" string
+        |> hardcoded False
+        |> required "isoDate" Iso8601.decoder
+        |> hardcoded False
+        |> hardcoded initialModel.options.articlePreviewHeightInEm
+        |> hardcoded 0
 
 
 decodeScrollTop : Value -> Result Error Int

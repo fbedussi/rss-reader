@@ -1,5 +1,6 @@
 module PartialViews.Article exposing (renderArticle)
 
+import Article exposing (getArticleDomId, getArticleExcerptDomId)
 import Css exposing (..)
 import Css.Global exposing (descendants, selector, typeSelector)
 import Helpers exposing (getArticleSite, getSelectedArticles)
@@ -34,7 +35,7 @@ renderArticle articlePreviewHeight sites articleToRender =
             articleToRender.date
 
         domId =
-            "article_" ++ String.fromInt articleToRender.id
+            getArticleDomId articleToRender.id
 
         articleExcerptParsed =
             case Html.Parser.run articleToRender.excerpt of
@@ -114,11 +115,19 @@ renderArticle articlePreviewHeight sites articleToRender =
                             [ typeSelector "img"
                                 [ display none ]
                             ]
-                        , maxHeight (Css.em articlePreviewHeight)
+                        , maxHeight
+                            (if articleToRender.height < 50 then
+                                Css.px (articleToRender.height * 16)
+
+                             else
+                                Css.px articleToRender.height
+                            )
                         , transition "max-height 0.3s"
                         , overflow hidden
                         ]
-                        [ class "article-excerpt" ]
+                        [ id <| getArticleExcerptDomId articleToRender.id
+                        , class "article-excerpt"
+                        ]
                         [ styled div
                             []
                             [ class "article-excerptInner" ]
@@ -129,7 +138,8 @@ renderArticle articlePreviewHeight sites articleToRender =
                         ]
                     , styled btn
                         [ marginTop theme.distanceXXS
-                        , opacity zero
+
+                        -- , opacity zero
                         , transition "opacity 0.3s"
                         ]
                         [ class "readMoreButton"

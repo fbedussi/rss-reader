@@ -78,23 +78,6 @@ sendInfoOutside info =
             in
             infoForOutside { tag = "saveAllData", data = allData }
 
-        ToggleExcerptViaJs domId toOpen articlePreviewHeight ->
-            let
-                excerptData =
-                    object
-                        [ ( "domId", domId |> string )
-                        , ( "toOpen", toOpen |> bool )
-                        , ( "originalMaxHeight", articlePreviewHeight |> float )
-                        ]
-            in
-            infoForOutside { tag = "toggleExcerpt", data = excerptData }
-
-        InitReadMoreButtons ->
-            infoForOutside { tag = "initReadMoreButtons", data = null }
-
-        ScrollToTopViaJs ->
-            infoForOutside { tag = "scrollToTop", data = null }
-
         SignOutViaJs ->
             infoForOutside { tag = "signOut", data = null }
 

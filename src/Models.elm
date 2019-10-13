@@ -51,6 +51,8 @@ type alias Article =
     , starred : Bool
     , date : Time.Posix
     , isOpen : Bool
+    , height : Float
+    , innerHeight : Float
     }
 
 
@@ -218,6 +220,8 @@ type Msg
     | ToggleSelectSite Id
     | ToggleDeleteActions Id
     | ToggleExcerpt Id String Bool
+    | SetArticleInnerHeight Id (Result Dom.Error Dom.Viewport)
+    | SetArticleHeight Id String Bool (Result Dom.Error Dom.Viewport)
     | ExecuteImport
     | StoreImportData String
     | RefreshFeeds
@@ -294,9 +298,6 @@ type InfoForOutside
     | SaveOptions Options
     | SaveLastRefreshedTime Time.Posix
     | SaveAllData ( List Category, List Site, List Article )
-    | ToggleExcerptViaJs String Bool Float
-    | InitReadMoreButtons
-    | ScrollToTopViaJs
     | SignOutViaJs
 
 
