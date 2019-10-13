@@ -180,10 +180,10 @@ switchInfoForElm infoForElm model =
             )
 
         PageScroll scrollTop ->
-            let
-                _ =
-                    Debug.log "scrollTop" scrollTop
-            in
+            -- let
+            --     _ =
+            --         -- Debug.log "scrollTop" scrollTop
+            -- in
             ( { model | isBackToTopVisible = scrollTop > 1000 }, Cmd.none )
 
 

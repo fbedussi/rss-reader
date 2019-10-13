@@ -154,7 +154,7 @@ function elmIteroperability(app, uid) {
               sites: convertObjToArray(result[1]).map(site =>
                 Object.assign({ categoriesId: [] }, site)
               ), //if the array is empty firebase strip it
-              articles: Object.values(result[2][0]),
+              articles: Object.values(result[2][0] || {}),
               options: result[3][0],
               lastRefreshedTime:
                 result[4][0] && result[4][0].lastRefreshedTime
