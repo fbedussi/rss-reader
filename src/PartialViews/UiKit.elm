@@ -8,7 +8,7 @@ import Html.Attributes.Aria exposing (ariaHidden, ariaLabel)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, for, fromUnstyled, id, type_, value)
 import Html.Styled.Events exposing (onCheck, onClick, onInput)
-import Models exposing (ErrorBoxMsg(..), Msg(..), Panel, Selected, ErrorMsg)
+import Models exposing (ErrorBoxMsg(..), ErrorMsg, Msg(..), Panel, Selected)
 import PanelsManager exposing (getPanelClass)
 import PartialViews.Icons exposing (closeIcon, starIcon)
 
@@ -279,6 +279,7 @@ sidebarSelectionBtn =
         , standardPadding
         , textAlign left
         , displayFlex
+        , alignItems center
         , flex (int 1)
         ]
 

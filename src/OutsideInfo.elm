@@ -208,7 +208,7 @@ encodeSite site =
         , ( "numberOfFailures", site.numberOfFailures |> int )
         ]
 
-
+ 
 encodeIdList : List Id -> Value
 encodeIdList ids =
     list int ids

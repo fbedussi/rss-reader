@@ -97,7 +97,7 @@ function elmIteroperability(app, uid) {
 
   window.addEventListener("scroll", debounce(sendScrollPosition, 70));
 
-  app.ports.infoForOutside.subscribe(function(cmd) {
+  app.ports.infoForOutside.subscribe(function (cmd) {
     if (!cmd.tag || !cmd.tag.length) {
       return;
     }
@@ -226,7 +226,6 @@ function elmIteroperability(app, uid) {
         break;
 
       case "initReadMoreButtons":
-        initBackToTopButton();
         watchForArticleChange();
         break;
 
