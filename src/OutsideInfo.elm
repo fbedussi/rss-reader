@@ -98,6 +98,9 @@ sendInfoOutside info =
         SignOutViaJs ->
             infoForOutside { tag = "signOut", data = null }
 
+        ExportData data ->
+            infoForOutside { tag = "exportData", data = data }
+
 
 getInfoFromOutside : (InfoForElm -> Msg) -> (String -> Msg) -> Sub Msg
 getInfoFromOutside tagger onError =
@@ -208,7 +211,7 @@ encodeSite site =
         , ( "numberOfFailures", site.numberOfFailures |> int )
         ]
 
- 
+
 encodeIdList : List Id -> Value
 encodeIdList ids =
     list int ids

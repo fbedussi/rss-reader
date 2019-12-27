@@ -1,6 +1,7 @@
 import { toggleExcerpt, initReadMoreButtons } from "./readMoreButton";
 import debounce from "./debounce";
 import firebase from "../db/services/firebaseInit";
+import opml from 'opml-generator';
 
 function convertObjToArray(initialArray = []) {
   const resultArray = initialArray.map(obj => {
@@ -231,6 +232,17 @@ function elmIteroperability(app, uid) {
 
       case "scrollToTop":
         document.scrollingElement.scrollTop = 0;
+        break;
+
+      case "exportData":
+        console.log(payload);
+        const xml = opml(payload.head, payload.categories.concat(payload.orphanSites));
+        const dlAnchorElem = document.createElement('a');
+        document.body.appendChild(dlAnchorElem);
+        const blob = window.URL.createObjectURL(new Blob([xml], { type: 'text/xml' }));
+        dlAnchorElem.setAttribute("href", blob);
+        dlAnchorElem.setAttribute("download", "subscriptions.xml");
+        dlAnchorElem.click();
         break;
 
       case "signOut":

@@ -6,7 +6,7 @@ import Html.Styled.Attributes exposing (class, id, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..), Options, Panel(..))
 import PartialViews.IconButton exposing (iconButton)
-import PartialViews.Icons exposing (exitIcon, importIcon)
+import PartialViews.Icons exposing (exitIcon, exportIcon, importIcon)
 import PartialViews.UiKit exposing (btn, input, inputRow, inputRowLabel, layerTop, secondaryBtn, theme)
 
 
@@ -19,7 +19,12 @@ settingsLayer options animationClass =
             [ class "layer-inner" ]
             [ inputRow
                 []
-                [ iconButton (importIcon []) ( "import", True ) [ onClick <| OpenImportPanel ] ]
+                [ styled div
+                    [ marginRight theme.distanceXS ]
+                    []
+                    [ iconButton (importIcon []) ( "import", True ) [ onClick <| OpenImportPanel ] ]
+                , iconButton (exportIcon []) ( "export", True ) [ onClick <| TriggerExportData ]
+                ]
             , inputRow
                 []
                 [ iconButton (exitIcon []) ( "sign out", True ) [ onClick SignOut ] ]

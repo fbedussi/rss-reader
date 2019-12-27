@@ -1,13 +1,14 @@
 module Update exposing (createNewCategory, createNewSite, update)
 
 import Browser.Dom exposing (focus, getViewportOf)
+import Export exposing (encodeOpml)
 import GetFeeds exposing (getFeeds)
-import Helpers exposing (closeModal, countNewArticlesInSite, createErrorMsg, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
+import Helpers exposing (countNewArticlesInSite, createErrorMsg, dateDescending, delay, getDataToSaveInDb, getNextId, mergeArticles, openModal, sendMsg, toggleSelected)
 import Import exposing (executeImport)
-import Models exposing (Article, Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Modal, Model, Msg(..), Panel(..), Site, createEmptySite, panelToString)
+import Models exposing (Category, ErrorBoxMsg(..), Id, InfoForOutside(..), Model, Msg(..), Panel(..), Site, createEmptySite, panelToString)
 import Murmur3 exposing (hashString)
 import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
-import PanelsManager exposing (PanelsState, closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
+import PanelsManager exposing (closeAllPanels, closePanel, closePanelsFuzzy, getPanelState, initPanel, isPanelOpen, openPanel)
 import Swiper
 import Task
 import Time exposing (millisToPosix)
@@ -40,7 +41,7 @@ update msg model =
                 Ok height ->
                     ( { model | categories = updateCategoriesHeight (round height.viewport.height) categoryId model.categories }, Cmd.none )
 
-                Err notFound ->
+                Err _ ->
                     ( model, Cmd.none )
 
         ToggleSelectSite siteId ->
@@ -336,6 +337,9 @@ update msg model =
 
         SignOut ->
             ( model, SignOutViaJs |> sendInfoOutside )
+
+        TriggerExportData ->
+            ( model, encodeOpml model.categories model.sites |> ExportData |> sendInfoOutside )
 
         NoOp ->
             ( model, Cmd.none )

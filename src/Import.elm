@@ -2,14 +2,8 @@ module Import exposing (executeImport)
 
 import Helpers exposing (createErrorMsg)
 import Json.Decode exposing (..)
-import Json.Decode.Pipeline exposing (hardcoded, optional, required)
-import Models exposing (Category, Model, Site)
-
-
-type alias OpmlCategory =
-    { sites : List Site
-    , name : String
-    }
+import Json.Decode.Pipeline exposing (hardcoded, required)
+import Models exposing (Category, Model, OpmlCategory, Site)
 
 
 executeImport : Model -> Model
@@ -87,13 +81,14 @@ opmlDecoder =
 opmlCategoryDecoder : Decoder OpmlCategory
 opmlCategoryDecoder =
     map2 OpmlCategory
-        (field "outline" (list opmlSiteDecoder))
         (field "_title" string)
+        (field "outline" (list opmlSiteDecoder))
 
 
 opmlLooseSiteDecoder : Decoder OpmlCategory
 opmlLooseSiteDecoder =
     map2 OpmlCategory
+        (succeed "")
         (map6 fakeSiteList
             (succeed 0)
             (succeed [])
@@ -102,7 +97,6 @@ opmlLooseSiteDecoder =
             (field "_htmlUrl" string)
             (succeed False)
         )
-        (succeed "")
 
 
 fakeSiteList : Models.Id -> List Int -> String -> String -> String -> Bool -> List Site

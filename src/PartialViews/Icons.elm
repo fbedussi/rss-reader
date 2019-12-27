@@ -1,4 +1,4 @@
-module PartialViews.Icons exposing (arrowTop, cancelIcon, checkIcon, closeIcon, cogIcon, deleteIcon, editIcon, exitIcon, folderIcon, iconStyle, importIcon, logo, menuIcon, plusIcon, refreshIcon, rssIcon, searchIcon, starIcon)
+module PartialViews.Icons exposing (arrowTop, cancelIcon, checkIcon, closeIcon, cogIcon, deleteIcon, editIcon, exitIcon, exportIcon, folderIcon, iconStyle, importIcon, logo, menuIcon, plusIcon, refreshIcon, rssIcon, searchIcon, starIcon)
 
 import Css exposing (batch, currentColor, display, em, height, inlineBlock, middle, vertical, verticalAlign, width)
 import Html.Styled exposing (Html)
@@ -53,6 +53,14 @@ importIcon styles =
         [ path [ d "M8 9l4-4h-3v-4h-2v4h-3zM11.636 7.364l-1.121 1.121 4.064 1.515-6.579 2.453-6.579-2.453 4.064-1.515-1.121-1.121-4.364 1.636v4l8 3 8-3v-4z" ]
             []
         ]
+
+
+exportIcon : List Css.Style -> Html Msg
+exportIcon styles =
+    styled svg
+        ([ iconStyle ] ++ styles)
+        [ viewBox "0 0 16 16" ]
+        [ path [ d "M 8,1 4,5 H 7 V 9 H 9 V 5 h 3 z" ] [], path [ d "M 11.636,7.364 10.515,8.485 14.579,10 8,12.453 1.421,10 5.485,8.485 4.364,7.364 0,9 v 4 l 8,3 8,-3 V 9 Z" ] [] ]
 
 
 cancelIcon : List Css.Style -> Html msg

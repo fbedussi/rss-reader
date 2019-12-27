@@ -1,6 +1,4 @@
-module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), ErrorMsg, GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, defaultOptions, init, initialModel, panelToString, toEnglishMonth)
-
--- import TouchEvents exposing (Touch)
+module Models exposing (Article, Category, Data, DeleteMsg(..), EditCategoryMsg(..), EditSiteMsg(..), Email, ErrorBoxMsg(..), ErrorMsg, GenericOutsideData, Id, InfoForElm(..), InfoForOutside(..), LoginData, Modal, Model, Msg(..), OpmlCategory, Options, Panel(..), Password, Selected, SelectedCategoryId, SelectedSiteId, Site, UserUid, createEmptySite, defaultOptions, init, initialModel, panelToString, toEnglishMonth)
 
 import Browser.Dom as Dom
 import Char exposing (Char)
@@ -8,7 +6,6 @@ import Http
 import Json.Encode
 import PanelsManager exposing (PanelsState, initialPanelsState)
 import Swiper exposing (SwipeEvent, SwipingState, initialSwipingState)
-import Task exposing (Task)
 import Time exposing (Month(..), millisToPosix)
 
 
@@ -40,6 +37,12 @@ type alias Password =
 
 type alias Id =
     Int
+
+
+type alias OpmlCategory =
+    { name : String
+    , sites : List Site
+    }
 
 
 type alias Article =
@@ -246,6 +249,7 @@ type Msg
     | DeleteMsg DeleteMsg
     | ErrorBoxMsg ErrorBoxMsg
     | Outside InfoForElm
+    | TriggerExportData
     | NoOp
 
 
@@ -298,6 +302,7 @@ type InfoForOutside
     | InitReadMoreButtons
     | ScrollToTopViaJs
     | SignOutViaJs
+    | ExportData Json.Encode.Value
 
 
 type InfoForElm
