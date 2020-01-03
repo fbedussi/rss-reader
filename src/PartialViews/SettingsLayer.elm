@@ -1,7 +1,7 @@
 module PartialViews.SettingsLayer exposing (settingsLayer)
 
 import Css exposing (..)
-import Html.Styled exposing (Html, div, styled)
+import Html.Styled exposing (Html, div, span, styled)
 import Html.Styled.Attributes exposing (class, id, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Models exposing (Msg(..), Options, Panel(..))
@@ -22,8 +22,9 @@ settingsLayer options animationClass =
                 [ styled div
                     [ marginRight theme.distanceXS ]
                     []
-                    [ iconButton (importIcon []) ( "import", True ) [ onClick <| OpenImportPanel ] ]
-                , iconButton (exportIcon []) ( "export", True ) [ onClick <| TriggerExportData ]
+                    [ styled span [ marginRight theme.distanceXS ] [] [ iconButton (importIcon []) ( "import", True ) [ onClick <| OpenImportPanel ] ]
+                    , iconButton (exportIcon []) ( "export", True ) [ onClick <| TriggerExportData ]
+                    ]
                 ]
             , inputRow
                 []
