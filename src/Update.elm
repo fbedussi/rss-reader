@@ -33,16 +33,38 @@ update msg model =
                 , currentPage = 1
                 , sites = model.sites |> List.map (\site -> { site | isSelected = False })
               }
-            , Task.attempt (OpenTab categoryId) (getViewportOf <| "cat_" ++ String.fromInt categoryId ++ "_inner")
+            , Task.attempt (ToggleOpenTab categoryId) (getViewportOf <| "cat_" ++ String.fromInt categoryId ++ "_inner")
             )
 
-        OpenTab categoryId innerViewport ->
-            case innerViewport of
-                Ok height ->
-                    ( { model | categories = updateCategoriesHeight (round height.viewport.height) categoryId model.categories }, Cmd.none )
+        ToggleOpenTab categoryId innerViewport ->
+            let
+                category =
+                    List.filter (\cat -> cat.id == categoryId) model.categories |> List.head
 
-                Err _ ->
-                    ( model, Cmd.none )
+                selected =
+                    case category of
+                        Just cat ->
+                            cat.isSelected
+
+                        Nothing ->
+                            False
+
+                catHeight =
+                    case innerViewport of
+                        Ok height ->
+                            round height.viewport.height
+
+                        Err _ ->
+                            0
+
+                targetHeight =
+                    if selected then
+                        catHeight
+
+                    else
+                        0
+            in
+            ( { model | categories = updateCategoriesHeight targetHeight categoryId model.categories }, Cmd.none )
 
         ToggleSelectSite siteId ->
             ( { model

@@ -226,7 +226,7 @@ type Msg
     | RefreshFeeds
     | GetArticles Id (Result Http.Error (List Article))
     | ToggleSelectedCategory Id
-    | OpenTab Id (Result Dom.Error Dom.Viewport)
+    | ToggleOpenTab Id (Result Dom.Error Dom.Viewport)
     | AddNewCategory
     | AddNewSite
     | SaveArticle Article

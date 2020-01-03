@@ -199,7 +199,7 @@ toggleSelected items id =
         |> List.map
             (\item ->
                 if item.id == id then
-                    { item | isSelected = True }
+                    { item | isSelected = not item.isSelected }
 
                 else
                     { item | isSelected = False }
