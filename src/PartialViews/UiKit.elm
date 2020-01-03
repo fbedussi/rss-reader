@@ -554,7 +554,10 @@ articleTitle =
     styled h2
         [ descendants
             [ selector "a"
-                [ color theme.colorPrimary ]
+                [ color theme.colorPrimary
+                , textDecoration none
+                , backgroundImage none
+                ]
             ]
         , marginBottom (Css.em 0.5)
         ]
