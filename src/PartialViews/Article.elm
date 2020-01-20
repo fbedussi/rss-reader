@@ -115,6 +115,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                                 [ display none ]
                             ]
                         , maxHeight (Css.em articlePreviewHeight)
+                        , lineHeight (Css.em 1.4)
                         , transition "max-height 0.3s"
                         , overflow hidden
                         ]
