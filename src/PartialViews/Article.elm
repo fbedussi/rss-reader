@@ -88,6 +88,7 @@ renderArticle articlePreviewHeight sites articleToRender =
                     [ class "article-content" ]
                     [ styled div
                         [ marginLeft (Css.rem 2)
+                        , marginBottom theme.distanceXXXS
                         , onDesktop
                             [ marginLeft zero ]
                         ]

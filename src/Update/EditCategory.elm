@@ -56,7 +56,7 @@ handleEditCategoryMsgs model msg =
                                 updateCategory
 
                             else
-                                category
+                                modelCategory
                         )
                         model.categories
             in
