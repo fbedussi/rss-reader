@@ -158,6 +158,7 @@ type alias Model =
     , fetchingRss : Bool
     , modal : Modal
     , panelsState : PanelsState
+    , sidebarCollapsed: Bool
     , menuOpen : Bool
     , currentPage : Int
     , options : Options
@@ -185,6 +186,7 @@ initialModel =
     , fetchingRss = False
     , modal = { text = "", action = NoOp }
     , panelsState = initialPanelsState
+    , sidebarCollapsed = False
     , menuOpen = False
     , currentPage = 1
     , options = defaultOptions
@@ -231,6 +233,7 @@ type Msg
     | AddNewSite
     | SaveArticle Article
     | TogglePanel Panel
+    | ToggleSidebar
     | ToggleMenu
     | CloseMenu
     | OpenImportPanel

@@ -1,4 +1,4 @@
-module PartialViews.Icons exposing (arrowTop, cancelIcon, checkIcon, closeIcon, cogIcon, deleteIcon, editIcon, exitIcon, exportIcon, folderIcon, iconStyle, importIcon, logo, menuIcon, plusIcon, refreshIcon, rssIcon, searchIcon, starIcon)
+module PartialViews.Icons exposing (arrowTop, cancelIcon, checkIcon, closeIcon, cogIcon, deleteIcon, editIcon, exitIcon, exportIcon, folderIcon, iconStyle, importIcon, logo, menuIcon, plusIcon, refreshIcon, rssIcon, searchIcon, starIcon, arrowLeftIcon)
 
 import Css exposing (batch, currentColor, display, em, height, inlineBlock, middle, vertical, verticalAlign, width)
 import Html.Styled exposing (Html)
@@ -235,5 +235,15 @@ logo styles =
             []
         , path
             [ d "M53.565 19.447c0-3.988-2.574-6.646-5.685-6.646-2.97 0-5.912 2.856-5.912 7.297 0 3.111 1.839 6.958 6.194 6.958 2.291 0 3.48-.764 5.714-3.62l-.736-.51c-1.3 1.782-2.517 3.253-4.695 3.253-2.856 0-5.034-2.941-5.034-6.081v-.65h10.154zm-10.098-.876c.424-2.885 2.263-4.894 4.413-4.894 1.244 0 2.206.396 2.941 1.188.764.792 1.16 2.037 1.273 3.706h-8.627zM66.742 19.447c0-3.988-2.573-6.646-5.685-6.646-2.97 0-5.911 2.856-5.911 7.297 0 3.111 1.838 6.958 6.194 6.958 2.291 0 3.48-.764 5.714-3.62l-.736-.51c-1.3 1.782-2.517 3.253-4.695 3.253-2.857 0-5.035-2.941-5.035-6.081v-.65h10.154zm-10.097-.876c.424-2.885 2.263-4.894 4.412-4.894 1.245 0 2.207.396 2.942 1.188.764.792 1.16 2.037 1.273 3.706h-8.627zM79.694 5.673c-1.386.764-2.602 1.16-3.62 1.16v.876c1.951 0 2.177.085 2.177.792v6.195c-1.018-1.047-2.29-1.556-3.818-1.556-3.507 0-6.11 3.055-6.11 6.477 0 4.243 2.292 7.1 5.63 7.1 2.12 0 3.224-.623 4.298-2.009v1.81h3.96v-.876h-1.16c-.735 0-1.357-.368-1.357-1.556V5.673zm-1.443 16.942c-.367 1.556-1.866 3.112-3.931 3.112-3.253 0-4.412-3.48-4.412-6.11 0-3.649 2.375-5.487 4.525-5.487 2.065 0 3.507 1.442 3.818 2.15v6.335z", style "fill: #4d4d4d" ]
+            []
+        ]
+
+arrowLeftIcon : List Css.Style -> Html msg
+arrowLeftIcon styles = 
+    styled svg
+        styles
+        [ viewBox "0 0 18 18" ]
+        [ path 
+            [d "M11.56 5.56L10.5 4.5 6 9l4.5 4.5 1.06-1.06L8.12 9z"]
             []
         ]

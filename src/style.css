@@ -1,310 +1,318 @@
 :root {
-    --defaultTransitionDuration: 0.3s;
-    --collapseDuration: 1s;
+  --defaultTransitionDuration: 0.3s;
+  --collapseDuration: 1s;
 }
 
 /*Reset*/
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .article-excerpt * {
-    margin: initial;
-    padding: initial;
-    box-sizing: initial;
+  margin: initial;
+  padding: initial;
+  box-sizing: initial;
 }
 
 ul {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .mouseNavigation *:focus {
-    outline: none;
+  outline: none;
 }
 
 a {
-    text-decoration: none;
-    text-shadow: -1px -1px 0 #fff, 
-        1px -1px 0 #fff, 
-        -1px 1px 0 #fff, 
-        1px 1px 0 #fff;
-    background-image: linear-gradient(to right, currentColor 0%, currentColor 100%);
-    background-repeat: repeat-x;
-    background-position: bottom 0.05em center;
-    background-size: 100% 0.1em;
+  text-decoration: none;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+  background-image: linear-gradient(
+    to right,
+    currentColor 0%,
+    currentColor 100%
+  );
+  background-repeat: repeat-x;
+  background-position: bottom 0.05em center;
+  background-size: 100% 0.1em;
 }
 
 body {
-    overflow-x: hidden;
-    font-family: 'Lato', sans-serif;
+  overflow-x: hidden;
+  font-family: "Lato", sans-serif;
 }
 
 /*Animations*/
 @keyframes spin {
-    0% {
-        transform: rotate(0);
-    }
+  0% {
+    transform: rotate(0);
+  }
 
-    100% {
-        transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes slideDown {
-    0% {
-        visibility: visible;
-        transform: translateY(-100%);
-    }
+  0% {
+    visibility: visible;
+    transform: translateY(-100%);
+  }
 
-    100% {
-        visibility: visible;
-        transform: translateY(0);
-    }
+  100% {
+    visibility: visible;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUp {
-    0% {
-        visibility: visible;
-        transform: translateY(0);
-    }
+  0% {
+    visibility: visible;
+    transform: translateY(0);
+  }
 
-    100% {
-        visibility: hidden;
-        transform: translateY(-100%);
-    }
+  100% {
+    visibility: hidden;
+    transform: translateY(-100%);
+  }
 }
 
 @keyframes slideDown2 {
-    0% {
-        visibility: visible;
-        transform: translateY(0);
-    }
+  0% {
+    visibility: visible;
+    transform: translateY(0);
+  }
 
-    100% {
-        visibility: visible;
-        transform: translateY(100%);
-    }
+  100% {
+    visibility: visible;
+    transform: translateY(100%);
+  }
 }
 
 @keyframes slideUp2 {
-    0% {
-        visibility: visible;
-        transform: translateY(100%);
-    }
+  0% {
+    visibility: visible;
+    transform: translateY(100%);
+  }
 
-    100% {
-        visibility: hidden;
-        transform: translateY(0);
-    }
+  100% {
+    visibility: hidden;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideRight {
-    0% {
-        visibility: visible;
-        transform: translateX(0);
-    }
+  0% {
+    visibility: visible;
+    transform: translateX(0);
+  }
 
-    100% {
-        visibility: visible;
-        transform: translateX(100%);
-    }
+  100% {
+    visibility: visible;
+    transform: translateX(100%);
+  }
 }
 
 @keyframes slideLeft {
-    0% {
-        visibility: visible;
-        transform: translateX(100%);
-    }
+  0% {
+    visibility: visible;
+    transform: translateX(100%);
+  }
 
-    100% {
-        visibility: hidden;
-        transform: translateX(0);
-    }
+  100% {
+    visibility: hidden;
+    transform: translateX(0);
+  }
 }
 
 @keyframes popIn {
-    0% {
-        visibility: visible;
-        transform: scale(0);
-        opacity: 0;
-    }
+  0% {
+    visibility: visible;
+    transform: scale(0);
+    opacity: 0;
+  }
 
-    100% {
-        visibility: visible;
-        transform: scale(1);
-        opacity: 1;
-    }
+  100% {
+    visibility: visible;
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes popOut {
-    0% {
-        visibility: visible;
-        transform: scale(1);
-        opacity: 1;
-    }
+  0% {
+    visibility: visible;
+    transform: scale(1);
+    opacity: 1;
+  }
 
-    100% {
-        visibility: hidden;
-        transform: scale(0);
-        opacity: 0;
-    }
+  100% {
+    visibility: hidden;
+    transform: scale(0);
+    opacity: 0;
+  }
 }
 
 @keyframes popInCentered {
-    0% {
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-    }
+  0% {
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
 
-    100% {
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
+  100% {
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes popOutCentered {
-    0% {
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
+  0% {
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 
-    100% {
-        visibility: hidden;
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-    }
+  100% {
+    visibility: hidden;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
 }
 
-@keyframes expand {  
-    0% {
-        height: 0;
-    }
-    
-    100% {
-      height: 2.5rem;
-    }
+@keyframes expand {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: 2.5rem;
+  }
 }
 
-@keyframes collapse {  
-    0% {
-      height: 2.5rem;
-    }
-    
-    100% {
-      height: 0;
-      visibility: hidden;
-    }
+@keyframes collapse {
+  0% {
+    height: 2.5rem;
+  }
+
+  100% {
+    height: 0;
+    visibility: hidden;
+  }
 }
-  
 
 .is-hidden {
-    display: none !important;
+  display: none !important;
 }
 
 .slideUp {
-    animation: slideUp var(--defaultTransitionDuration) forwards;
+  animation: slideUp var(--defaultTransitionDuration) forwards;
 }
 
 .slideDown {
-    animation: slideDown var(--defaultTransitionDuration) forwards;
+  animation: slideDown var(--defaultTransitionDuration) forwards;
 }
 
 .deletePanelOpen {
-    animation: slideDown2 var(--defaultTransitionDuration) forwards;
+  animation: slideDown2 var(--defaultTransitionDuration) forwards;
 }
 
 .deletePanelClosed {
-    animation: slideUp2 var(--defaultTransitionDuration) forwards;
+  animation: slideUp2 var(--defaultTransitionDuration) forwards;
 }
 
 .popIn {
-    animation: popIn var(--defaultTransitionDuration) forwards;
+  animation: popIn var(--defaultTransitionDuration) forwards;
 }
 
 .popOut {
-    animation: popOut var(--defaultTransitionDuration) forwards;
+  animation: popOut var(--defaultTransitionDuration) forwards;
 }
 
 .popInCentered {
-    animation: popInCentered var(--defaultTransitionDuration) forwards;
+  animation: popInCentered var(--defaultTransitionDuration) forwards;
 }
 
 .popOutCentered {
-    animation: popOutCentered var(--defaultTransitionDuration) forwards;
+  animation: popOutCentered var(--defaultTransitionDuration) forwards;
 }
 
 .expand {
-    animation: expand var(--collapseDuration) forwards;
+  animation: expand var(--collapseDuration) forwards;
 }
 
 .collapse {
-    animation: collapse var(--collapseDuration) forwards;
+  animation: collapse var(--collapseDuration) forwards;
 }
 
 .fetchingRss .refreshButton svg {
-    animation: spin 1s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
+  animation: spin 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 
 /*Menu Icon*/
-#bottom, 
+#bottom,
 #central,
 #top,
 #centralBis {
-    transition: transform 0.3s;
-    transform-origin: center center;
+  transition: transform 0.3s;
+  transform-origin: center center;
 }
 
 .menuOpen #top {
-    transform: translateY(-200%);
+  transform: translateY(-200%);
 }
 
 .menuOpen #bottom {
-    transform: translateY(200%);
+  transform: translateY(200%);
 }
 
 .menuOpen #central {
-    transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .menuOpen #centralBis {
-    transform: rotate(-45deg);
+  transform: rotate(-45deg);
 }
 
 .sidebar {
-    transform: translateX(-100%);
+  transform: translateX(-100%);
 }
 
 .menuOpen .sidebar {
-    transform: translateX(0);    
+  transform: translateX(0);
 }
 
 /*Login page*/
 .loginWrapper {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 /*Global styles*/
 [disabled] {
-    opacity: 0.5;
-    pointer-events: none;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-@media screen and (min-width: 1000px) {
-    .deletePanelOpen {
-        animation: slideRight var(--defaultTransitionDuration) forwards;
-    }
+@media screen and (min-width: 901px) {
+  .deletePanelOpen {
+    animation: slideRight var(--defaultTransitionDuration) forwards;
+  }
 
-    .deletePanelClosed {
-        animation: slideLeft var(--defaultTransitionDuration) forwards;
-    }
+  .deletePanelClosed {
+    animation: slideLeft var(--defaultTransitionDuration) forwards;
+  }
+
+  .sidebar {
+    will-change: width;
+  }
+
+  .sidebar:hover .collapseSidebarBtn {
+    opacity: 1;
+  }
 }
-

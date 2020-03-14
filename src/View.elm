@@ -60,8 +60,8 @@ view model =
                             [ displayFlex ]
                         ]
                         [ class "mainWrapper" ]
-                        [ HSL.lazy4 sidebar model.sites model.searchTerm model.categories model.panelsState
-                        , HSL.lazy5 mainContent model.categories model.sites model.articles model.options model.currentPage
+                        [ HSL.lazy5 sidebar model.sites model.searchTerm model.categories model.panelsState model.sidebarCollapsed
+                        , HSL.lazy6 mainContent model.categories model.sites model.articles model.options model.currentPage model.sidebarCollapsed
                         ]
                     , PartialViews.UiKit.overlay (model.menuOpen || isSomePanelOpen "Panel" model.panelsState)
                     , modal model.modal <| getModalAnimationClass <| getPanelState (panelToString PanelModal) model.panelsState

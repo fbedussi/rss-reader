@@ -1,4 +1,4 @@
-module PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle)
+module PartialViews.IconButton exposing (iconButton, iconButtonAlert, iconButtonNoStyle, iconButtonStyled)
 
 import Css exposing (Style, backgroundColor, em, marginLeft, padding2)
 import Html.Styled exposing (Attribute, Html, button, span, styled, text)
@@ -59,3 +59,7 @@ iconButtonAlert icon labelData attributes =
 iconButtonNoStyle : Icon -> ( Label, ShowLabel ) -> List (Attribute Msg) -> Html Msg
 iconButtonNoStyle icon labelData attributes =
     iconButton_ btnNoStyle icon labelData [ padding2 theme.distanceXXXS theme.distanceXXS ] attributes
+
+iconButtonStyled : Icon -> ( Label, ShowLabel ) -> List Style -> List (Attribute Msg) -> Html Msg
+iconButtonStyled icon labelData styles attributes =
+    iconButton_ btnNoStyle icon labelData ([ padding2 theme.distanceXXXS theme.distanceXXS ] ++ styles  ) attributes

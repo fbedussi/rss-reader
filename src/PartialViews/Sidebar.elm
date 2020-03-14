@@ -10,15 +10,15 @@ import Html.Styled.Lazy exposing (lazy, lazy2, lazy3)
 import Models exposing (Article, Category, Model, Msg(..), Panel(..), SelectedCategoryId, SelectedSiteId, Site)
 import PanelsManager exposing (PanelsState)
 import PartialViews.CategoryTree exposing (renderCategory, renderSiteEntry)
-import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle)
-import PartialViews.Icons exposing (cogIcon, plusIcon)
+import PartialViews.IconButton exposing (iconButton, iconButtonNoStyle, iconButtonStyled)
+import PartialViews.Icons exposing (cogIcon, plusIcon, arrowLeftIcon)
 import PartialViews.SearchResult exposing (searchResult)
 import PartialViews.UiKit exposing (input, onDesktop, sidebarBoxStyle, standardPadding, theme, transition)
 import Swiper exposing (onSwipeEvents)
 
 
-sidebar : List Site -> String -> List Category -> PanelsState -> Html Msg
-sidebar sites searchTerm categories panelsState =
+sidebar : List Site -> String -> List Category -> PanelsState -> Bool -> Html Msg
+sidebar sites searchTerm categories panelsState sidebarCollapsed =
     let
         sitesWithoutCategory =
             sites
@@ -34,35 +34,78 @@ sidebar sites searchTerm categories panelsState =
         , top <| calc theme.headerHeight plus theme.hairlineWidth
         , height <| calc (Css.vh 100) minus (calc theme.headerHeight plus theme.hairlineWidth)
         , left zero
-        , transition "transform 0.3s"
+        , transition "transform 0.3s, width 0.3s, box-shadow 0.3s"
         , overflow auto
-        , width (pct 90)
+        , maxWidth (Css.rem 25)
         , backgroundColor theme.colorBackground
         , zIndex theme.zIndex.menu
         , onDesktop
-            [ position static
+            [ position relative
+            , top zero
             , zIndex theme.zIndex.base
-            , width (pct 25)
+            , width <| if sidebarCollapsed then (Css.rem 1.5) else (Css.rem 25)
             , height auto
-            , minWidth (Css.rem 25)
-            , overflow initial
+            , overflow visible
             , transforms []
+            , boxShadow4 (Css.px 0) (Css.px 0) (Css.px 0) theme.colorHairline
+            , hover [
+                boxShadow4 (Css.px 3) (Css.px 0) (Css.px 5) theme.colorHairline
+            ]
             ]
         ]
-        ([ class "sidebar" ] ++ (onSwipeEvents Swiped |> List.map fromUnstyled))
-        ([ renderSidebarToolbar
-         , lazy renderSearchBox searchTerm
-         , lazy2 searchResult sites searchTerm
-         ]
-            ++ (if not searchInProgress then
-                    [ lazy renderSitesWithoutCategory sitesWithoutCategory
-                    , lazy3 renderCategories categories sites panelsState
-                    ]
+        ([ class <| "sidebar" ++ if sidebarCollapsed then " collapsed" else ""  ] ++ (onSwipeEvents Swiped |> List.map fromUnstyled))
+        [ iconButtonStyled (arrowLeftIcon [ fill theme.colorPrimary 
+            , width (Css.pct 100)
+            , height (Css.pct 100)
+            , transforms [rotate <| if sidebarCollapsed then (deg 180) else (deg 0)]
+            ]) ("toggle siedebar", False)
+            [position sticky
+            , top (Css.rem 9)
+            , width theme.buttonHeight
+            , height theme.buttonHeight
+            , borderRadius (Css.pct 50)
+            , backgroundColor theme.colorBackground
+            , overflow hidden
+            , opacity (int 0)
+            , transition "opacity 0.3s"
+            , left (Css.rem 25)
+            , zIndex (int 100)
+            , marginRight (Css.rem -1.25)
+            , boxShadow4 (Css.px 3) (Css.px 0) (Css.px 15) theme.colorHairline
+            , fill theme.colorPrimary
+            , border3 (Css.px 1) solid theme.colorHairline
+            , padding zero
+            ]
+            [onClick ToggleSidebar, class "collapseSidebarBtn"]
+        , styled div
+            [onDesktop
+                [ overflow hidden
+                , transition "opacity 0.3s"
+                , opacity <| if sidebarCollapsed then (int 0) else (int 1)
+                ]]
+            []
+            [ styled div
+                [width (Css.pct 100)
+                , onDesktop 
+                    [width (Css.rem 25)]
+                ]
+                []
+                ([ renderSidebarToolbar
+                , lazy renderSearchBox searchTerm
+                , lazy2 searchResult sites searchTerm
+                ]
+                    ++ (if not searchInProgress then
+                            [ lazy renderSitesWithoutCategory sitesWithoutCategory
+                            , lazy3 renderCategories categories sites panelsState
+                            ]
 
-                else
-                    []
-               )
-        )
+                        else
+                            []
+                    )
+
+                )
+            ]
+        ]
 
 
 renderSidebarToolbar : Html Msg

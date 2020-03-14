@@ -188,7 +188,7 @@ btnNoStyleStyle =
     batch
         [ appearance "none"
         , border zero
-        , backgroundColor transparent
+        , backgroundColor inherit
         , fontSize theme.fontSizeBase
         , padding zero
         , color currentColor

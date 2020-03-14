@@ -107,6 +107,9 @@ update msg model =
             in
             ( { model | panelsState = updatedPanelsState }, Cmd.none )
 
+        ToggleSidebar ->
+            ( { model | sidebarCollapsed = not model.sidebarCollapsed }, Cmd.none )
+
         ToggleMenu ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
 

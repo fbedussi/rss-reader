@@ -10,8 +10,8 @@ import PartialViews.Article exposing (renderArticle)
 import PartialViews.UiKit exposing (btn, clear, onDesktop, selectableBtn, standardPadding, starBtn, theme, visuallyHiddenStyle)
 
 
-mainContent : List Category -> List Site -> List Article -> Options -> Int -> Html Msg
-mainContent categories sites articles options currentPage =
+mainContent : List Category -> List Site -> List Article -> Options -> Int -> Bool -> Html Msg
+mainContent categories sites articles options currentPage sidebarCollapsed =
     let
         selectedArticles =
             getSelectedArticles categories sites articles
@@ -23,12 +23,12 @@ mainContent categories sites articles options currentPage =
             selectedArticles
                 |> List.drop (options.articlesPerPage * (currentPage - 1))
                 |> List.take options.articlesPerPage
+        
     in
     styled main_
         [ standardPadding
         , onDesktop
-            [ width (pct 75)
-            , maxWidth <| calc (pct 100) minus (Css.rem 25)
+            [ maxWidth <| calc (pct 100) minus <| if sidebarCollapsed then (Css.rem 0) else (Css.rem 25)
             ]
         ]
         [ class "mainContent" ]
