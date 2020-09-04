@@ -39,7 +39,7 @@
     "elm-format": "^0.8.1",
     "firebase": "^5.9.3",
     "firebaseui": "^3.5.2",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "opml-generator": "^1.1.1"
   }
 }
