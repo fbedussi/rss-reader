@@ -98,16 +98,16 @@ decodeError err =
     decodeValue string err
 
 
-feedDecoder : Int -> Decoder (List Article)
-feedDecoder siteId =
-    field "items" (list (feedArticleDecoder siteId))
+feedDecoder : Decoder (List Article)
+feedDecoder =
+    field "items" (list feedArticleDecoder)
 
 
-feedArticleDecoder : Int -> Decoder Article
-feedArticleDecoder siteId =
+feedArticleDecoder : Decoder Article
+feedArticleDecoder =
     map8 Article
         (succeed 0)
-        (succeed siteId)
+        (field "siteId" int)
         (field "link" string)
         (field "title" string)
         (field "content" string)

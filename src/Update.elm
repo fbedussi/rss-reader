@@ -165,7 +165,7 @@ update msg model =
             , AddSiteInDb newSite |> sendInfoOutside
             )
 
-        GetArticles siteId rssResult ->
+        GetArticles rssResult ->
             let
                 updatedModel =
                     { model | fetchingRss = False }
@@ -173,6 +173,13 @@ update msg model =
             case rssResult of
                 Ok feeds ->
                     let
+                        siteId = case List.head feeds of
+                            Ok article ->
+                                article.siteId
+
+                            Err _ ->
+                                -1
+                                
                         rssArticles =
                             feeds
                                 |> List.map

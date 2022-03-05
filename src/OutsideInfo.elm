@@ -1,6 +1,6 @@
 port module OutsideInfo exposing (encodeArticle, encodeCategory, encodeIdList, encodeOptions, encodeSite, getInfoFromOutside, infoForElmPort, infoForOutside, sendInfoOutside, switchInfoForElm)
 
-import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeScrollTop, decodeUser)
+import Decoder exposing (decodeData, decodeDbOpened, decodeError, decodeScrollTop, decodeUser, feedDecoder)
 import Json.Encode exposing (..)
 import Models exposing (..)
 import Time exposing (posixToMillis)
@@ -101,6 +101,9 @@ sendInfoOutside info =
         ExportData data ->
             infoForOutside { tag = "exportData", data = data }
 
+        GetSiteFeed data ->
+            infoForOutside { tag = "getSiteFeed", data = data }
+
 
 getInfoFromOutside : (InfoForElm -> Msg) -> (String -> Msg) -> Sub Msg
 getInfoFromOutside tagger onError =
@@ -135,6 +138,14 @@ getInfoFromOutside tagger onError =
                     case decodeScrollTop outsideInfo.data of
                         Ok scrollTop ->
                             tagger <| PageScroll scrollTop
+
+                        Err e ->
+                            NoOp
+
+                "siteFeed" ->
+                    case feedDecoder outsideInfo.data of
+                        Ok articles ->
+                            tagger <| GetArticles articles
 
                         Err e ->
                             NoOp

@@ -226,7 +226,7 @@ type Msg
     | ExecuteImport
     | StoreImportData String
     | RefreshFeeds
-    | GetArticles Id (Result Http.Error (List Article))
+    | GetArticles (List Article)
     | ToggleSelectedCategory Id
     | ToggleOpenTab Id (Result Dom.Error Dom.Viewport)
     | AddNewCategory
@@ -306,6 +306,7 @@ type InfoForOutside
     | ScrollToTopViaJs
     | SignOutViaJs
     | ExportData Json.Encode.Value
+    | GetSiteFeed Site
 
 
 type InfoForElm

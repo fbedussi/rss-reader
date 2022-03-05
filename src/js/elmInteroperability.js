@@ -235,7 +235,6 @@ function elmIteroperability(app, uid) {
         break;
 
       case "exportData":
-        console.log(payload);
         const xml = opml(payload.head, payload.categories.concat(payload.orphanSites));
         const dlAnchorElem = document.createElement('a');
         document.body.appendChild(dlAnchorElem);
@@ -244,6 +243,23 @@ function elmIteroperability(app, uid) {
         dlAnchorElem.setAttribute("download", "subscriptions.xml");
         dlAnchorElem.click();
         break;
+      
+      case "getSiteFeed":
+          console.log(payload);
+
+          fetch(payload.url)
+          .then(response => response.text())
+          .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+          .then(data => {
+            console.log(data);
+            const items = data.querySelectorAll("item");
+            let html = ``;
+            return JSON.stringify(items.map(item => ({
+              siteId: payload.siteId,
+              link: item.querySelector("link").innerHTML,
+              title: item.querySelector("title").innerHTML,
+            })))
+          });
 
       case "signOut":
         firebase
